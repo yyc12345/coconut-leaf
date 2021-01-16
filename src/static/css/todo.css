@@ -1,0 +1,32 @@
+div.todo-item {
+    display: flex;
+    flex-flow: row;
+    align-items: flex-start;
+
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+div.todo-item-words {
+    flex-grow: 1;
+    flex-basis: 0;
+
+    word-break: break-all;
+}
+
+div.todo-item-icon {
+    margin-left: 0.75rem;
+}
+
+
+
+div.control-list {
+    display: flex; 
+    flex-flow: row;
+    flex-wrap: wrap;
+}
+
+div.control-list > * {
+    margin-right: 0.75rem;
+    margin-bottom: 0.75rem;
+}

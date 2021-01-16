@@ -1,0 +1,124 @@
+#calendar-body div:nth-child(n+2) div {
+    border-top: 0 solid black;
+    border-left: 0 solid black;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+
+    padding: 0.75em;
+
+    display: flex;
+    flex-flow: column;
+    align-items: flex-start;
+
+    overflow: hidden;
+}
+
+#calendar-body div:nth-child(n+2) div:nth-child(1) {
+    border-left: 1px solid black;
+}
+
+#calendar-body div:nth-child(2) div {
+    border-top: 1px solid black;
+}
+
+#calendar-body div div {
+    flex-grow: 1;
+    flex-basis: 0;
+    flex-shrink: 0;
+
+    overflow: hidden;
+}
+
+#calendar-body div {
+    display: flex;
+    flex-flow: row;
+}
+
+
+
+
+
+
+
+div.schedule-day {
+    display: flex;
+    flex-flow: column;
+}
+
+div.schedule-day-words {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+div.schedule-event-list {
+    display: flex;
+    flex-flow: column;
+}
+
+div.schedule-event {
+    display: flex;
+    flex-flow: row;
+    align-items: flex-start;
+
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+div.schedule-event-words {
+    display: flex;
+    flex-flow: column;
+    align-items: flex-start;
+    flex-grow: 1;
+    flex-basis: 0;
+
+    word-break: break-all;
+}
+
+div.schedule-event-icon {
+    margin-left: 0.75rem;
+}
+
+#schedule-list div.schedule-day:nth-child(n+2) {
+    border-top: 1px solid rgba(219,219,219,.5);
+}
+
+
+
+
+
+div.collection-item {
+    display: flex;
+    flex-flow: row;
+    align-items: flex-start;
+
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+div.collection-item-words {
+    flex-grow: 1;
+    flex-basis: 0;
+
+    word-break: break-all;
+}
+
+div.collection-item-icon {
+    margin-left: 0.75rem;
+}
+
+
+
+
+
+
+
+div.control-list {
+    display: flex; 
+    flex-flow: row;
+    flex-wrap: wrap;
+}
+
+div.control-list > * {
+    margin-right: 0.75rem;
+    margin-bottom: 0.75rem;
+}

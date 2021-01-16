@@ -1,0 +1,14 @@
+{
+    "database-type": "sqlite",
+    "database-config": {
+        "user": "",
+        "password": "",
+        "db": "",
+        "url": "",
+        "port": 3306
+    },
+    "web": {
+        "port": 8888
+    },
+    "debug": true
+}

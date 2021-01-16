@@ -1,0 +1,13 @@
+# ignore sqlite db
+*.db
+
+# ignore my debug setting
+*.cfg
+
+# ignore py cache
+src/__pycache__
+
+# ignore any image first
+*.png
+*.jpg
+*.gif
