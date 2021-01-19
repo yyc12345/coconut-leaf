@@ -1,7 +1,7 @@
 <nav class="navbar has-shadow is-spaced bd-navbar" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
         <a class="navbar-item" href="home">
-            <img src="icon.png"><b style="margin:0 0 0 14px;">coconut-leaf</b>
+            <img src="/static/image/icon.png"><b style="margin:0 0 0 14px;">coconut-leaf</b>
         </a>
 
         <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false"
@@ -14,26 +14,26 @@
 
     <div id="navbarBasicExample" class="navbar-menu">
         <div class="navbar-start">
-            <a class="navbar-item" href="home">Home</a>
-            <a class="navbar-item" href="calendar">Calendar</a>
-            <a class="navbar-item" href="todo">Todo</a>
-            <a class="navbar-item" href="admin">Admin</a>
+            <a i18n-name="ccn-header-nav-home" id="cnn-header-nav-home" class="navbar-item ccn-i18n" href="/web/home"></a>
+            <a i18n-name="ccn-header-nav-calendar" id="cnn-header-nav-calendar" class="navbar-item ccn-i18n" href="/web/calendar"></a>
+            <a i18n-name="ccn-header-nav-todo" id="cnn-header-nav-todo" class="navbar-item ccn-i18n" href="/web/todo"></a>
+            <a i18n-name="ccn-header-nav-admin" id="cnn-header-nav-admin" class="navbar-item ccn-i18n" href="/web/admin"></a>
         </div>
 
         <div class="navbar-end">
-            <p class="control">
-                <a class="button is-primary">Login</a>
+            <p id="cnn-header-user-login" class="navbar-item">
+                <a class="button is-primary ccn-i18n" i18n-name="ccn-header-user-login" href="/web/login"></a>
             </p>
-            <p class="control">
-                <a class="button is-primary">Logout</a>
+            <p id="cnn-header-user-logout" class="navbar-item">
+                <a class="button is-primary ccn-i18n" i18n-name="ccn-header-user-logout"></a>
             </p>
 
             <div class="navbar-item has-dropdown is-hoverable">
-                <a class="navbar-link">Language</a>
+                <a class="navbar-link ccn-i18n" i18n-name="ccn-header-language"></a>
 
-                <div class="navbar-dropdown">
-                    <a class="navbar-item">English</a>
-                    <a class="navbar-item">简体中文</a>
+                <div id="cnn-header-language" class="navbar-dropdown">
+                    <a language="en-US" class="navbar-item">English</a>
+                    <a language="zh-CN" class="navbar-item">简体中文</a>
                 </div>
             </div>
         </div>

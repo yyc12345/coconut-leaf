@@ -1,6 +1,7 @@
 import hashlib
 import random
 import uuid
+import time
 
 ValidUsername = set(map(lambda x:chr(x), range(48, 58, 1))) | set(map(lambda x:chr(x), range(65, 91, 1))) | set(map(lambda x:chr(x), range(97, 123, 1)))
 ValidPassword = set(map(lambda x:chr(x), range(33, 127, 1)))
@@ -13,7 +14,7 @@ def IsValidPassword(strl):
 
 def ComputePasswordHash(password):
     s = hashlib.sha256()
-    s.update(password)
+    s.update(password.encode('utf-8'))
     return s.hexdigest()
 
 def GenerateUUID():
@@ -21,8 +22,8 @@ def GenerateUUID():
 
 def GenerateToken(username):
     s = hashlib.sha256()
-    s.update(username)
-    s.update(str(GenerateSalt()))
+    s.update(username.encode('utf-8'))
+    s.update((str(GenerateSalt())).encode('utf-8'))
     return s.hexdigest()
 
 def GenerateSalt():
@@ -30,5 +31,8 @@ def GenerateSalt():
 
 def ComputePasswordHashWithSalt(passwordHashed, salt):
     s = hashlib.sha256()
-    s.update(passwordHashed + str(salt))
+    s.update((passwordHashed + str(salt)).encode('utf-8'))
     return s.hexdigest()
+
+def GetCurrentTimestamp():
+    return int(time.time())

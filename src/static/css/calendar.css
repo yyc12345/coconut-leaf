@@ -1,4 +1,4 @@
-#calendar-body div:nth-child(n+2) div {
+#ccn-calendar-calendarBbody div:nth-child(n+2) div {
     border-top: 0 solid black;
     border-left: 0 solid black;
     border-right: 1px solid black;
@@ -13,15 +13,15 @@
     overflow: hidden;
 }
 
-#calendar-body div:nth-child(n+2) div:nth-child(1) {
+#ccn-calendar-calendarBbody div:nth-child(n+2) div:nth-child(1) {
     border-left: 1px solid black;
 }
 
-#calendar-body div:nth-child(2) div {
+#ccn-calendar-calendarBbody div:nth-child(2) div {
     border-top: 1px solid black;
 }
 
-#calendar-body div div {
+#ccn-calendar-calendarBbody div div {
     flex-grow: 1;
     flex-basis: 0;
     flex-shrink: 0;
@@ -29,7 +29,7 @@
     overflow: hidden;
 }
 
-#calendar-body div {
+#ccn-calendar-calendarBbody div {
     display: flex;
     flex-flow: row;
 }

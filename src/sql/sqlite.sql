@@ -35,7 +35,7 @@ CREATE TABLE calendar(
 
     [ccn_title] TEXT NOT NULL,
     [ccn_description] TEXT NOT NULL,
-    [ccn_lastChange] BIGINT NOT NULL,
+    [ccn_lastChange] TEXT NOT NULL,
 
     [ccn_eventDateTimeType] TINYINT NOT NULL,
     [ccn_eventDateTimeStart] BIGINT NOT NULL,
@@ -54,7 +54,7 @@ CREATE TABLE todo(
     [ccn_belongTo] TEXT NOT NULL,
 
     [ccn_data] TEXT NOT NULL,
-    [ccn_lastChange] BIGINT NOT NULL,
+    [ccn_lastChange] TEXT NOT NULL,
 
     PRIMARY KEY (ccn_uuid),
     FOREIGN KEY (ccn_belongTo) REFERENCES user(ccn_name) ON DELETE CASCADE

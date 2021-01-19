@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>coconut-leaf Login</title>
+    <title id="ccn-pageName"></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/js/all.min.js"></script>
@@ -11,26 +11,19 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery-i18n-properties@1.2.7/jquery.i18n.properties.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jsrender@1.0.10/jsrender.min.js"></script>
 
-    <script type="text/x-jsrender" id="jsrender-tmpl-headerNav" src="{{url_tmpl_headerNac}}"></script>
+    <script type="text/x-jsrender" id="jsrender-tmpl-headerNav" src="/static/tmpl/headerNav.tmpl"></script>
 
-    <script type="text/javascript" src="{{url_js_localStorageAssist}}"></script>
-    <script type="text/javascript" src="{{url_js_i18n}}"></script>
-    <script type="text/javascript" src="{{url_js_api}}"></script>
-    <script type="text/javascript" src="{{url_js_headerNav}}"></script>
+    <script type="text/javascript" src="/static/js/localStorageAssist.js"></script>
+    <script type="text/javascript" src="/static/js/i18n.js"></script>
+    <script type="text/javascript" src="/static/js/api.js"></script>
+    <script type="text/javascript" src="/static/js/headerNav.js"></script>
     
-    <script type="text/javascript" src="{{url_js_pageHome}}"></script>
+    <script type="text/javascript" src="/static/js/page/home.js"></script>
 </head>
 
 <body>
     <div class="container" style="margin-top: 1.25rem;">
-        <article>
-            <h1 class="title">coconut-leaf</h1>
-            <p>A light, self-host calendar system.</p>
-            <p>Originally, this app is served for yyc12345's personal use.</p>
-            <br />
-            <p>Pull request / issue / translation are welcomed.</p>
-            <p>Submit them in our <a href="https://github.com/yyc12345/coconut-leaf">GitHub project</a>.</p>
-
+        <article class="ccn-i18n" i18n-name="ccn-home-desc">
         </article>
     </div>
 </body>

@@ -15,7 +15,7 @@ import database
 
 app = Flask(__name__)
 
-render_static_resources = None
+# render_static_resources = None
 
 # =============================================database
 def get_database():
@@ -39,23 +39,28 @@ def nospecHandle():
 
 @app.route('/web/home', methods=['GET'])
 def web_homeHandle():
-    UpdateStaticResources()
-    return render_template("home.html", **render_static_resources)
+    # UpdateStaticResources()
+    return render_template("home.html")
 
 @app.route('/web/calendar', methods=['GET'])
 def web_calendarHandle():
-    UpdateStaticResources()
-    return render_template("calendar.html", **render_static_resources)
+    # UpdateStaticResources()
+    return render_template("calendar.html")
 
 @app.route('/web/todo', methods=['GET'])
 def web_todoHandle():
-    UpdateStaticResources()
-    return render_template("todo.html", **render_static_resources)
+    # UpdateStaticResources()
+    return render_template("todo.html")
 
 @app.route('/web/admin', methods=['GET'])
 def web_adminHandle():
-    UpdateStaticResources()
-    return render_template("admin.html", **render_static_resources)
+    # UpdateStaticResources()
+    return render_template("admin.html")
+
+@app.route('/web/login', methods=['GET'])
+def web_loginHandle():
+    # UpdateStaticResources()
+    return render_template("login.html")
 
 # ============================================= query page route
 
@@ -194,6 +199,7 @@ def api_admin_deleteHandle():
 
 # =============================================main run
 
+'''
 def UpdateStaticResources():
     global render_static_resources
     if render_static_resources is not None:
@@ -209,6 +215,7 @@ def UpdateStaticResources():
 
         'url_js_pageHome': url_for('static', filename='js/page/home.js')
     }
+'''
 
 def run():
     app.run(port=config.CustomConfig['web']['port'])
