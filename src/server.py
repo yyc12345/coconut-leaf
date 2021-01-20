@@ -68,19 +68,54 @@ def web_loginHandle():
 
 @app.route('/api/common/salt', methods=['POST'])
 def api_common_saltHandle():
-    pass
+    result = (False, None)
+    if (CheckParameter(('username', ))):
+        db = get_database()
+        result = db.common_salt(request.form['username'])
+    
+    return ConstructResponseBody(result)
 
 @app.route('/api/common/login', methods=['POST'])
 def api_common_loginHandle():
-    pass
+    result = (False, None)
+    if (CheckParameter(('username', 'password'))):
+        db = get_database()
+        result = db.common_login(
+            request.form['username'],
+            request.form['password']
+        )
+    
+    return ConstructResponseBody(result)
+
+@app.route('/api/common/webLogin', methods=['POST'])
+def api_common_webLoginHandle():
+    result = (False, None)
+    if (CheckParameter(('username', 'password'))):
+        db = get_database()
+        result = db.common_webLogin(
+            request.form['username'],
+            request.form['password']
+        )
+    
+    return ConstructResponseBody(result)
 
 @app.route('/api/common/logout', methods=['POST'])
 def api_common_logoutHandle():
-    pass
+    result = (False, None)
+    if (CheckParameter(('token', ))):
+        db = get_database()
+        result = db.common_logout(request.form['token'])
+    
+    return ConstructResponseBody(result)
 
 @app.route('/api/common/tokenValid', methods=['POST'])
 def api_common_tokenValidHandle():
-    pass
+    result = (False, None)
+    if (CheckParameter(('token', ))):
+        db = get_database()
+        result = db.common_tokenValid(request.form['token'])
+    
+    return ConstructResponseBody(result)
 
 @app.route('/api/common/isAdmin', methods=['POST'])
 def api_common_isAdminHandle():
@@ -216,6 +251,18 @@ def UpdateStaticResources():
         'url_js_pageHome': url_for('static', filename='js/page/home.js')
     }
 '''
+
+def CheckParameter(paramList):
+    gotten = set(request.form.keys())
+    paramSet = set(paramList)
+    return gotten.issubset(paramSet) and paramSet.issubset(gotten)
+
+def ConstructResponseBody(returnedTuple):
+    return {
+        'success': returnedTuple[0],
+        'error': '',
+        'data': returnedTuple[1]
+    }
 
 def run():
     app.run(port=config.CustomConfig['web']['port'])

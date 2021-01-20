@@ -15,6 +15,7 @@
 
     <script type="text/javascript" src="/static/js/localStorageAssist.js"></script>
     <script type="text/javascript" src="/static/js/i18n.js"></script>
+    <script type="text/javascript" src="/static/js/utils.js"></script>
     <script type="text/javascript" src="/static/js/api.js"></script>
     <script type="text/javascript" src="/static/js/headerNav.js"></script>
     
@@ -28,7 +29,7 @@
             <div class="field">
                 <label class="label ccn-i18n" i18n-name="ccn-login-form-username"></label>
                 <div class="control has-icons-left has-icons-right">
-                    <input class="input" type="text">
+                    <input id="ccn-login-form-username" class="input" type="text">
                     <span class="icon is-small is-left">
                         <i class="fas fa-user"></i>
                     </span>
@@ -37,7 +38,7 @@
             <div class="field">
                 <label class="label ccn-i18n" i18n-name="ccn-login-form-password"></label>
                 <p class="control has-icons-left">
-                    <input class="input" type="password">
+                    <input id="ccn-login-form-password" class="input" type="password">
                     <span class="icon is-small is-left">
                         <i class="fas fa-lock"></i>
                     </span>
@@ -45,7 +46,7 @@
             </div>
 
             <div class="control">
-                <button class="button is-primary ccn-i18n" i18n-name="ccn-login-form-login"></button>
+                <button id="ccn-login-form-login" class="button is-primary ccn-i18n" i18n-name="ccn-login-form-login"></button>
             </div>
 
         </div>

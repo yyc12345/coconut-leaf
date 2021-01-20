@@ -106,6 +106,23 @@ class CalendarDatabase(object):
         
         if password == utils.ComputePasswordHashWithSalt(gotten_password, gotten_salt):
             token = utils.GenerateToken(username)
+            self.cursor.execute('UPDATE user SET [ccn_token] = ?, [ccn_tokenExpireOn] = ?, [ccn_salt] = ? WHERE [ccn_name] = ?;', (
+                token,
+                utils.GetCurrentTimestamp() + 60 * 60 * 24 * 2, # add 2 day from now
+                utils.GenerateSalt(), # regenerate a new slat to prevent re-login try
+                username
+            ))
+            return token
+        else:
+            # return empty string to indicate fail to login
+            return ''
+
+    @SafeDatabaseOperation
+    def common_webLogin(self, username, password):
+        self.cursor.execute('SELECT [ccn_name] FROM user WHERE [ccn_name] = ? AND [ccn_password] = ?;', (username, utils.ComputePasswordHash(password)))
+
+        if len(self.cursor.fetchall()) != 0:
+            token = utils.GenerateToken(username)
             self.cursor.execute('UPDATE user SET [ccn_token] = ?, [ccn_tokenExpireOn] = ? WHERE [ccn_name] = ?;', (
                 token,
                 utils.GetCurrentTimestamp() + 60 * 60 * 24 * 2, # add 2 day from now
@@ -118,15 +135,18 @@ class CalendarDatabase(object):
 
     @SafeDatabaseOperation
     def common_logout(self, token):
-        username = self.get_username_from_token(cur, token)
+        username = self.get_username_from_token(token)
         self.cursor.execute('UPDATE user SET [ccn_tokenExpireOn] = 0 WHERE [ccn_name] = ?;', (username, ))
-        return None
+        return True
 
     @SafeDatabaseOperation
     def common_tokenValid(self, token):
         # get user name have check the validation, don't do anything more.
-        self.get_username_from_token(token)
-        return result
+        try:
+            self.get_username_from_token(token)
+            return True
+        except:
+            return False
 
     @SafeDatabaseOperation
     def common_isAdmin(self, token):
@@ -142,7 +162,7 @@ class CalendarDatabase(object):
             newpassword,
             username
         ))
-        return None
+        return True
 
     # =============================== calendar
 
@@ -151,8 +171,71 @@ class CalendarDatabase(object):
 
 
     # =============================== todo
+    @SafeDatabaseOperation
+    def todo_getFull(self, token):
+        username = self.get_username_from_token(token)
+        self.cursor.execute('SELECT * FROM todo WHERE [ccn_belongTo] = ?;', (username, ))
+        return self.cursor.fetchall()
 
+    @SafeDatabaseOperation
+    def todo_getList(self, token):
+        username = self.get_username_from_token(token)
+        self.cursor.execute('SELECT [ccn_uuid] FROM todo WHERE [ccn_belongTo] = ?;', (username, ))
+        return tuple(map(lambda x: x[0], self.cursor.fetchall()))
 
+    @SafeDatabaseOperation
+    def todo_getDetail(self, token, uuid):
+        username = self.get_username_from_token(token)
+        self.cursor.execute('SELECT * FROM todo WHERE [ccn_belongTo] = ? AND [ccn_uuid] = ?;', (username, uuid))
+        return self.cursor.fetchone()
+
+    @SafeDatabaseOperation
+    def todo_add(self, token):
+        username = self.get_username_from_token(token)
+        newuuid = utils.GenerateUUID()
+        lastupdate = utils.GenerateUUID()
+        self.cursor.execute('INSERT INTO todo VALUES (?, ?, ?, ?);', (
+            newuuid,
+            username,
+            '',
+            lastupdate,
+        ))
+        return newuuid
+
+    @SafeDatabaseOperation
+    def todo_update(self, token, uuid, data, lastChange):
+        # check valid token
+        self.get_username_from_token(token)
+        # check sync conflict
+        self.cursor.execute('SELECT [ccn_uuid] FROM todo WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (
+            uuid,
+            lastChange
+        ))
+        if len(self.cursor.fetchall()) == 0:
+            return False
+
+        # update
+        self.cursor.execute('UPDATE todo SET [ccn_data] = ? WHERE [ccn_uuid] = ?;', (
+            data,
+            uuid
+        ))
+        return True
+
+    @SafeDatabaseOperation
+    def todo_delete(self, token, uuid, lastChange):
+        # check valid token
+        self.get_username_from_token(token)
+        # check sync conflict
+        self.cursor.execute('SELECT [ccn_uuid] FROM todo WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (
+            uuid,
+            lastChange
+        ))
+        if len(self.cursor.fetchall()) == 0:
+            return False
+
+        # delete
+        self.cursor.execute('DELETE FROM todo WHERE [ccn_uuid] = ?;', (uuid, ))
+        return True
 
 
     # =============================== admin

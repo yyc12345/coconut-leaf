@@ -11,7 +11,7 @@ function cnn_headerNav_Insert() {
 }
 
 function cnn_headerNav_LoggedRefresh() {
-    if (cnn_api_tokenValid()) {
+    if (cnn_api_common_tokenValid()) {
         // logged, show all nav button and logout button
         $("#cnn-header-nav-home").show();
         $("#cnn-header-nav-calendar").show();
@@ -41,8 +41,16 @@ function cnn_headerNav_BindEvents() {
         });
     });
 
-    // todo: bind logout
-
+    // bind logout
+    $("#cnn-header-user-logout").click(function() {
+        if (cnn_api_common_logout()) {
+            // ok, logout
+            // jump into home page again
+            window.location.href = '/web/home';
+            return;
+    
+        } else alert($.i18n.prop("ccn-js-failToLogout"));
+    });
 
     // bind burger menu
     // copy from bulma website
