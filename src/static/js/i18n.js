@@ -34,7 +34,7 @@ function ccn_i18n_ApplyLanguage() {
         language: ccn_i18n_currentLanguage,
         callback: function() {
             //set usual block
-            var cache = $(".ccn-i18n");
+            var cache = $("[i18n-name]");
             cache.each(function() {
                 $(this).html($.i18n.prop($(this).attr('i18n-name')));
             });

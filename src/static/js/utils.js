@@ -1,3 +1,4 @@
+/*
 function ComputPasswordWithSalt(password, salt) {
     return ComputeSHA256(ComputeSHA256(password) + salt.toString());
 }
@@ -13,6 +14,7 @@ function ComputeSHA256(strl) {
     var hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
     return hashHex.toLowerCase();
 }
+*/
 
 function IsResponseOK(data) {
     if (typeof(data) == 'undefined') {

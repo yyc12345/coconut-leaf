@@ -192,27 +192,69 @@ def api_collection_getSharedHandle():
 
 @app.route('/api/todo/getFull', methods=['POST'])
 def api_todo_getFullHandle():
-    pass
+    result = (False, None)
+    if (CheckParameter(('token', ))):
+        db = get_database()
+        result = db.todo_getFull(request.form['token'])
+    
+    return ConstructResponseBody(result)
 
 @app.route('/api/todo/getList', methods=['POST'])
 def api_todo_getListHandle():
-    pass
+    result = (False, None)
+    if (CheckParameter(('token', ))):
+        db = get_database()
+        result = db.todo_getList(request.form['token'])
+    
+    return ConstructResponseBody(result)
 
 @app.route('/api/todo/getDetail', methods=['POST'])
 def api_todo_getDetailHandle():
-    pass
+    result = (False, None)
+    if (CheckParameter(('token', 'uuid'))):
+        db = get_database()
+        result = db.todo_getDetail(
+            request.form['token'],
+            request.form['uuid']
+        )
+    
+    return ConstructResponseBody(result)
 
 @app.route('/api/todo/add', methods=['POST'])
 def api_todo_addHandle():
-    pass
+    result = (False, None)
+    if (CheckParameter(('token', ))):
+        db = get_database()
+        result = db.todo_add(request.form['token'])
+    
+    return ConstructResponseBody(result)
 
 @app.route('/api/todo/update', methods=['POST'])
 def api_todo_updateHandle():
-    pass
+    result = (False, None)
+    if (CheckParameter(('token', 'uuid', 'data', 'lastChange'))):
+        db = get_database()
+        result = db.todo_update(
+            request.form['token'],
+            request.form['uuid'],
+            request.form['data'],
+            request.form['lastChange']
+        )
+    
+    return ConstructResponseBody(result)
 
 @app.route('/api/todo/delete', methods=['POST'])
 def api_todo_deleteHandle():
-    pass
+    result = (False, None)
+    if (CheckParameter(('token', 'uuid', 'lastChange'))):
+        db = get_database()
+        result = db.todo_delete(
+            request.form['token'],
+            request.form['uuid'],
+            request.form['lastChange']
+        )
+    
+    return ConstructResponseBody(result)
 
 # ================================ admin
 

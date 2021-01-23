@@ -6,13 +6,13 @@ $(document).ready(function() {
     cnn_headerNav_LoggedRefresh();
 
     // bind login event
-    $("#ccn-login-form-login").click(StartLogin);
+    $("#ccn-login-form-login").click(ccn_login_startLogin);
 
     // apply i18n
     ccn_i18n_ApplyLanguage();
 });
 
-function StartLogin() {
+function ccn_login_startLogin() {
     // disable all ui first
     $("#ccn-login-form-login").attr("disabled",true);
     $("#ccn-login-form-username").attr("disabled",true);

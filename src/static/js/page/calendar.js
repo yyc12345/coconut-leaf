@@ -8,6 +8,18 @@ $(document).ready(function() {
     // process calendar it self
     ccn_calendar_LoadCalendarBody();
 
+    // bind tab control switcher and set current tab
+    $("#tabcontrol-tab-1-1").click(function(){
+        ccn_tabcontrol_SwitchTab(1, 1);
+    });
+    $("#tabcontrol-tab-1-2").click(function(){
+        ccn_tabcontrol_SwitchTab(1, 2);
+    });
+    $("#tabcontrol-tab-1-3").click(function(){
+        ccn_tabcontrol_SwitchTab(1, 3);
+    });
+    ccn_tabcontrol_SwitchTab(1, 1);
+
     // apply i18n
     ccn_i18n_ApplyLanguage();
 });

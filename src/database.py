@@ -114,8 +114,8 @@ class CalendarDatabase(object):
             ))
             return token
         else:
-            # return empty string to indicate fail to login
-            return ''
+            # throw a exception to indicate fail to login
+            raise Exception()
 
     @SafeDatabaseOperation
     def common_webLogin(self, username, password):
@@ -130,23 +130,20 @@ class CalendarDatabase(object):
             ))
             return token
         else:
-            # return empty string to indicate fail to login
-            return ''
+            # throw a exception to indicate fail to login
+            raise Exception()
 
     @SafeDatabaseOperation
     def common_logout(self, token):
         username = self.get_username_from_token(token)
         self.cursor.execute('UPDATE user SET [ccn_tokenExpireOn] = 0 WHERE [ccn_name] = ?;', (username, ))
-        return True
+        return None
 
     @SafeDatabaseOperation
     def common_tokenValid(self, token):
         # get user name have check the validation, don't do anything more.
-        try:
-            self.get_username_from_token(token)
-            return True
-        except:
-            return False
+        self.get_username_from_token(token)
+        return None
 
     @SafeDatabaseOperation
     def common_isAdmin(self, token):
@@ -194,13 +191,14 @@ class CalendarDatabase(object):
         username = self.get_username_from_token(token)
         newuuid = utils.GenerateUUID()
         lastupdate = utils.GenerateUUID()
-        self.cursor.execute('INSERT INTO todo VALUES (?, ?, ?, ?);', (
+        returnedData = (
             newuuid,
             username,
             '',
             lastupdate,
-        ))
-        return newuuid
+        )
+        self.cursor.execute('INSERT INTO todo VALUES (?, ?, ?, ?);', returnedData)
+        return returnedData
 
     @SafeDatabaseOperation
     def todo_update(self, token, uuid, data, lastChange):
@@ -212,14 +210,16 @@ class CalendarDatabase(object):
             lastChange
         ))
         if len(self.cursor.fetchall()) == 0:
-            return False
+            raise Exception()
 
         # update
-        self.cursor.execute('UPDATE todo SET [ccn_data] = ? WHERE [ccn_uuid] = ?;', (
+        newLastChange = utils.GenerateUUID()
+        self.cursor.execute('UPDATE todo SET [ccn_data] = ?, [ccn_lastChange] = ? WHERE [ccn_uuid] = ?;', (
             data,
+            newLastChange,
             uuid
         ))
-        return True
+        return newLastChange
 
     @SafeDatabaseOperation
     def todo_delete(self, token, uuid, lastChange):
@@ -231,11 +231,11 @@ class CalendarDatabase(object):
             lastChange
         ))
         if len(self.cursor.fetchall()) == 0:
-            return False
+            raise Exception()
 
         # delete
         self.cursor.execute('DELETE FROM todo WHERE [ccn_uuid] = ?;', (uuid, ))
-        return True
+        return None
 
 
     # =============================== admin

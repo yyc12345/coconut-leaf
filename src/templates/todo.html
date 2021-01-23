@@ -20,66 +20,26 @@
     <script type="text/javascript" src="/static/js/api.js"></script>
     <script type="text/javascript" src="/static/js/headerNav.js"></script>
     
-    <script type="text/javascript" src="/static/js/page/login.js"></script>
+    <script type="text/javascript" src="/static/js/page/todo.js"></script>
     <link rel="stylesheet" href="/static/css/todo.css">
 </head>
 
 <body>
 
     <div class="container" style="display: flex; flex-flow: column; margin-top: 1.25rem;">
-        <h1 class="title">Todo list</h1>
+        <h1 i18n-name="ccn-todo-todoList" class="title ccn-i18n"></h1>
         <div class="control-list">
-            <div class="control">
+            <div id="ccn-todo-btnAdd" class="control">
                 <a class="button is-primary"><span class="icon is-small"><i class="fas fa-plus"></i></span></a>
             </div>
-            <div class="control">
+            <div id="ccn-todo-btnRefresh" class="control">
                 <a class="button is-primary">
                     <span class="icon is-small"><i class="fas fa-sync"></i></span>
                 </a>
             </div>
         </div>
 
-        <div style="display: flex; flex-flow: column; margin-top: 1.25rem;">
-            <div class="todo-item card">
-                <div class="todo-item-words">
-                    <p>this is a name</p>
-                </div>
-
-                <div class="todo-item-icon control">
-                    <button class="button"><span class="icon is-small"><i class="fas fa-pen"></i></span></button>
-                </div>
-                <div class="todo-item-icon control">
-                    <button class="button"><span class="icon is-small"><i class="fas fa-trash"></i></span></button>
-                </div>
-            </div>
-            <div class="todo-item card">
-                <div class="todo-item-words">
-                    <p>this is a
-                        namewwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
-                    </p>
-                </div>
-
-                <div class="todo-item-icon control">
-                    <button class="button"><span class="icon is-small"><i class="fas fa-pen"></i></span></button>
-                </div>
-                <div class="todo-item-icon control">
-                    <button class="button"><span class="icon is-small"><i class="fas fa-trash"></i></button>
-                </div>
-            </div>
-
-            <div class="todo-item card">
-                <div class="todo-item-words control">
-                    <textarea class="textarea"></textarea>
-                </div>
-
-                <div class="todo-item-icon control">
-                    <button class="button"><span class="icon is-small"><i class="fas fa-check"></i></span></button>
-                </div>
-                <div class="todo-item-icon control">
-                    <button class="button"><span class="icon is-small"><i class="fas fa-times"></i></button>
-                </div>
-            </div>
-
+        <div id="ccn-todo-todoList" style="display: flex; flex-flow: column; margin-top: 1.25rem;">
         </div>
     </div>
 

@@ -20,6 +20,7 @@
     <script type="text/javascript" src="/static/js/utils.js"></script>
     <script type="text/javascript" src="/static/js/api.js"></script>
     <script type="text/javascript" src="/static/js/headerNav.js"></script>
+    <script type="text/javascript" src="/static/js/tabcontrol.js"></script>
     
     <script type="text/javascript" src="/static/js/page/calendar.js"></script>
     <link rel="stylesheet" href="/static/css/calendar.css">
@@ -30,14 +31,14 @@
     <div class="container" style="margin-top: 20px;">
         <div class="tabs">
             <ul>
-                <li class="is-active"><a>Calendar</a></li>
-                <li><a>Shared</a></li>
-                <li><a>Sharing</a></li>
+                <li id="tabcontrol-tab-1-1" class="tabcontrol-tab-1"><a i18n-name="ccn-calendar-tabcontrol-tabCalendar"></a></li>
+                <li id="tabcontrol-tab-1-2" class="tabcontrol-tab-1"><a i18n-name="ccn-calendar-tabcontrol-tabShared"></a></li>
+                <li id="tabcontrol-tab-1-3" class="tabcontrol-tab-1"><a i18n-name="ccn-calendar-tabcontrol-tabSharing"></a></li>
             </ul>
         </div>
     </div>
 
-    <div id="tabcontrol-1-1" class="container" style="margin-top: 20px; display: none;">
+    <div id="tabcontrol-panel-1-1" class="container tabcontrol-panel-1" style="margin-top: 20px;">
         <nav class="level">
             <div class="level-item">
                 <div class="field has-addons">
@@ -45,33 +46,33 @@
                         <input class="input" type="date">
                     </div>
                     <div class="control">
-                        <button class="button is-info">Jump</button>
+                        <button i18n-name="ccn-calendar-jump" class="button is-info"></button>
                     </div>
                 </div>
             </div>
 
             <div class="level-item control">
-                <a class="button is-info">Today</a>
+                <a i18n-name="ccn-calendar-today" class="button is-info"></a>
             </div>
             <div class="level-item control">
-                <a class="button is-primary">Add...</a>
+                <a i18n-name="ccn-calendar-add" class="button is-primary"></a>
             </div>
         </nav>
 
         <div id="ccn-calendar-calendarBbody" class="card" style="padding: 1.25rem; display: flex; flex-flow: column;">
             <div style="margin: 0 0 0.75em 0;">
-                <div><b>Monday</b></div>
-                <div><b>Tuesday</b></div>
-                <div><b>Wednesday</b></div>
-                <div><b>Thursday</b></div>
-                <div><b>Friday</b></div>
-                <div><b style="color: red;">Saturday</b></div>
-                <div><b style="color: red;">Sunday</b></div>
+                <div><b i18n-name="ccn-calendar-week-monday"></b></div>
+                <div><b i18n-name="ccn-calendar-week-tuesday"></b></div>
+                <div><b i18n-name="ccn-calendar-week-wednesday"></b></div>
+                <div><b i18n-name="ccn-calendar-week-thursday"></b></div>
+                <div><b i18n-name="ccn-calendar-week-friday"></b></div>
+                <div><b i18n-name="ccn-calendar-week-saturday" style="color: red;"></b></div>
+                <div><b i18n-name="ccn-calendar-week-sunday" style="color: red;"></b></div>
             </div>
         </div>
 
         <div class="container" style="padding: 1.25rem; display: flex; flex-flow: column; margin-top: 1.25rem;">
-            <h1 class="title">Schedule</h1>
+            <h1 i18n-name="ccn-calendar-scheduleList" class="title"></h1>
 
             <div id="schedule-list">
                 <div class="schedule-day container">
@@ -170,7 +171,7 @@
 
     </div>
 
-    <div id="tabcontrol-1-2" class="container" style="margin-top: 20px; display: none;">
+    <div id="tabcontrol-panel-1-2" class="container tabcontrol-panel-1" style="margin-top: 20px;">
 
         <div class="container" style="display: flex; flex-flow: column;">
             <h1 class="title">Shared</h1>
@@ -211,7 +212,7 @@
 
     </div>
 
-    <div id="tabcontrol-1-3" class="container" style="margin-top: 20px; display: none;">
+    <div id="tabcontrol-panel-1-3" class="container tabcontrol-panel-1" style="margin-top: 20px;">
 
         <div class="container" style="display: flex; flex-flow: column;">
             <h1 class="title">Owned</h1>
