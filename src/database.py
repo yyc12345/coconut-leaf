@@ -3,6 +3,7 @@ import sqlite3
 import json
 import utils
 import threading
+import logging
 
 def SafeDatabaseOperation(func):
     def wrapper(self, *args, **kwargs):
@@ -11,22 +12,31 @@ def SafeDatabaseOperation(func):
             try:
                 self.check_database()
                 self.cursor = self.db.cursor()
-            except:
+            except Exception as e:
                 self.cursor = None
-                return (False, None)
+                if config.CustomConfig['debug']:
+                    logging.exception(e)
+                return (False, str(e), None)
 
             # do real data work
             try:
-                result = (True, func(self, *args, **kwargs))
+                if self.isFirstRun:
+                    self.isFirstRun = False
+                    print('Cleaning outdated token...')
+                    self.tokenOper_clean()
+
+                result = (True, '', func(self, *args, **kwargs))
                 self.cursor.close()
                 self.cursor = None
                 self.db.commit()
                 return result
-            except:
+            except Exception as e:
                 self.cursor.close()
                 self.cursor = None
                 self.db.rollback()
-                return (False, None)
+                if config.CustomConfig['debug']:
+                    logging.exception(e)
+                return (False, str(e), None)
 
     return wrapper
 
@@ -35,6 +45,7 @@ class CalendarDatabase(object):
         self.db = None
         self.cursor = None
         self.mutex = threading.Lock()
+        self.isFirstRun = True
 
     def open(self):
         if (self.is_database_valid()):
@@ -49,7 +60,7 @@ class CalendarDatabase(object):
 
     def init(self, username, password):
         if (self.is_database_valid()):
-            raise Exception('Databade is opened')
+            raise Exception('Database is opened')
 
         # establish tables
         self.open()
@@ -58,13 +69,11 @@ class CalendarDatabase(object):
             cursor.executescript(fsql.read())
 
         # finish init
-        cursor.execute('INSERT INTO user VALUES (?, ?, ?, ?, ?, ?);', (
+        cursor.execute('INSERT INTO user VALUES (?, ?, ?, ?);', (
             username,
             utils.ComputePasswordHash(password),
             1,
-            utils.GenerateSalt(),
-            utils.GenerateToken(username),
-            0
+            utils.GenerateSalt()
         ))
         cursor.close()
         self.db.commit()
@@ -81,13 +90,32 @@ class CalendarDatabase(object):
     def is_database_valid(self):
         return not (self.db == None)
 
-    def get_username_from_token(self, token):
-        self.cursor.execute('SELECT [ccn_name] FROM user WHERE [ccn_token] = ? AND [ccn_tokenExpireOn] > ?;',(
+    # ======================= token related internal operation
+    def tokenOper_clean(self):
+        # remove outdated token
+        self.cursor.execute('DELETE FROM token WHERE [ccn_tokenExpireOn] <= ?',(utils.GetCurrentTimestamp(), ))
+
+    def tokenOper_postpone_expireOn(self, token):
+        self.cursor.execute('UPDATE token SET [ccn_tokenExpireOn] = ? WHERE [ccn_token] = ?;', (
+            utils.GetTokenExpireOn(),
+            token
+        ))
+
+    def tokenOper_check_valid(self, token):
+        self.tokenOper_get_username(token)
+
+    def tokenOper_is_admin(self, username):
+        self.cursor.execute('SELECT [ccn_isAdmin] FROM user WHERE [ccn_name] = ?;',(username, ))
+        cache = self.cursor.fetchone()[0]
+        return True if cache == 1 else False
+
+    def tokenOper_get_username(self, token):
+        self.cursor.execute('SELECT [ccn_user] FROM token WHERE [ccn_token] = ? AND [ccn_tokenExpireOn] > ?;',(
             token,
             utils.GetCurrentTimestamp()
         ))
         return self.cursor.fetchone()[0]
-
+        
     # =============================== # =============================== operation function
     # =============================== common
     @SafeDatabaseOperation
@@ -106,16 +134,19 @@ class CalendarDatabase(object):
         
         if password == utils.ComputePasswordHashWithSalt(gotten_password, gotten_salt):
             token = utils.GenerateToken(username)
-            self.cursor.execute('UPDATE user SET [ccn_token] = ?, [ccn_tokenExpireOn] = ?, [ccn_salt] = ? WHERE [ccn_name] = ?;', (
-                token,
-                utils.GetCurrentTimestamp() + 60 * 60 * 24 * 2, # add 2 day from now
+            self.cursor.execute('UPDATE user SET [ccn_salt] = ? WHERE [ccn_name] = ?;', (
                 utils.GenerateSalt(), # regenerate a new slat to prevent re-login try
                 username
+            ))
+            self.cursor.execute('INSERT INTO token VALUES (?, ?, ?);', (
+                username,
+                token,
+                utils.GetTokenExpireOn(), # add 2 day from now
             ))
             return token
         else:
             # throw a exception to indicate fail to login
-            raise Exception()
+            raise Exception('Login authentication failed')
 
     @SafeDatabaseOperation
     def common_webLogin(self, username, password):
@@ -123,38 +154,35 @@ class CalendarDatabase(object):
 
         if len(self.cursor.fetchall()) != 0:
             token = utils.GenerateToken(username)
-            self.cursor.execute('UPDATE user SET [ccn_token] = ?, [ccn_tokenExpireOn] = ? WHERE [ccn_name] = ?;', (
+            self.cursor.execute('INSERT INTO token VALUES (?, ?, ?);', (
+                username,
                 token,
-                utils.GetCurrentTimestamp() + 60 * 60 * 24 * 2, # add 2 day from now
-                username
+                utils.GetTokenExpireOn(), # add 2 day from now
             ))
             return token
         else:
             # throw a exception to indicate fail to login
-            raise Exception()
+            raise Exception('Login authentication failed')
 
     @SafeDatabaseOperation
     def common_logout(self, token):
-        username = self.get_username_from_token(token)
-        self.cursor.execute('UPDATE user SET [ccn_tokenExpireOn] = 0 WHERE [ccn_name] = ?;', (username, ))
+        self.tokenOper_check_valid(token)
+        self.cursor.execute('DELETE FROM token WHERE [ccn_token] = ?;', (token, ))
         return None
 
     @SafeDatabaseOperation
     def common_tokenValid(self, token):
-        # get user name have check the validation, don't do anything more.
-        self.get_username_from_token(token)
+        self.tokenOper_check_valid(token)
         return None
 
     @SafeDatabaseOperation
     def common_isAdmin(self, token):
-        username = self.get_username_from_token(token)
-        self.cursor.execute('SELECT [ccn_isAdmin] FROM user WHERE [ccn_name] = ?;', (username, ))
-        result = self.cursor.fetchone()[0] == 1
-        return result
+        username = self.tokenOper_get_username(token)
+        return self.tokenOper_is_admin(username)
 
     @SafeDatabaseOperation
     def common_changePassword(self, token, newpassword):
-        username = self.get_username_from_token(token)
+        username = self.tokenOper_get_username(token)
         self.cursor.execute('UPDATE user SET [ccn_password] = ? WHERE [ccn_name] = ?;', (
             newpassword,
             username
@@ -170,25 +198,25 @@ class CalendarDatabase(object):
     # =============================== todo
     @SafeDatabaseOperation
     def todo_getFull(self, token):
-        username = self.get_username_from_token(token)
+        username = self.tokenOper_get_username(token)
         self.cursor.execute('SELECT * FROM todo WHERE [ccn_belongTo] = ?;', (username, ))
         return self.cursor.fetchall()
 
     @SafeDatabaseOperation
     def todo_getList(self, token):
-        username = self.get_username_from_token(token)
+        username = self.tokenOper_get_username(token)
         self.cursor.execute('SELECT [ccn_uuid] FROM todo WHERE [ccn_belongTo] = ?;', (username, ))
         return tuple(map(lambda x: x[0], self.cursor.fetchall()))
 
     @SafeDatabaseOperation
     def todo_getDetail(self, token, uuid):
-        username = self.get_username_from_token(token)
+        username = self.tokenOper_get_username(token)
         self.cursor.execute('SELECT * FROM todo WHERE [ccn_belongTo] = ? AND [ccn_uuid] = ?;', (username, uuid))
         return self.cursor.fetchone()
 
     @SafeDatabaseOperation
     def todo_add(self, token):
-        username = self.get_username_from_token(token)
+        username = self.tokenOper_get_username(token)
         newuuid = utils.GenerateUUID()
         lastupdate = utils.GenerateUUID()
         returnedData = (
@@ -203,7 +231,7 @@ class CalendarDatabase(object):
     @SafeDatabaseOperation
     def todo_update(self, token, uuid, data, lastChange):
         # check valid token
-        self.get_username_from_token(token)
+        self.tokenOper_check_valid(token)
         # check sync conflict
         self.cursor.execute('SELECT [ccn_uuid] FROM todo WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (
             uuid,
@@ -224,7 +252,7 @@ class CalendarDatabase(object):
     @SafeDatabaseOperation
     def todo_delete(self, token, uuid, lastChange):
         # check valid token
-        self.get_username_from_token(token)
+        self.tokenOper_check_valid(token)
         # check sync conflict
         self.cursor.execute('SELECT [ccn_uuid] FROM todo WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (
             uuid,

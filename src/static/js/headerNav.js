@@ -1,13 +1,5 @@
 function cnn_headerNav_Insert() {
-    $.ajax({
-        url: $("#jsrender-tmpl-headerNav").attr('src'),
-        type: "GET",
-        async: false,
-        success: function (data) {
-            var tmpl = $.templates(data);
-            $('body').prepend(tmpl.render());
-        }
-    });
+    $('body').prepend(ccn_template_headerNav.render());
 }
 
 function cnn_headerNav_LoggedRefresh() {
@@ -57,10 +49,10 @@ function cnn_headerNav_BindEvents() {
     // Check for click events on the navbar burger icon
     $(".navbar-burger").click(function() {
 
-    // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
-    $(".navbar-burger").toggleClass("is-active");
-    $(".navbar-menu").toggleClass("is-active");
+        // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+        $(".navbar-burger").toggleClass("is-active");
+        $(".navbar-menu").toggleClass("is-active");
 
-});
+    });
 }
 

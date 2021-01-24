@@ -36,3 +36,7 @@ function GetApiToken() {
 function SetApiToken(value) {
     ccn_localstorageAssist_Set('ccn-token', value);
 }
+
+function LineBreaker2Br(strl) {
+    return $('<div>').text(strl).html().replace(/\n/g,'<br />');
+}

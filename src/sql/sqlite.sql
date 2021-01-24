@@ -6,10 +6,16 @@ CREATE TABLE user(
     [ccn_password] TEXT NOT NULL,
     [ccn_isAdmin] TINYINT NOT NULL CHECK(ccn_isAdmin = 1 OR ccn_isAdmin = 0),
     [ccn_salt] INTEGER NOT NULL,
+
+    PRIMARY KEY (ccn_name)
+);
+
+CREATE TABLE token(
+    [ccn_user] TEXT NOT NULL,
     [ccn_token] TEXT UNIQUE NOT NULL,
     [ccn_tokenExpireOn] BIGINT NOT NULL,
 
-    PRIMARY KEY (ccn_name)
+    FOREIGN KEY (ccn_user) REFERENCES user(ccn_name) ON DELETE CASCADE
 );
 
 CREATE TABLE collection(

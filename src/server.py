@@ -302,8 +302,8 @@ def CheckParameter(paramList):
 def ConstructResponseBody(returnedTuple):
     return {
         'success': returnedTuple[0],
-        'error': '',
-        'data': returnedTuple[1]
+        'error': returnedTuple[1],
+        'data': returnedTuple[2]
     }
 
 def run():

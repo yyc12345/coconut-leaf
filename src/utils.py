@@ -23,7 +23,7 @@ def GenerateUUID():
 def GenerateToken(username):
     s = hashlib.sha256()
     s.update(username.encode('utf-8'))
-    s.update((str(GenerateSalt())).encode('utf-8'))
+    s.update(GenerateUUID().encode('utf-8'))
     return s.hexdigest()
 
 def GenerateSalt():
@@ -36,3 +36,6 @@ def ComputePasswordHashWithSalt(passwordHashed, salt):
 
 def GetCurrentTimestamp():
     return int(time.time())
+
+def GetTokenExpireOn():
+    return GetCurrentTimestamp() + 60 * 60 * 24 * 2 # add 2 day from now

@@ -43,19 +43,19 @@ function ccn_i18n_ApplyLanguage() {
             //set title
             switch(ccn_pages_currentPage) {
                 case ccn_pages_enumPages.home:
-                    $('#ccn-pageName').html($.i18n.prop('ccn-pageName-home'))
+                    $('#ccn-pageName').html($.i18n.prop('ccn-pageName-home'));
                     break;
                 case ccn_pages_enumPages.calendar:
-                    $('#ccn-pageName').html($.i18n.prop('ccn-pageName-calendar'))
+                    $('#ccn-pageName').html($.i18n.prop('ccn-pageName-calendar'));
                     break;
                 case ccn_pages_enumPages.todo:
-                    $('#ccn-pageName').html($.i18n.prop('ccn-pageName-todo'))
+                    $('#ccn-pageName').html($.i18n.prop('ccn-pageName-todo'));
                     break;
                 case ccn_pages_enumPages.admin:
-                    $('#ccn-pageName').html($.i18n.prop('ccn-pageName-admin'))
+                    $('#ccn-pageName').html($.i18n.prop('ccn-pageName-admin'));
                     break;
                 case ccn_pages_enumPages.login:
-                    $('#ccn-pageName').html($.i18n.prop('ccn-pageName-login'))
+                    $('#ccn-pageName').html($.i18n.prop('ccn-pageName-login'));
                     break;
             }
         }

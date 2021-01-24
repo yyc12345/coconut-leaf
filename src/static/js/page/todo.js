@@ -1,8 +1,12 @@
 var ccn_todo_todoListCache = [];
 
 $(document).ready(function() {
+    ccn_pages_currentPage = ccn_pages_enumPages.todo;
+
+    // template process
+    ccn_template_Load();
+
     // nav process
-    ccn_pages_currentPage = ccn_pages_enumPages.login;
     cnn_headerNav_Insert();
     cnn_headerNav_BindEvents();
     cnn_headerNav_LoggedRefresh();
@@ -40,25 +44,15 @@ function ccn_todo_RenderCacheList() {
         data: undefined
     };
 
-    var templates = undefined;
-    $.ajax({
-        url: $("#jsrender-tmpl-todoItem").attr('src'),
-        type: "GET",
-        async: false,
-        success: function (data) {
-            templates = $.templates(data);
-        }
-    });
-
     var listDOM = $("#ccn-todo-todoList");
     for(var index in ccn_todo_todoListCache) {
         // update render data
         var item = ccn_todo_todoListCache[index];
         renderdata.uuid = item[0];
-        renderdata.data = item[2];
+        renderdata.data = LineBreaker2Br(item[2]);
 
         // render
-        listDOM.append(templates.render(renderdata));
+        listDOM.append(ccn_template_todoItem.render(renderdata));
 
         // set mode
         var uuid = renderdata.uuid;
@@ -111,21 +105,10 @@ function ccn_todo_Add() {
         ccn_todo_todoListCache[result[0]] = result;
 
         // render
-        var templates = undefined;
-        $.ajax({
-            url: $("#jsrender-tmpl-todoItem").attr('src'),
-            type: "GET",
-            async: false,
-            success: function (data) {
-                templates = $.templates(data);
-            }
-        });
-
-        // render
         var listDOM = $("#ccn-todo-todoList");
-        listDOM.append(templates.render({
+        listDOM.append(ccn_template_todoItem.render({
             uuid: result[0],
-            data: result[2]
+            data: LineBreaker2Br(result[2])
         }));
 
         // set mode
@@ -145,7 +128,7 @@ function ccn_todo_ItemEdit() {
 
     // copy current data to textarea
     $("#ccn-todo-todoItem-textarea-" + uuid).val(
-        $("#ccn-todo-todoItem-p-" + uuid).text()
+        ccn_todo_todoListCache[uuid][2]
     );
 
     // switch to edit mode
@@ -186,7 +169,7 @@ function ccn_todo_ItemUpdate() {
         // safely update data & lastChanged and control
         ccn_todo_todoListCache[uuid][2] = newData;
         ccn_todo_todoListCache[uuid][3] = result;
-        $("#ccn-todo-todoItem-p-" + uuid).text(newData);
+        $("#ccn-todo-todoItem-p-" + uuid).html(LineBreaker2Br(newData));
 
         // switch to normal mode
         ccn_todo_ChangeDisplayMode(uuid, false);
