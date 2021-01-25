@@ -11,15 +11,15 @@ $(document).ready(function() {
     cnn_headerNav_BindEvents();
     cnn_headerNav_LoggedRefresh();
 
+    // apply i18n
+    ccn_i18n_ApplyLanguage();
+    
     // refresh once
     ccn_todo_Refresh();
     
     // bind event
     $("#ccn-todo-btnAdd").click(ccn_todo_Add);
     $("#ccn-todo-btnRefresh").click(ccn_todo_Refresh);
-
-    // apply i18n
-    ccn_i18n_ApplyLanguage();
 });
 
 function ccn_todo_RefreshCacheList() {

@@ -43,7 +43,6 @@ CREATE TABLE calendar(
     [ccn_description] TEXT NOT NULL,
     [ccn_lastChange] TEXT NOT NULL,
 
-    [ccn_eventDateTimeType] TINYINT NOT NULL,
     [ccn_eventDateTimeStart] BIGINT NOT NULL,
     [ccn_eventDateTimeEnd] BIGINT NOT NULL,
     

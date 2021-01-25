@@ -29,13 +29,5 @@ $(document).ready(function() {
 });
 
 function ccn_calendar_LoadCalendarBody() {
-    $.ajax({
-        url: $("#jsrender-tmpl-calendarItem").attr('src'),
-        type: "GET",
-        async: false,
-        success: function (data) {
-            var tmpl = $.templates(data);
-            $('#ccn-calendar-calendarBbody').append(tmpl.render());
-        }
-    });
+    $('#ccn-calendar-calendarBbody').append(ccn_template_calendarItem.render());
 }

@@ -14,10 +14,12 @@ import config
 import database
 
 app = Flask(__name__)
+calendar_db = database.CalendarDatabase()
 
 # render_static_resources = None
 
 # =============================================database
+'''
 def get_database():
     db = getattr(g, '_database', None)
     if db is None:
@@ -30,6 +32,7 @@ def close_database(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
+'''
 
 # ============================================= static page route
 
@@ -70,7 +73,7 @@ def web_loginHandle():
 def api_common_saltHandle():
     result = (False, None)
     if (CheckParameter(('username', ))):
-        db = get_database()
+        db = calendar_db
         result = db.common_salt(request.form['username'])
     
     return ConstructResponseBody(result)
@@ -79,7 +82,7 @@ def api_common_saltHandle():
 def api_common_loginHandle():
     result = (False, None)
     if (CheckParameter(('username', 'password'))):
-        db = get_database()
+        db = calendar_db
         result = db.common_login(
             request.form['username'],
             request.form['password']
@@ -91,7 +94,7 @@ def api_common_loginHandle():
 def api_common_webLoginHandle():
     result = (False, None)
     if (CheckParameter(('username', 'password'))):
-        db = get_database()
+        db = calendar_db
         result = db.common_webLogin(
             request.form['username'],
             request.form['password']
@@ -103,7 +106,7 @@ def api_common_webLoginHandle():
 def api_common_logoutHandle():
     result = (False, None)
     if (CheckParameter(('token', ))):
-        db = get_database()
+        db = calendar_db
         result = db.common_logout(request.form['token'])
     
     return ConstructResponseBody(result)
@@ -112,7 +115,7 @@ def api_common_logoutHandle():
 def api_common_tokenValidHandle():
     result = (False, None)
     if (CheckParameter(('token', ))):
-        db = get_database()
+        db = calendar_db
         result = db.common_tokenValid(request.form['token'])
     
     return ConstructResponseBody(result)
@@ -194,7 +197,7 @@ def api_collection_getSharedHandle():
 def api_todo_getFullHandle():
     result = (False, None)
     if (CheckParameter(('token', ))):
-        db = get_database()
+        db = calendar_db
         result = db.todo_getFull(request.form['token'])
     
     return ConstructResponseBody(result)
@@ -203,7 +206,7 @@ def api_todo_getFullHandle():
 def api_todo_getListHandle():
     result = (False, None)
     if (CheckParameter(('token', ))):
-        db = get_database()
+        db = calendar_db
         result = db.todo_getList(request.form['token'])
     
     return ConstructResponseBody(result)
@@ -212,7 +215,7 @@ def api_todo_getListHandle():
 def api_todo_getDetailHandle():
     result = (False, None)
     if (CheckParameter(('token', 'uuid'))):
-        db = get_database()
+        db = calendar_db
         result = db.todo_getDetail(
             request.form['token'],
             request.form['uuid']
@@ -224,7 +227,7 @@ def api_todo_getDetailHandle():
 def api_todo_addHandle():
     result = (False, None)
     if (CheckParameter(('token', ))):
-        db = get_database()
+        db = calendar_db
         result = db.todo_add(request.form['token'])
     
     return ConstructResponseBody(result)
@@ -233,7 +236,7 @@ def api_todo_addHandle():
 def api_todo_updateHandle():
     result = (False, None)
     if (CheckParameter(('token', 'uuid', 'data', 'lastChange'))):
-        db = get_database()
+        db = calendar_db
         result = db.todo_update(
             request.form['token'],
             request.form['uuid'],
@@ -247,7 +250,7 @@ def api_todo_updateHandle():
 def api_todo_deleteHandle():
     result = (False, None)
     if (CheckParameter(('token', 'uuid', 'lastChange'))):
-        db = get_database()
+        db = calendar_db
         result = db.todo_delete(
             request.form['token'],
             request.form['uuid'],
@@ -307,5 +310,7 @@ def ConstructResponseBody(returnedTuple):
     }
 
 def run():
+    calendar_db.open()
     app.run(port=config.CustomConfig['web']['port'])
+    calendar_db.close()
     

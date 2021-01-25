@@ -1,6 +1,6 @@
 $(document).ready(function() {
     ccn_pages_currentPage = ccn_pages_enumPages.login;
-    
+
     // template process
     ccn_template_Load();
     
@@ -9,11 +9,11 @@ $(document).ready(function() {
     cnn_headerNav_BindEvents();
     cnn_headerNav_LoggedRefresh();
 
-    // bind login event
-    $("#ccn-login-form-login").click(ccn_login_startLogin);
-
     // apply i18n
     ccn_i18n_ApplyLanguage();
+
+    // bind login event
+    $("#ccn-login-form-login").click(ccn_login_startLogin);
 });
 
 function ccn_login_startLogin() {

@@ -20,8 +20,9 @@ def SafeDatabaseOperation(func):
 
             # do real data work
             try:
-                if self.isFirstRun:
-                    self.isFirstRun = False
+                currentTime = utils.GetCurrentTimestamp()
+                if currentTime - self.latestClean > config.CustomConfig['auto-token-clean-duration']:
+                    self.latestClean = currentTime
                     print('Cleaning outdated token...')
                     self.tokenOper_clean()
 
@@ -45,14 +46,14 @@ class CalendarDatabase(object):
         self.db = None
         self.cursor = None
         self.mutex = threading.Lock()
-        self.isFirstRun = True
+        self.latestClean = 0
 
     def open(self):
         if (self.is_database_valid()):
             raise Exception('Databade is opened')
 
         if config.CustomConfig['database-type'] == 'sqlite':
-            self.db = sqlite3.connect(config.CustomConfig['database-config']['url'])
+            self.db = sqlite3.connect(config.CustomConfig['database-config']['url'], check_same_thread = False)
         elif config.CustomConfig['database-type'] == 'mysql':
             raise Exception('Not implemented database')
         else:
@@ -114,7 +115,10 @@ class CalendarDatabase(object):
             token,
             utils.GetCurrentTimestamp()
         ))
-        return self.cursor.fetchone()[0]
+        result = self.cursor.fetchone()[0]
+        # need postpone expire on time
+        self.tokenOper_postpone_expireOn(token)
+        return result
         
     # =============================== # =============================== operation function
     # =============================== common
