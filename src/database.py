@@ -122,6 +122,7 @@ class CalendarDatabase(object):
         
     # =============================== # =============================== operation function
     # =============================== common
+    
     @SafeDatabaseOperation
     def common_salt(self, username):
         salt = utils.GenerateSalt()

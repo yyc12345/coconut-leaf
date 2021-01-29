@@ -22,6 +22,7 @@ CREATE TABLE collection(
     [ccn_uuid] TEXT NOT NULL,
     [ccn_name] TEXT NOT NULL,
     [ccn_user] TEXT NOT NULL,
+    [ccn_lastChange] TEXT NOT NULL,
 
     PRIMARY KEY (ccn_uuid),
     FOREIGN KEY (ccn_user) REFERENCES user(ccn_name) ON DELETE CASCADE

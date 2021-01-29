@@ -6,11 +6,9 @@
 
 日历的主要运算负载在循环事件的计算和处理上。在这方面，服务端负责计算循环事件的起始和结束时间。客户端利用服务端计算出的起始和结束时间，计算循环事件到底在哪些日子被循环了，进而进行渲染。
 
-本日历系统基于UNIX时间戳进行处理。在设计上使用Int64进行存储以规避2038问题。
+本日历系统基于UNIX时间戳进行处理。在设计上使用Int64进行存储以规避2038问题。同时，由于日历设计不需要精确到秒，因此本日历中与时间存储有关的时间戳使用标准UNIX时间戳/60来存储，构成粒度为分钟的时间戳。但是其余的，例如用户登录相关的时间戳，仍然为标准UNIX时间戳
 
-本日历目前无条件限定最小时间为1950年1月1日，最大时间为2049年12月31日。
-
-尽管允许客户端调换一个星期开始的日子是星期几，但是在设计上和计算上，均认为星期一是一个星期的开始。
+本日历目前无条件限定最小时间为1950年1月1日，最大时间为2200年12月31日。
 
 API只有在遇到非当前接口应该产生的错误时，才使用外层结构来进行返回错误，例如token无效，应用程序错误，参数错误等。其应当返回的错误应该通过内层进行返回，例如登录接口的登陆成功与失败，删除接口的成功与否，应该通过内层返回true或false来决定。
 
@@ -78,6 +76,461 @@ CREATE TABLE calendar(
 
 ## API
 
+所有API均为POST请求
+
+### Common类
+
+Common类下的为通用请求接口，一般与用户状态等相关  
+登录有两种方式，一种是走加盐密码的通常登录，也就是执行salt和login。另一种是直接传输明文登录，通常是用于网页这种脚本语言太垃圾不适合计算HASH的场合，请求发到webLogin。
+
+#### salt
+
+请求地址：`/api/common/salt`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|username|string|需要获取盐的用户名|
+
+返回参数：一个int，表征盐
+
+#### login
+
+请求地址：`/api/common/login`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|username|string|需要登录的用户名|
+|password|string|加盐密码，计算方法是先将密码求SHA256并16进制输出小写，再与盐的字符串形式拼接，然后整体做SHA256输出16进制小写|
+
+返回参数：一个bool，表示是否登陆成功
+
+此请求与上面的盐获取请求配套使用，用于通常意义下的客户端登录。
+
+#### webLogin
+
+请求地址：`/api/common/webLogin`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|username|string|需要登陆的用户名|
+|password|string|明文密码|
+
+返回参数：一个bool，表示是否登陆成功
+
+此请求设计用于Web端进行登录，其安全性由HTTPS保证。
+
+#### logout
+
+请求地址：`/api/common/logout`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|要退出用户的一个token，即销毁此token|
+
+返回参数：一个bool，表示是否退出登录
+
+#### tokenValid
+
+请求地址：`/api/common/tokenValid`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|待检测的token|
+
+返回参数：一个bool，表示是否有效
+
+#### isAdmin
+
+请求地址：`/api/common/isAdmin`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于管理员鉴别的token|
+
+返回参数：一个bool，表示是否是管理员
+
+#### changePassword
+
+请求地址：`/api/common/changePassword`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|password|string|新的明文密码|
+
+返回参数：一个bool，表示是否修改成功
+
+此请求的安全性由HTTPS保证。
+
+### Calendar类
+
+Calendar类下的为日历请求接口  
+日历事件请求有两种，一种是设计给网页使用的getFull，一次性获取所有信息。另一种是为客户端同步设计的，先用getList获取符合条件的事件的uuid和lastChange，然后与本地比对，然后通过getDetail与服务器进行同步，这样可以节约掉一部分没有修改的事件的同步成本。
+
+#### getFull
+
+请求地址：`/api/calendar/getFull`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|startDateTime|int|事件开始时间|
+|endDateTime|int|事件结束事件|
+
+返回参数：一个json，为从calendar数据库中原样select出数据的数组。没有符合条件的则返回空数组。
+
+#### getList
+
+请求地址：`/api/calendar/getList`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|startDatetime|int|事件开始时间|
+|endDatetime|int|事件结束事件|
+
+返回参数：一个json，返回符合条件的calendar数据库中的uuid字段组成的数组。没有符合条件的则返回空数组。
+
+#### getDetail
+
+请求地址：`/api/calendar/getDetail`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|uuid|string|需要获取详细信息的事件的uuid|
+
+返回参数：一个json对象，为给定uuid对象的数据库条目原样复制。没有符合条件的则返回null。
+
+#### update
+
+请求地址：`/api/calendar/update`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|uuid|string|要修改条目的uuid|
+|belongTo|string|事件所属collection的uuid|
+|title|string|事件标题|
+|description|string|事件描述|
+|eventDateTimeStart|int|事件开始时间|
+|eventDateTimeEnd|int|事件结束时间|
+|loopRules|string|事件循环规则|
+|lastChange|string|用于同步验证|
+
+返回参数：新的lastChange，用以更新本地缓存
+
+#### add
+
+请求地址：`/api/calendar/add`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|belongTo|string|事件所属collection的uuid|
+|title|string|事件标题|
+|description|string|事件描述|
+|eventDateTimeStart|int|事件开始时间|
+|eventDateTimeEnd|int|事件结束时间|
+|loopRules|string|事件循环规则|
+
+返回参数：新事件的uuid，用以本地更新
+
+#### delete
+
+请求地址：`/api/calendar/delete`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|uuid|string|要删除条目的uuid|
+|lastChange|string|用于同步验证|
+
+返回参数：一个bool，指示是否删除成功。
+
+### Collection类
+
+Collection类下的为日历集合请求接口  
+尾缀为Own的为对自己拥有集合的操作，尾缀为Sharing的表示对自己拥有的某个集合的分享人员进行操作，尾缀为Shared的表示对由他人分享的日历集合的操作。  
+需要注意的是，在数据表中这3部分由2个表描述，collection和share，在进行Sharing结尾的操作时（也就是操作share表），同时也会更新其在collection对应条目的lastChange。因此share表里没有lastChange而全部lastChange都在collection表里。  
+
+#### getOwn
+
+请求地址：`/api/collection/getOwn`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+
+返回参数：一个json，返回collection数据表中符合条件的条目组合成的数组
+
+#### addOwn
+
+请求地址：`/api/collection/addOwn`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|name|string|新集合的名称|
+
+返回参数：新创建集合的uuid
+
+#### updateOwn
+
+请求地址：`/api/collection/updateOwn`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|uuid|string|需要修改集合的uuid|
+|name|string|集合的新名称|
+|lastChange|string|用于同步验证|
+
+返回参数：一个新的lastChange，用于客户端更新
+
+#### deleteOwn
+
+请求地址：`/api/collection/deleteOwn`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|uuid|string|需要删除集合的uuid|
+|lastChange|string|用于同步验证|
+
+返回参数：一个bool，表示是否删除成功
+
+#### getSharing
+
+请求地址：`/api/collection/getSharing`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|uuid|string|用于获取的collection的uuid|
+
+返回参数：一个json，返回share数据表中符合条件的条目组合成的数组
+
+#### deleteSharing
+
+请求地址：`/api/collection/deleteSharing`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|uuid|string|需要删除的相关集合的uuid|
+|target|string|需要删除的用户名|
+|lastChange|string|用于同步验证|
+
+返回参数：一个新的lastChange，用于客户端更新
+
+#### addSharing
+
+请求地址：`/api/collection/addSharing`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|uuid|string|需要添加的相关集合的uuid|
+|target|string|需要添加的用户名|
+|lastChange|string|用于同步验证|
+
+返回参数：一个新的lastChange，用于客户端更新
+
+#### getShared
+
+请求地址：`/api/collection/getShared`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+
+返回参数：一个json，返回被共享给自己的日历集合在collection数据表中对应条目的数组
+
+### Todo类
+
+Todo类下的为待办事项请求接口  
+待办请求与日历事件请求相似，也有两种，一种是设计给网页使用的getFull。另一种是为客户端同步设计的getList和getDetail。
+
+#### getFull
+
+请求地址：`/api/todo/getFull`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+
+返回参数：一个json，获取todo数据表中符合自己的条目的数组输出
+
+#### getList
+
+请求地址：`/api/todo/getList`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+
+返回参数：一个json，获取todo数据表中符合自己的条目的uuid字段的数组输出
+
+#### getDetail
+
+请求地址：`/api/todo/getDetail`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|uuid|string|待获取条目的uuid字段|
+
+返回参数：一个json，指定uuid条目的数据库条目的输出，不存在则输出null
+
+#### add
+
+请求地址：`/api/todo/add`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+
+返回参数：新添加条目的uuid
+
+#### update
+
+请求地址：`/api/todo/update`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|uuid|string|待修改条目的uuid|
+|data|string|新的数据|
+|lastChange|string|用于同步验证|
+
+返回参数：新的lastChange用于客户端同步
+
+#### delete
+
+请求地址：`/api/todo/delete`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|uuid|string|待删除条目的uuid|
+|lastChange|string|用于同步验证|
+
+返回参数：一个bool，用于表明是否删除成功
+
+### Admin类
+
+Admin类下的为管理员请求接口  
+目前管理员接口只能对用户列表进行操作，因此请求的名字也没有后缀。  
+Admin类的操作需要管理员权限的token，如果不具有权限，服务端会返回错误，是否具有管理员权限可以通过common类里面的接口由客户端查询，避免不必要的错误返回。  
+Admin类的操作不涉及任何客户端存储，因此不需要lastChange来保护。
+
+#### get
+
+请求地址：`/api/admin/get`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+
+返回参数：一个json，返回当前用户列表，即返回user表中的name和isAdmin字段组成的数组
+
+#### add
+
+请求地址：`/api/admin/add`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|username|string|新的用户名|
+
+返回参数：一个bool，用于表示是否创建成功，创建成功的用户具有一个随机的密码，并且默认非管理员
+
+#### update
+
+请求地址：`/api/admin/update`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|username|string|用户名，此处仅仅是确认用户名，用户名是不能修改的|
+|password|string|新的明文密码|
+|isAdmin|bool|是否是管理员|
+
+返回参数：一个bool表示是否修改成功
+
+#### delete
+
+请求地址：`/api/admin/delete`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|username|string|用户名|
+
+返回参数：一个bool表示是否删除成功
 
 ## 事件循环规则字符串
 
@@ -87,22 +540,27 @@ CREATE TABLE calendar(
 
 ### 循环规则
 
+循环规则中，例如每年循环，究竟循环哪一天，每月循环，`x`和`y`的数值为多少，则根据向服务器请求的事件开始时间戳和时区相对偏移来自动计算。
+
 #### 按年
 
-格式：`Y[span]`
+格式：`Y[R|F][span]`
 
-每间隔`[span]`年在同样的月份和日期进行循环。但需要考虑闰年，假设在2月29日设置3年循环一次，则实际上是12年循环一次（不考虑400年非闰）
+每间隔`[span]`年在同样的月份和日期进行循环。`[S|R]`则表示在严格模式（Strict mode）和粗略模式（Rough mode）中的选择。  
+假设在某个闰年，在2月29日设置3年循环一次，若选择严格模式，则实际上是12年循环一次（不考虑400年非闰），也就是不存在的日子则无视。而选择粗略模式，则将会在不存在的日子将事件设置在2月28日。
 
 #### 按月
 
 按月有4种格式
 
-* 每月第`[num]`天：`MA[num][span]`
-* 每月倒数第`[num]`天：`MB[num][span]`
-* 每月第`[num1]`个星期第`[num2]`天：`MC[num1],[num2],[span]`
-* 每月倒数第`[num1]`个星期第`[num2]`天：`MD[num1],[num2],[span]`
+* 每月第`x`天：`M[R|F]A[span]`
+* 每月倒数第`x`天：`M[R|F]B[span]`
+* 每月第`x`个星期`y`：`M[R|F]C[span]`
+* 每月倒数第`x`个星期`y`：`M[R|F]D[span]`
 
-`[span]`表示每隔多少个月处理一次此类事件。 需要注意相关数字的钳制，此种类型的事件循环也是算力消耗最大的。
+`[span]`表示每隔多少个月处理一次此类事件。 需要注意相关数字的钳制，此种类型的事件循环也是算力消耗最大的。  
+`[S|R]`则表示在严格模式（Strict mode）和粗略模式（Rough mode）中的选择。  
+同理，使用严格模式，对于不存在的日子即视为不存在。若选择粗略模式，将会按照可能的情况，将事件放在一个月的开始或结束，或者一个月开始或结束的某个星期。
 
 #### 按周
 
