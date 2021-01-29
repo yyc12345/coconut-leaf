@@ -238,6 +238,7 @@ Calendar类下的为日历请求接口
 |eventDateTimeStart|int|事件开始时间|
 |eventDateTimeEnd|int|事件结束时间|
 |loopRules|string|事件循环规则|
+|timezoneOffset|int|提交请求的用户的本地时间与UTC时间之间的差值，使用本程序指定的粒度为分钟的时间差|
 |lastChange|string|用于同步验证|
 
 返回参数：新的lastChange，用以更新本地缓存
@@ -257,6 +258,7 @@ Calendar类下的为日历请求接口
 |eventDateTimeStart|int|事件开始时间|
 |eventDateTimeEnd|int|事件结束时间|
 |loopRules|string|事件循环规则|
+|timezoneOffset|int|提交请求的用户的本地时间与UTC时间之间的差值，使用本程序指定的粒度为分钟的时间差|
 
 返回参数：新事件的uuid，用以本地更新
 
@@ -489,7 +491,7 @@ Admin类的操作不涉及任何客户端存储，因此不需要lastChange来�
 |:---|:---|:---|
 |token|string|用于用户鉴权的字符串|
 
-返回参数：一个json，返回当前用户列表，即返回user表中的name和isAdmin字段组成的数组
+返回参数：一个json，返回当前用户列表，即返回user表中的name和isAdmin字段组成的数组。需要注意的是，isAdmin会转换成bool再传输。
 
 #### add
 
