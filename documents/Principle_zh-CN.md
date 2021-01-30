@@ -10,7 +10,7 @@
 
 本日历目前无条件限定最小时间为1950年1月1日，最大时间为2200年12月31日。
 
-API只有在遇到非当前接口应该产生的错误时，才使用外层结构来进行返回错误，例如token无效，应用程序错误，参数错误等。其应当返回的错误应该通过内层进行返回，例如登录接口的登陆成功与失败，删除接口的成功与否，应该通过内层返回true或false来决定。
+API在遇到当前接口产生错误时，使用外层结构来进行返回错误，例如token无效，应用程序错误，参数错误等。请注意捕获错误。如果没有错误，则表示data字段为有效数据。
 
 ## 数据库
 
@@ -280,11 +280,12 @@ Calendar类下的为日历请求接口
 
 Collection类下的为日历集合请求接口  
 尾缀为Own的为对自己拥有集合的操作，尾缀为Sharing的表示对自己拥有的某个集合的分享人员进行操作，尾缀为Shared的表示对由他人分享的日历集合的操作。  
+其中Own结尾的get请求与日历事件获取请求相似，也有两种，一种是设计给网页使用的getFull。另一种是为客户端同步设计的getList和getDetail。  
 需要注意的是，在数据表中这3部分由2个表描述，collection和share，在进行Sharing结尾的操作时（也就是操作share表），同时也会更新其在collection对应条目的lastChange。因此share表里没有lastChange而全部lastChange都在collection表里。  
 
-#### getOwn
+#### getFullOwn
 
-请求地址：`/api/collection/getOwn`
+请求地址：`/api/collection/getFullOwn`
 
 请求参数：
 
@@ -293,6 +294,31 @@ Collection类下的为日历集合请求接口
 |token|string|用于用户鉴权的字符串|
 
 返回参数：一个json，返回collection数据表中符合条件的条目组合成的数组
+
+#### getListOwn
+
+请求地址：`/api/collection/getListOwn`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+
+返回参数：一个json，返回collection数据表中符合条件的条目的uuid组合成的数组
+
+#### getDetailOwn
+
+请求地址：`/api/collection/getDetailOwn`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|uuid|string|需要获取集合的uuid|
+
+返回参数：一个json，返回collection数据表中对应uuid的条目
 
 #### addOwn
 
@@ -504,7 +530,7 @@ Admin类的操作不涉及任何客户端存储，因此不需要lastChange来�
 |token|string|用于用户鉴权的字符串|
 |username|string|新的用户名|
 
-返回参数：一个bool，用于表示是否创建成功，创建成功的用户具有一个随机的密码，并且默认非管理员
+返回参数：一个json，返回新建用户的对应条目，与get接口返回字段一致。创建成功的用户具有一个随机的密码，并且默认非管理员。创建失败返回null
 
 #### update
 
