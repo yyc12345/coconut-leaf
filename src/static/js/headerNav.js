@@ -1,32 +1,32 @@
-function cnn_headerNav_Insert() {
+function ccn_headerNav_Insert() {
     $('body').prepend(ccn_template_headerNav.render());
 }
 
-function cnn_headerNav_LoggedRefresh() {
-    if (cnn_api_common_tokenValid()) {
+function ccn_headerNav_LoggedRefresh() {
+    if (ccn_api_common_tokenValid()) {
         // logged, show all nav button and logout button
-        $("#cnn-header-nav-home").show();
-        $("#cnn-header-nav-calendar").show();
-        $("#cnn-header-nav-todo").show();
-        $("#cnn-header-nav-admin").show();
+        $("#ccn-header-nav-home").show();
+        $("#ccn-header-nav-calendar").show();
+        $("#ccn-header-nav-todo").show();
+        $("#ccn-header-nav-admin").show();
 
-        $("#cnn-header-user-login").hide();
-        $("#cnn-header-user-logout").show();
+        $("#ccn-header-user-login").hide();
+        $("#ccn-header-user-logout").show();
     } else {
-        $("#cnn-header-nav-home").show();
-        $("#cnn-header-nav-calendar").hide();
-        $("#cnn-header-nav-todo").hide();
-        $("#cnn-header-nav-admin").hide();
+        $("#ccn-header-nav-home").show();
+        $("#ccn-header-nav-calendar").hide();
+        $("#ccn-header-nav-todo").hide();
+        $("#ccn-header-nav-admin").hide();
 
-        $("#cnn-header-user-login").show();
-        $("#cnn-header-user-logout").hide();
+        $("#ccn-header-user-login").show();
+        $("#ccn-header-user-logout").hide();
     }
 }
 
 // bind language process and internal process function such as logout and expand menu
-function cnn_headerNav_BindEvents() {
+function ccn_headerNav_BindEvents() {
     // bind function
-    $("#cnn-header-language > *").each(function(){
+    $("#ccn-header-language > *").each(function(){
         $(this).click(function(){
             ccn_i18n_ChangeLanguage($(this).attr("language"));
             ccn_i18n_ApplyLanguage();
@@ -34,14 +34,14 @@ function cnn_headerNav_BindEvents() {
     });
 
     // bind logout
-    $("#cnn-header-user-logout").click(function() {
-        if (cnn_api_common_logout()) {
+    $("#ccn-header-user-logout").click(function() {
+        if (ccn_api_common_logout()) {
             // ok, logout
             // jump into home page again
             window.location.href = '/web/home';
             return;
     
-        } else alert($.i18n.prop("ccn-js-failToLogout"));
+        } else ccn_messagebox_Show($.i18n.prop("ccn-js-fail-logout"));
     });
 
     // bind burger menu

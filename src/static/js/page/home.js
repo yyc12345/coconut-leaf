@@ -5,10 +5,14 @@ $(document).ready(function() {
     ccn_template_Load();
     
     // nav process
-    cnn_headerNav_Insert();
-    cnn_headerNav_BindEvents();
-    cnn_headerNav_LoggedRefresh();
+    ccn_headerNav_Insert();
+    ccn_headerNav_BindEvents();
+    ccn_headerNav_LoggedRefresh();
 
+    // messagebox process
+    ccn_messagebox_Insert();
+    ccn_messagebox_BindEvent();
+    
     // apply i18n
     ccn_i18n_ApplyLanguage();
 });

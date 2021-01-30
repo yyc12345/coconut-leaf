@@ -1,7 +1,10 @@
+// the api use bool to return status: fail: return false, true: return data(including true and false)
+// the api use other type to return data: fail: return undefined, true: return data(if the returned value have change be null, return undefined instaed).
+
 // var cached_salt = undefined
 
 /*
-function cnn_api_common_salt(_username) {
+function ccn_api_common_salt(_username) {
     // true or false
     // gotten salt store in cached_salt.
     var gotten_data = undefined;
@@ -23,7 +26,7 @@ function cnn_api_common_salt(_username) {
     } else return false;
 }
 
-function cnn_api_common_login(_username, password) {
+function ccn_api_common_login(_username, password) {
     // return true or false, token is managed by this js file self.
     // if cached_salt is undefined, return false directly
     if (typeof(cached_salt) == undefined) return false;
@@ -51,7 +54,7 @@ function cnn_api_common_login(_username, password) {
 
 // ====================================================== common
 
-function cnn_api_common_webLogin(_username, password) {
+function ccn_api_common_webLogin(_username, password) {
     var gotten_data = undefined;
     $.ajax({
         url: '/api/common/webLogin',
@@ -71,7 +74,7 @@ function cnn_api_common_webLogin(_username, password) {
     } else return false;
 }
 
-function cnn_api_common_logout() {
+function ccn_api_common_logout() {
     // return true or false
     var gotten_data = undefined;
     $.ajax({
@@ -86,13 +89,13 @@ function cnn_api_common_logout() {
         }
     });
 
-    if (IsResponseOK(gotten_data)) {
+    if (IsResponseOK(gotten_data) && gotten_data['data']) {
         SetApiToken('');
         return true;
     } return false;
 }
 
-function cnn_api_common_tokenValid() {
+function ccn_api_common_tokenValid() {
     // get from local database first, then judge it via post
     // return true or false
     var gotten_token = GetApiToken();
@@ -111,7 +114,7 @@ function cnn_api_common_tokenValid() {
         }
     });
 
-    if (IsResponseOK(gotten_data)) return true;
+    if (IsResponseOK(gotten_data) && gotten_data['data']) return true;
     else {
         SetApiToken('');
         return false;
@@ -130,7 +133,7 @@ function cnn_api_common_tokenValid() {
 
 // ====================================================== todo
 
-function cnn_api_todo_getFull() {
+function ccn_api_todo_getFull() {
     // return data or undefined
     var gotten_data = undefined;
     $.ajax({
@@ -149,7 +152,7 @@ function cnn_api_todo_getFull() {
     else return undefined;
 }
 
-function cnn_api_todo_add() {
+function ccn_api_todo_add() {
     // return data or undefined
     var gotten_data = undefined;
     $.ajax({
@@ -168,7 +171,7 @@ function cnn_api_todo_add() {
     else return undefined;
 }
 
-function cnn_api_todo_update(_uuid, _data, _lastChange) {
+function ccn_api_todo_update(_uuid, _data, _lastChange) {
     // return data or undefined
     var gotten_data = undefined;
     $.ajax({
@@ -190,7 +193,7 @@ function cnn_api_todo_update(_uuid, _data, _lastChange) {
     else return undefined;
 }
 
-function cnn_api_todo_delete(_uuid, _lastChange) {
+function ccn_api_todo_delete(_uuid, _lastChange) {
     // return true or false
     var gotten_data = undefined;
     $.ajax({
@@ -207,7 +210,7 @@ function cnn_api_todo_delete(_uuid, _lastChange) {
         }
     });
 
-    return IsResponseOK(gotten_data);
+    return (IsResponseOK(gotten_data) && gotten_data['data']);
 }
 
 // ====================================================== admin

@@ -1,4 +1,5 @@
 var ccn_template_headerNav = undefined;
+var ccn_template_messagebox = undefined;
 var ccn_template_calendarItem = undefined;
 var ccn_template_scheduleItem = undefined;
 var ccn_template_userItem = undefined;
@@ -11,6 +12,14 @@ function ccn_template_Load() {
         async: false,
         success: function (data) {
             ccn_template_headerNav = $.templates(data);
+        }
+    });
+    $.ajax({
+        url: $("#jsrender-tmpl-messagebox").attr('src'),
+        type: "GET",
+        async: false,
+        success: function (data) {
+            ccn_template_messagebox = $.templates(data);
         }
     });
 

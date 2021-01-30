@@ -7,9 +7,13 @@ $(document).ready(function() {
     ccn_template_Load();
 
     // nav process
-    cnn_headerNav_Insert();
-    cnn_headerNav_BindEvents();
-    cnn_headerNav_LoggedRefresh();
+    ccn_headerNav_Insert();
+    ccn_headerNav_BindEvents();
+    ccn_headerNav_LoggedRefresh();
+
+    // messagebox process
+    ccn_messagebox_Insert();
+    ccn_messagebox_BindEvent();
 
     // apply i18n
     ccn_i18n_ApplyLanguage();
@@ -26,7 +30,7 @@ function ccn_todo_RefreshCacheList() {
     // clean list cache first
     ccn_todo_todoListCache = new Array();
 
-    var result = cnn_api_todo_getFull();
+    var result = ccn_api_todo_getFull();
     if(typeof(result) != 'undefined') {
         for(var index in result) {
             ccn_todo_todoListCache[result[index][0]] = result[index];
@@ -96,10 +100,10 @@ function ccn_todo_Refresh() {
 }
 
 function ccn_todo_Add() {
-    var result = cnn_api_todo_add();
+    var result = ccn_api_todo_add();
     if (typeof(result) == 'undefined') {
         // fail
-        alert($.i18n.prop("ccn-js-failToOperate"));
+        ccn_messagebox_Show($.i18n.prop("ccn-js-fail-operate"));
     } else {
         // add into cache
         ccn_todo_todoListCache[result[0]] = result;
@@ -138,14 +142,14 @@ function ccn_todo_ItemEdit() {
 function ccn_todo_ItemDelete() {
     var uuid = $(this).attr("uuid");
     
-    var result = cnn_api_todo_delete(
+    var result = ccn_api_todo_delete(
         uuid,
         ccn_todo_todoListCache[uuid][3]
     );
 
     if(typeof(result) == 'undefined') {
         // fail
-        alert($.i18n.prop("ccn-js-failToOperate"));
+        ccn_messagebox_Show($.i18n.prop("ccn-js-fail-operate"));
     } else {
         // remove body
         $("#ccn-todo-todoItem-" + uuid).remove();
@@ -156,7 +160,7 @@ function ccn_todo_ItemUpdate() {
     var uuid = $(this).attr("uuid");
 
     var newData = $("#ccn-todo-todoItem-textarea-" + uuid).val();
-    var result = cnn_api_todo_update(
+    var result = ccn_api_todo_update(
         uuid, 
         newData, 
         ccn_todo_todoListCache[uuid][3]
@@ -164,7 +168,7 @@ function ccn_todo_ItemUpdate() {
 
     if (typeof(result) == 'undefined') {
         // fail
-        alert($.i18n.prop("ccn-js-failToOperate"));
+        ccn_messagebox_Show($.i18n.prop("ccn-js-fail-operate"));
     } else {
         // safely update data & lastChanged and control
         ccn_todo_todoListCache[uuid][2] = newData;

@@ -5,9 +5,13 @@ $(document).ready(function() {
     ccn_template_Load();
     
     // nav process
-    cnn_headerNav_Insert();
-    cnn_headerNav_BindEvents();
-    cnn_headerNav_LoggedRefresh();
+    ccn_headerNav_Insert();
+    ccn_headerNav_BindEvents();
+    ccn_headerNav_LoggedRefresh();
+
+    // messagebox process
+    ccn_messagebox_Insert();
+    ccn_messagebox_BindEvent();
 
     // apply i18n
     ccn_i18n_ApplyLanguage();
@@ -28,23 +32,23 @@ function ccn_login_startLogin() {
 
     /*
     // try get salt
-    if (cnn_api_common_salt(username)) {
+    if (ccn_api_common_salt(username)) {
         // continue login
-        if (cnn_api_common_login(username, password)) {
+        if (ccn_api_common_login(username, password)) {
             // ok, logged
             // jump into home page again
             window.location.href = '/web/home';
 
-        } else alert($.i18n.prop("ccn-js-failToLogin"));
-    } else alert($.i18n.prop("ccn-js-failToLogin"));
+        } else ccn_messagebox_Show($.i18n.prop("ccn-js-fail-login"));
+    } else ccn_messagebox_Show($.i18n.prop("ccn-js-fail-login"));
     */
-   if (cnn_api_common_webLogin(username, password)) {
+   if (ccn_api_common_webLogin(username, password)) {
         // ok, logged
         // jump into home page again
         window.location.href = '/web/home';
         return;
 
-    } else alert($.i18n.prop("ccn-js-failToLogin"));
+    } else ccn_messagebox_Show($.i18n.prop("ccn-js-fail-login"));
 
     // retore ui
     $("#ccn-login-form-login").removeAttr("disabled");
