@@ -173,12 +173,12 @@ class CalendarDatabase(object):
     def common_logout(self, token):
         self.tokenOper_check_valid(token)
         self.cursor.execute('DELETE FROM token WHERE [ccn_token] = ?;', (token, ))
-        return None
+        return True
 
     @SafeDatabaseOperation
     def common_tokenValid(self, token):
         self.tokenOper_check_valid(token)
-        return None
+        return True
 
     @SafeDatabaseOperation
     def common_isAdmin(self, token):
@@ -243,7 +243,7 @@ class CalendarDatabase(object):
             lastChange
         ))
         if len(self.cursor.fetchall()) == 0:
-            raise Exception()
+            raise Exception('No matched uuid or not matched sync symbol')
 
         # update
         newLastChange = utils.GenerateUUID()
@@ -264,11 +264,11 @@ class CalendarDatabase(object):
             lastChange
         ))
         if len(self.cursor.fetchall()) == 0:
-            raise Exception()
+            raise Exception('No matched uuid or not matched sync symbol')
 
         # delete
         self.cursor.execute('DELETE FROM todo WHERE [ccn_uuid] = ?;', (uuid, ))
-        return None
+        return True
 
 
     # =============================== admin

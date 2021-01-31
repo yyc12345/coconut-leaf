@@ -71,54 +71,30 @@ def web_loginHandle():
 
 @app.route('/api/common/salt', methods=['POST'])
 def api_common_saltHandle():
-    result = (False, None)
-    if (CheckParameter(('username', ))):
-        db = calendar_db
-        result = db.common_salt(request.form['username'])
-    
-    return ConstructResponseBody(result)
+    return SmartDbCaller(calendar_db.common_salt, 
+    (('username', str), ))
 
 @app.route('/api/common/login', methods=['POST'])
 def api_common_loginHandle():
-    result = (False, None)
-    if (CheckParameter(('username', 'password'))):
-        db = calendar_db
-        result = db.common_login(
-            request.form['username'],
-            request.form['password']
-        )
-    
-    return ConstructResponseBody(result)
+    return SmartDbCaller(calendar_db.common_login, 
+    (('username', str), 
+    ('password', str)))
 
 @app.route('/api/common/webLogin', methods=['POST'])
 def api_common_webLoginHandle():
-    result = (False, None)
-    if (CheckParameter(('username', 'password'))):
-        db = calendar_db
-        result = db.common_webLogin(
-            request.form['username'],
-            request.form['password']
-        )
-    
-    return ConstructResponseBody(result)
+    return SmartDbCaller(calendar_db.common_webLogin, 
+    (('username', str), 
+    ('password', str)))
 
 @app.route('/api/common/logout', methods=['POST'])
 def api_common_logoutHandle():
-    result = (False, None)
-    if (CheckParameter(('token', ))):
-        db = calendar_db
-        result = db.common_logout(request.form['token'])
-    
-    return ConstructResponseBody(result)
+    return SmartDbCaller(calendar_db.common_logout, 
+    (('token', str), ))
 
 @app.route('/api/common/tokenValid', methods=['POST'])
 def api_common_tokenValidHandle():
-    result = (False, None)
-    if (CheckParameter(('token', ))):
-        db = calendar_db
-        result = db.common_tokenValid(request.form['token'])
-    
-    return ConstructResponseBody(result)
+    return SmartDbCaller(calendar_db.common_tokenValid, 
+    (('token', str), ))
 
 @app.route('/api/common/isAdmin', methods=['POST'])
 def api_common_isAdminHandle():
@@ -156,8 +132,16 @@ def api_calendar_deleteHandle():
 
 # ================================ collection
 
-@app.route('/api/collection/getOwn', methods=['POST'])
-def api_collection_getOwnHandle():
+@app.route('/api/collection/getFullOwn', methods=['POST'])
+def api_collection_getFullOwnHandle():
+    pass
+
+@app.route('/api/collection/getListOwn', methods=['POST'])
+def api_collection_getListOwnHandle():
+    pass
+
+@app.route('/api/collection/getDetailOwn', methods=['POST'])
+def api_collection_getDetailOwnHandle():
     pass
 
 @app.route('/api/collection/addOwn', methods=['POST'])
@@ -195,69 +179,39 @@ def api_collection_getSharedHandle():
 
 @app.route('/api/todo/getFull', methods=['POST'])
 def api_todo_getFullHandle():
-    result = (False, None)
-    if (CheckParameter(('token', ))):
-        db = calendar_db
-        result = db.todo_getFull(request.form['token'])
-    
-    return ConstructResponseBody(result)
+    return SmartDbCaller(calendar_db.todo_getFull, 
+    (('token', str), ))
 
 @app.route('/api/todo/getList', methods=['POST'])
 def api_todo_getListHandle():
-    result = (False, None)
-    if (CheckParameter(('token', ))):
-        db = calendar_db
-        result = db.todo_getList(request.form['token'])
-    
-    return ConstructResponseBody(result)
+    return SmartDbCaller(calendar_db.todo_getList, 
+    (('token', str), ))
 
 @app.route('/api/todo/getDetail', methods=['POST'])
 def api_todo_getDetailHandle():
-    result = (False, None)
-    if (CheckParameter(('token', 'uuid'))):
-        db = calendar_db
-        result = db.todo_getDetail(
-            request.form['token'],
-            request.form['uuid']
-        )
-    
-    return ConstructResponseBody(result)
+    return SmartDbCaller(calendar_db.todo_getDetail, 
+    (('token', str), 
+    ('uuid', str)))
 
 @app.route('/api/todo/add', methods=['POST'])
 def api_todo_addHandle():
-    result = (False, None)
-    if (CheckParameter(('token', ))):
-        db = calendar_db
-        result = db.todo_add(request.form['token'])
-    
-    return ConstructResponseBody(result)
+    return SmartDbCaller(calendar_db.todo_add, 
+    (('token', str), ))
 
 @app.route('/api/todo/update', methods=['POST'])
 def api_todo_updateHandle():
-    result = (False, None)
-    if (CheckParameter(('token', 'uuid', 'data', 'lastChange'))):
-        db = calendar_db
-        result = db.todo_update(
-            request.form['token'],
-            request.form['uuid'],
-            request.form['data'],
-            request.form['lastChange']
-        )
-    
-    return ConstructResponseBody(result)
+    return SmartDbCaller(calendar_db.todo_update, 
+    (('token', str), 
+    ('uuid', str), 
+    ('data', str), 
+    ('lastChange', str)))
 
 @app.route('/api/todo/delete', methods=['POST'])
 def api_todo_deleteHandle():
-    result = (False, None)
-    if (CheckParameter(('token', 'uuid', 'lastChange'))):
-        db = calendar_db
-        result = db.todo_delete(
-            request.form['token'],
-            request.form['uuid'],
-            request.form['lastChange']
-        )
-    
-    return ConstructResponseBody(result)
+    return SmartDbCaller(calendar_db.todo_delete, 
+    (('token', str), 
+    ('uuid', str), 
+    ('lastChange', str)))
 
 # ================================ admin
 
@@ -297,10 +251,18 @@ def UpdateStaticResources():
     }
 '''
 
-def CheckParameter(paramList):
-    gotten = set(request.form.keys())
-    paramSet = set(paramList)
-    return gotten.issubset(paramSet) and paramSet.issubset(gotten)
+def SmartDbCaller(dbMethod, paramTuple):
+    result = (False, 'Invalid parameter', None)
+    paramList = []
+    for item in paramTuple:
+        cache = request.form.get(item[0], default=None, type=item[1])
+        if cache is None:
+            break
+        paramList.append(cache)
+    else:
+        result = dbMethod(*paramList)
+    
+    return ConstructResponseBody(result)
 
 def ConstructResponseBody(returnedTuple):
     return {
