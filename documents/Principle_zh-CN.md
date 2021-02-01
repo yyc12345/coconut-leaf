@@ -76,7 +76,8 @@ CREATE TABLE calendar(
 
 ## API
 
-所有API均为POST请求
+所有API均为POST请求  
+理论上，所有更新操作（名字里有update的），除去必要的鉴别字段外，其余字段均为可选字段，可选字段只需要提供至少一个即可。但一些可选字段只有1条的，就没有可选字段。
 
 ### Common类
 
@@ -242,6 +243,8 @@ Calendar类下的为日历请求接口
 |lastChange|string|用于同步验证|
 
 返回参数：新的lastChange，用以更新本地缓存
+
+除去token，uuid，timezoneOffset和lastChange这4项用来鉴别的条目外，其余的条目均为可选项，提供则更新，不提供则不更新。
 
 #### add
 
@@ -546,6 +549,8 @@ Admin类的操作不涉及任何客户端存储，因此不需要lastChange来�
 |isAdmin|bool|是否是管理员|
 
 返回参数：一个bool表示是否修改成功
+
+除去token，username这2项用来鉴别的条目外，其余的条目均为可选项，提供则更新，不提供则不更新。
 
 #### delete
 

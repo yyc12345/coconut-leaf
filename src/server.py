@@ -72,29 +72,29 @@ def web_loginHandle():
 @app.route('/api/common/salt', methods=['POST'])
 def api_common_saltHandle():
     return SmartDbCaller(calendar_db.common_salt, 
-    (('username', str), ))
+    (('username', str, False), ))
 
 @app.route('/api/common/login', methods=['POST'])
 def api_common_loginHandle():
     return SmartDbCaller(calendar_db.common_login, 
-    (('username', str), 
-    ('password', str)))
+    (('username', str, False), 
+    ('password', str, False)))
 
 @app.route('/api/common/webLogin', methods=['POST'])
 def api_common_webLoginHandle():
     return SmartDbCaller(calendar_db.common_webLogin, 
-    (('username', str), 
-    ('password', str)))
+    (('username', str, False), 
+    ('password', str, False)))
 
 @app.route('/api/common/logout', methods=['POST'])
 def api_common_logoutHandle():
     return SmartDbCaller(calendar_db.common_logout, 
-    (('token', str), ))
+    (('token', str, False), ))
 
 @app.route('/api/common/tokenValid', methods=['POST'])
 def api_common_tokenValidHandle():
     return SmartDbCaller(calendar_db.common_tokenValid, 
-    (('token', str), ))
+    (('token', str, False), ))
 
 @app.route('/api/common/isAdmin', methods=['POST'])
 def api_common_isAdminHandle():
@@ -180,38 +180,38 @@ def api_collection_getSharedHandle():
 @app.route('/api/todo/getFull', methods=['POST'])
 def api_todo_getFullHandle():
     return SmartDbCaller(calendar_db.todo_getFull, 
-    (('token', str), ))
+    (('token', str, False), ))
 
 @app.route('/api/todo/getList', methods=['POST'])
 def api_todo_getListHandle():
     return SmartDbCaller(calendar_db.todo_getList, 
-    (('token', str), ))
+    (('token', str, False), ))
 
 @app.route('/api/todo/getDetail', methods=['POST'])
 def api_todo_getDetailHandle():
     return SmartDbCaller(calendar_db.todo_getDetail, 
-    (('token', str), 
-    ('uuid', str)))
+    (('token', str, False), 
+    ('uuid', str, False)))
 
 @app.route('/api/todo/add', methods=['POST'])
 def api_todo_addHandle():
     return SmartDbCaller(calendar_db.todo_add, 
-    (('token', str), ))
+    (('token', str, False), ))
 
 @app.route('/api/todo/update', methods=['POST'])
 def api_todo_updateHandle():
     return SmartDbCaller(calendar_db.todo_update, 
-    (('token', str), 
-    ('uuid', str), 
-    ('data', str), 
-    ('lastChange', str)))
+    (('token', str, False), 
+    ('uuid', str, False), 
+    ('data', str, False), 
+    ('lastChange', str, False)))
 
 @app.route('/api/todo/delete', methods=['POST'])
 def api_todo_deleteHandle():
     return SmartDbCaller(calendar_db.todo_delete, 
-    (('token', str), 
-    ('uuid', str), 
-    ('lastChange', str)))
+    (('token', str, False), 
+    ('uuid', str, False), 
+    ('lastChange', str, False)))
 
 # ================================ admin
 
@@ -253,14 +253,25 @@ def UpdateStaticResources():
 
 def SmartDbCaller(dbMethod, paramTuple):
     result = (False, 'Invalid parameter', None)
+    optCount = 0
     paramList = []
+    optParamDict = {}
+    # for each item, item[0] is field name. item[1] is type. item[2] is whether it is optional field
     for item in paramTuple:
         cache = request.form.get(item[0], default=None, type=item[1])
-        if cache is None:
-            break
-        paramList.append(cache)
+        if item[2]:
+            # optional param
+            if cache is not None:
+                optParamDict[item[0]] = cache
+            optCount += 1
+        else:
+            if cache is None:
+                break
+            paramList.append(cache)
     else:
-        result = dbMethod(*paramList)
+        # at least one opt param
+        if optCount == 0 or len(optParamDict) != 0:
+            result = dbMethod(*paramList, **optParamDict)
     
     return ConstructResponseBody(result)
 
