@@ -98,11 +98,14 @@ def api_common_tokenValidHandle():
 
 @app.route('/api/common/isAdmin', methods=['POST'])
 def api_common_isAdminHandle():
-    pass
+    return SmartDbCaller(calendar_db.common_isAdmin, 
+    (('token', str, False), ))
 
 @app.route('/api/common/changePassword', methods=['POST'])
 def api_common_changePasswordHandle():
-    pass
+    return SmartDbCaller(calendar_db.common_changePassword, 
+    (('token', str, False),
+    ('password', str, False)))
 
 # ================================ calendar
 

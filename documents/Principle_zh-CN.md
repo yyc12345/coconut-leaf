@@ -35,6 +35,7 @@ CREATE TABLE calendar(
 
     [ccn_eventDateTimeStart] BIGINT NOT NULL,
     [ccn_eventDateTimeEnd] BIGINT NOT NULL,
+    [ccn_timezoneOffset] INT NOT NULL,
     
     [ccn_loopRules] TEXT NOT NULL,
     [ccn_loopDateTimeStart] BIGINT NOT NULL,
@@ -48,6 +49,8 @@ CREATE TABLE calendar(
 `ccn_title`是事件标题。`ccn_description`是事件描述，是一段JSON字典，其内容交由客户端自行解析，例如事件的标题颜色，设置提醒等，甚至包括ics文件标准中的一些基本用不到的功能，例如忙碌状态，地点，备注等，均交由此字段存储，交给客户端自行解析此字段决定如何使用这些数据。本日历不负责定义此处需要存储何种内容，但是定义其存储必须为JSON，为了方便不同的客户端进行解析，方便与ics文件之间相互转换。
 
 `ccn_eventDateTimeStart`和`ccn_eventDateTimeEnd`，分别表示开始时间和结束时间。如果是循环事件，则表示此循环事件的第一个事件发生的时间。对于常用的点事件，或者全天事件，归于前者情况里面，通过设定开始和结束时间为一分钟和全天来解决。
+
+`ccn_timezoneOffset`是客户端指定的对`ccn_eventDateTimeStart`和`ccn_eventDateTimeEnd`时区设定，这个值是传递给客户端和服务端本身进行计算用的。在服务器，2个事件时间仍然是UNIX时间戳。
 
 `ccn_loopRules`是事件循环的规则，其格式详见后文的事件循环规则字符串章节。
 
@@ -239,12 +242,12 @@ Calendar类下的为日历请求接口
 |eventDateTimeStart|int|事件开始时间|
 |eventDateTimeEnd|int|事件结束时间|
 |loopRules|string|事件循环规则|
-|timezoneOffset|int|提交请求的用户的本地时间与UTC时间之间的差值，使用本程序指定的粒度为分钟的时间差|
+|timezoneOffset|int|此事件的本地时间与UTC时间之间的差值，使用本程序指定的粒度为分钟的时间差|
 |lastChange|string|用于同步验证|
 
 返回参数：新的lastChange，用以更新本地缓存
 
-除去token，uuid，timezoneOffset和lastChange这4项用来鉴别的条目外，其余的条目均为可选项，提供则更新，不提供则不更新。
+除去token，uuid和lastChange这3项用来鉴别的条目外，其余的条目均为可选项，提供则更新，不提供则不更新。
 
 #### add
 
@@ -261,7 +264,7 @@ Calendar类下的为日历请求接口
 |eventDateTimeStart|int|事件开始时间|
 |eventDateTimeEnd|int|事件结束时间|
 |loopRules|string|事件循环规则|
-|timezoneOffset|int|提交请求的用户的本地时间与UTC时间之间的差值，使用本程序指定的粒度为分钟的时间差|
+|timezoneOffset|int|此事件的本地时间与UTC时间之间的差值，使用本程序指定的粒度为分钟的时间差|
 
 返回参数：新事件的uuid，用以本地更新
 
@@ -321,7 +324,7 @@ Collection类下的为日历集合请求接口
 |token|string|用于用户鉴权的字符串|
 |uuid|string|需要获取集合的uuid|
 
-返回参数：一个json，返回collection数据表中对应uuid的条目
+返回参数：一个json，返回collection数据表中对应uuid的条目。没有符合条件的则返回null。
 
 #### addOwn
 

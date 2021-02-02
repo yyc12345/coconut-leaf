@@ -46,6 +46,7 @@ CREATE TABLE calendar(
 
     [ccn_eventDateTimeStart] BIGINT NOT NULL,
     [ccn_eventDateTimeEnd] BIGINT NOT NULL,
+    [ccn_timezoneOffset] INT NOT NULL,
     
     [ccn_loopRules] TEXT NOT NULL,
     [ccn_loopDateTimeStart] BIGINT NOT NULL,

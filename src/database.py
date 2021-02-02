@@ -195,7 +195,125 @@ class CalendarDatabase(object):
         return True
 
     # =============================== calendar
+    @SafeDatabaseOperation
+    def calendar_getFull(self, token, startDateTime, endDateTime):
+        username = self.tokenOper_get_username(token)
+        self.cursor.execute('SELECT calendar.* FROM calendar INNER JOIN collection \
+                ON collection.ccn_uuid = calendar.ccn_belongTo \
+                WHERE (collection.ccn_user = ? AND calendar.ccn_loopDateTimeEnd >= ? AND calendar.ccn_loopDateTimeStart <= ?);', 
+                (username, startDateTime, endDateTime))
+        return self.cursor.fetchall()
 
+    @SafeDatabaseOperation
+    def calendar_getList(self, token, startDateTime, endDateTime):
+        username = self.tokenOper_get_username(token)
+        self.cursor.execute('SELECT calendar.ccn_uuid FROM calendar INNER JOIN collection \
+                ON collection.ccn_uuid = calendar.ccn_belongTo \
+                WHERE (collection.ccn_user = ? AND calendar.ccn_loopDateTimeEnd >= ? AND calendar.ccn_loopDateTimeStart <= ?);', 
+                (username, startDateTime, endDateTime))
+        return tuple(map(lambda x: x[0], self.cursor.fetchall()))
+
+    @SafeDatabaseOperation
+    def calendar_getDetail(self, token, uuid):
+        self.tokenOper_check_valid(token)
+        self.cursor.execute('SELECT * FROM calendar WHERE [ccn_uuid] = ?;', (uuid, ))
+        return self.cursor.fetchone()
+
+    @SafeDatabaseOperation
+    def calendar_update(self, token, uuid, lastChange, **optArgs):
+        self.tokenOper_check_valid(token)
+
+        # get prev data
+        self.cursor.execute('SELECT * FROM calendar WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (uuid, lastChange))
+        analyseData = self.cursor.fetchone()
+
+        # construct update data
+        lastupdate = utils.GenerateUUID()
+        sqlList = [
+            '[ccn_lastChange] = ?',
+        ]
+        argumentsList = [
+            lastupdate,
+        ]
+
+        # analyse opt arg
+        reAnalyseLoop = False
+
+        cache = optArgs.get('belongTo', default=None)
+        if cache is not None:
+            sqlList.append('[ccn_belongTo] = ?')
+            argumentsList.append(cache)
+        cache = optArgs.get('title', default=None)
+        if cache is not None:
+            sqlList.append('[ccn_title] = ?')
+            argumentsList.append(cache)
+        cache = optArgs.get('description', default=None)
+        if cache is not None:
+            sqlList.append('[ccn_description] = ?')
+            argumentsList.append(cache)
+        cache = optArgs.get('eventDateTimeStart', default=None)
+        if cache is not None:
+            sqlList.append('[ccn_eventDateTimeStart] = ?')
+            argumentsList.append(cache)
+            reAnalyseLoop = True
+            analyseData[5] = cache
+        cache = optArgs.get('eventDateTimeEnd', default=None)
+        if cache is not None:
+            sqlList.append('[ccn_eventDateTimeEnd] = ?')
+            argumentsList.append(cache)
+        cache = optArgs.get('loopRules', default=None)
+        if cache is not None:
+            sqlList.append('[ccn_loopRules] = ?')
+            argumentsList.append(cache)
+            reAnalyseLoop = True
+            analyseData[8] = cache
+        cache = optArgs.get('timezoneOffset', default=None)
+        if cache is not None:
+            sqlList.append('[ccn_timezoneOffset] = ?')
+            argumentsList.append(cache)
+            reAnalyseLoop = True
+            analyseData[7] = cache
+
+        if reAnalyseLoop:
+            pass
+            # todo: finish this, re-compute loop data and upload it into list
+
+        # execute
+        argumentsList.append(uuid)
+        self.cursor.execute('UPDATE calendar SET {} WHERE [ccn_uuid] = ?;'.format(', '.join(sqlList)), 
+        tuple(argumentsList))
+        return lastupdate
+
+    @SafeDatabaseOperation
+    def calendar_add(self, token, belongTo, title, description, eventDateTimeStart, eventDateTimeEnd, loopRules, timezoneOffset):
+        self.tokenOper_check_valid(token)
+
+        newuuid = utils.GenerateUUID()
+        lastupdate = utils.GenerateUUID()
+
+        # todo: analyse loopRules and output following 2 fileds.
+        loopDateTimeStart = eventDateTimeStart
+        loopDateTimeEnd = eventDateTimeEnd
+
+        self.cursor.execute('INSERT INTO calendar VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);', 
+        (newuuid,
+        belongTo,
+        title,
+        description,
+        lastupdate,
+        eventDateTimeStart,
+        eventDateTimeEnd,
+        timezoneOffset,
+        loopRules,
+        loopDateTimeStart,
+        loopDateTimeEnd))
+        return newuuid
+
+    @SafeDatabaseOperation
+    def calendar_delete(self, token, uuid, lastChange):
+        self.tokenOper_check_valid(token)
+        self.cursor.execute('DELETE FROM calendar WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (uuid, lastChange))
+        return True
 
     # =============================== collection
 
@@ -258,16 +376,9 @@ class CalendarDatabase(object):
     def todo_delete(self, token, uuid, lastChange):
         # check valid token
         self.tokenOper_check_valid(token)
-        # check sync conflict
-        self.cursor.execute('SELECT [ccn_uuid] FROM todo WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (
-            uuid,
-            lastChange
-        ))
-        if len(self.cursor.fetchall()) == 0:
-            raise Exception('No matched uuid or not matched sync symbol')
 
         # delete
-        self.cursor.execute('DELETE FROM todo WHERE [ccn_uuid] = ?;', (uuid, ))
+        self.cursor.execute('DELETE FROM todo WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (uuid, lastChange))
         return True
 
 
