@@ -189,7 +189,7 @@ class CalendarDatabase(object):
     def common_changePassword(self, token, newpassword):
         username = self.tokenOper_get_username(token)
         self.cursor.execute('UPDATE user SET [ccn_password] = ? WHERE [ccn_name] = ?;', (
-            newpassword,
+            utils.ComputePasswordHash(newpassword),
             username
         ))
         return True
@@ -282,6 +282,8 @@ class CalendarDatabase(object):
         argumentsList.append(uuid)
         self.cursor.execute('UPDATE calendar SET {} WHERE [ccn_uuid] = ?;'.format(', '.join(sqlList)), 
         tuple(argumentsList))
+        if self.cursor.rowcount != 1:
+            raise Exception('Fail to update due to no matched rows or too much rows.')
         return lastupdate
 
     @SafeDatabaseOperation
@@ -313,10 +315,110 @@ class CalendarDatabase(object):
     def calendar_delete(self, token, uuid, lastChange):
         self.tokenOper_check_valid(token)
         self.cursor.execute('DELETE FROM calendar WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (uuid, lastChange))
+        if self.cursor.rowcount != 1:
+            raise Exception('Fail to delete due to no matched rows or too much rows.')
         return True
 
     # =============================== collection
+    @SafeDatabaseOperation
+    def collection_getFullOwn(self, token):
+        username = self.tokenOper_get_username(token)
+        self.cursor.execute('SELECT * FROM collection WHERE [ccn_user] = ?;', (username, ))
+        return self.cursor.fetchall()
 
+    @SafeDatabaseOperation
+    def collection_getListOwn(self, token):
+        username = self.tokenOper_get_username(token)
+        self.cursor.execute('SELECT [ccn_uuid] FROM collection WHERE [ccn_user] = ?;', (username, ))
+        return tuple(map(lambda x: x[0], self.cursor.fetchall()))
+
+    @SafeDatabaseOperation
+    def collection_getDetailOwn(self, token, uuid):
+        username = self.tokenOper_get_username(token)
+        self.cursor.execute('SELECT * FROM collection WHERE [ccn_user] = ? AND [ccn_uuid] = ?;', (username, uuid))
+        return self.cursor.fetchone()
+
+    @SafeDatabaseOperation
+    def collection_addOwn(self, token, newname):
+        username = self.tokenOper_get_username(token)
+        newuuid = utils.GenerateUUID()
+        lastupdate = utils.GenerateUUID()
+        self.cursor.execute('INSERT INTO collection VALUES (?, ?, ?, ?);',
+        (newuuid, newname, username, lastupdate))
+        return newuuid
+
+    @SafeDatabaseOperation
+    def collection_updateOwn(self, token, uuid, newname, lastChange):
+        self.tokenOper_check_valid(token)
+
+        lastupdate = utils.GenerateUUID()
+        self.cursor.execute('UPDATE collection SET [ccn_name] = ? [ccn_lastChange] = ? WHERE [ccn_uuid] = ?, [ccn_lastChange] = ?;', (
+            newname,
+            lastupdate,
+            uuid,
+            lastChange
+        ))
+        if self.cursor.rowcount != 1:
+            raise Exception('Fail to update due to no matched rows or too much rows.')
+        return lastupdate
+
+    @SafeDatabaseOperation
+    def collection_deleteOwn(self, token, uuid, lastChange):
+        self.tokenOper_check_valid(token)
+
+        self.cursor.execute('DELETE FROM collection WHERE [ccn_uuid] = ?, [ccn_lastChange] = ?;', (
+            uuid,
+            lastChange
+        ))
+        if self.cursor.rowcount != 1:
+            raise Exception('Fail to delete due to no matched rows or too much rows.')
+        return True
+
+    @SafeDatabaseOperation
+    def collection_getSharing(self, token, uuid):
+        self.tokenOper_check_valid(token)
+        self.cursor.execute('SELECT [ccn_target] FROM share WHERE [ccn_uuid] = ?;', (uuid, ))
+        return tuple(map(lambda x: x[0], self.cursor.fetchall()))
+
+    @SafeDatabaseOperation
+    def collection_deleteSharing(self, token, uuid, target, lastChange):
+        self.tokenOper_check_valid(token)
+
+        lastupdate = utils.GenerateUUID()
+        self.cursor.execute('UPDATE share SET [ccn_lastChange] = ? WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (lastupdate, uuid, lastChange))
+        if self.cursor.rowcount != 1:
+            raise Exception('Fail to delete due to no matched rows or too much rows.')
+
+        self.cursor.execute('DELETE FROM share WHERE [ccn_uuid] = ? AND [ccn_target] = ?;', (uuid, target))
+        if self.cursor.rowcount != 1:
+            raise Exception('Fail to delete due to no matched rows or too much rows.')
+
+        return lastupdate
+
+    @SafeDatabaseOperation
+    def collection_addSharing(self, token, uuid, target, lastChange):
+        self.tokenOper_check_valid(token)
+
+        lastupdate = utils.GenerateUUID()
+        self.cursor.execute('UPDATE share SET [ccn_lastChange] = ? WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (lastupdate, uuid, lastChange))
+        if self.cursor.rowcount != 1:
+            raise Exception('Fail to delete due to no matched rows or too much rows.')
+
+        self.cursor.execute('SELECT * FROM share WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (uuid, target))
+        if len(self.cursor.fetchall()) != 0:
+            raise Exception('Fail to insert duplicated item.')
+        self.cursor.execute('INSERT INTO share VALUES (?, ?);', (uuid, target))
+
+        return lastupdate
+
+    @SafeDatabaseOperation
+    def collection_getShared(self, token):
+        username = self.tokenOper_get_username(token)
+        self.cursor.execute('SELECT collection.ccn_uuid, collection.name, collection.user \
+                FROM share INNER JOIN collection \
+                ON share.ccn_uuid = collection.ccn_uuid \
+                WHERE share.ccn_target = ?;', (username, ))
+        return self.cursor.fetchall()
 
     # =============================== todo
     @SafeDatabaseOperation
@@ -355,21 +457,17 @@ class CalendarDatabase(object):
     def todo_update(self, token, uuid, data, lastChange):
         # check valid token
         self.tokenOper_check_valid(token)
-        # check sync conflict
-        self.cursor.execute('SELECT [ccn_uuid] FROM todo WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (
-            uuid,
-            lastChange
-        ))
-        if len(self.cursor.fetchall()) == 0:
-            raise Exception('No matched uuid or not matched sync symbol')
 
         # update
         newLastChange = utils.GenerateUUID()
-        self.cursor.execute('UPDATE todo SET [ccn_data] = ?, [ccn_lastChange] = ? WHERE [ccn_uuid] = ?;', (
+        self.cursor.execute('UPDATE todo SET [ccn_data] = ?, [ccn_lastChange] = ? WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (
             data,
             newLastChange,
-            uuid
+            uuid,
+            lastChange
         ))
+        if self.cursor.rowcount != 1:
+            raise Exception('Fail to update due to no matched rows or too much rows.')
         return newLastChange
 
     @SafeDatabaseOperation
@@ -379,9 +477,73 @@ class CalendarDatabase(object):
 
         # delete
         self.cursor.execute('DELETE FROM todo WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (uuid, lastChange))
+        if self.cursor.rowcount != 1:
+            raise Exception('Fail to delete due to no matched rows or too much rows.')
         return True
 
 
     # =============================== admin
+    @SafeDatabaseOperation
+    def admin_get(self, token):
+        username = self.tokenOper_get_username(token)
+        if not tokenOper_is_admin(username):
+            raise Exception('Permission denied.')
 
+        self.cursor.execute('SELECT [ccn_name], [ccn_isAdmin] FROM user;')
+        return tuple(map(lambda x: (x[0], x[1] == 1), self.cursor.fetchall()))
+
+    @SafeDatabaseOperation
+    def admin_add(self, token, newname):
+        username = self.tokenOper_get_username(token)
+        if not tokenOper_is_admin(username):
+            raise Exception('Permission denied.')
+
+        newpassword = utils.ComputePasswordHash(utils.GenerateUUID())
+        self.cursor.execute('INSERT INTO user VALUES (?, ?, ?, ?);', (
+            newname,
+            newpassword,
+            0,
+            utils.GenerateSalt()
+        ))
+        return (newname, False)
+
+    @SafeDatabaseOperation
+    def admin_update(self, token, username, **optArgs):
+        username = self.tokenOper_get_username(token)
+        if not tokenOper_is_admin(username):
+            raise Exception('Permission denied.')
+
+        # construct data
+        sqlList = []
+        argumentsList = []
+
+        # analyse opt arg
+        cache = optArgs.get('password', default=None)
+        if cache is not None:
+            sqlList.append('[ccn_password] = ?')
+            argumentsList.append(utils.ComputePasswordHash(cache))
+        cache = optArgs.get('isAdmin', default=None)
+        if cache is not None:
+            sqlList.append('[ccn_isAdmin] = ?')
+            argumentsList.append(1 if cache else 0)
+
+        # execute
+        argumentsList.append(username)
+        self.cursor.execute('UPDATE user SET {} WHERE [ccn_name] = ?;'.format(', '.join(sqlList)), 
+        tuple(argumentsList))
+        if self.cursor.rowcount != 1:
+            raise Exception('Fail to update due to no matched rows or too much rows.')
+        return True
+
+    @SafeDatabaseOperation
+    def admin_delete(self, token, username):
+        _username = self.tokenOper_get_username(token)
+        if not tokenOper_is_admin(_username):
+            raise Exception('Permission denied.')
+
+        # delete
+        self.cursor.execute('DELETE FROM user WHERE [ccn_name] = ?;', (username, ))
+        if self.cursor.rowcount != 1:
+            raise Exception('Fail to delete due to no matched rows or too much rows.')
+        return True
 

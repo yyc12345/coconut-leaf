@@ -379,7 +379,7 @@ Collection类下的为日历集合请求接口
 |token|string|用于用户鉴权的字符串|
 |uuid|string|用于获取的collection的uuid|
 
-返回参数：一个json，返回share数据表中符合条件的条目组合成的数组
+返回参数：一个json，返回share数据表中符合条件的条目的ccn_target列组合成的数组
 
 #### deleteSharing
 
@@ -421,7 +421,7 @@ Collection类下的为日历集合请求接口
 |:---|:---|:---|
 |token|string|用于用户鉴权的字符串|
 
-返回参数：一个json，返回被共享给自己的日历集合在collection数据表中对应条目的数组
+返回参数：一个json，返回被共享给自己的日历集合在collection数据表中的对应条目除去lastChange列的数组
 
 ### Todo类
 
