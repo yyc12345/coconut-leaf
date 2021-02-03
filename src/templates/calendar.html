@@ -16,6 +16,9 @@
     <script type="text/x-jsrender" id="jsrender-tmpl-messagebox" src="/static/tmpl/messagebox.tmpl"></script>
     <script type="text/x-jsrender" id="jsrender-tmpl-calendarItem" src="/static/tmpl/calendarItem.tmpl"></script>
     <script type="text/x-jsrender" id="jsrender-tmpl-scheduleItem" src="/static/tmpl/scheduleItem.tmpl"></script>
+    <script type="text/x-jsrender" id="jsrender-tmpl-sharingItem" src="/static/tmpl/sharingItem.tmpl"></script>
+    <script type="text/x-jsrender" id="jsrender-tmpl-sharingTargetItem" src="/static/tmpl/sharingTargetItem.tmpl"></script>
+    <script type="text/x-jsrender" id="jsrender-tmpl-sharedItem" src="/static/tmpl/sharedItem.tmpl"></script>
 
     <script type="text/javascript" src="/static/js/localStorageAssist.js"></script>
     <script type="text/javascript" src="/static/js/i18n.js"></script>
@@ -190,29 +193,7 @@
                 </div>
             </div>
 
-            <div style="display: flex; flex-flow: column;">
-                <div class="collection-item card">
-                    <div class="collection-item-words">
-                        <b>this is a name</b>
-                        <p><span>Shared by: </span><span>yyc12345</span></p>
-                    </div>
-
-                    <div class="collection-item-icon control">
-                        <a class="button"><span class="icon is-small"><i class="fas fa-eye"></i></span></a>
-                    </div>
-                </div>
-                <div class="collection-item card">
-                    <div class="collection-item-words">
-                        <b>this is a
-                            namewwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww</b>
-                        <p><span>Shared by: </span><span>Diablo</span></p>
-                    </div>
-
-                    <div class="collection-item-icon control">
-                        <a class="button"><span class="icon is-small"><i class="fas fa-eye-slash"></i></span></a>
-                    </div>
-                </div>
-
+            <div id="ccn-calendar-sharedList" style="display: flex; flex-flow: column;">
             </div>
         </div>
 
@@ -241,40 +222,7 @@
                 </div>
             </div>
 
-            <div style="display: flex; flex-flow: column; margin-top: 1.25rem;">
-                <div class="collection-item card">
-                    <div class="collection-item-words">
-                        <p>this is a name</p>
-                    </div>
-
-                    <div class="collection-item-icon control">
-                        <a class="button"><span class="icon is-small"><i class="fas fa-pen"></i></span></a>
-                    </div>
-                    <div class="collection-item-icon control">
-                        <a class="button"><span class="icon is-small"><i class="fas fa-trash"></i></span></a>
-                    </div>
-                    <div class="collection-item-icon control">
-                        <a class="button"><span class="icon is-small"><i class="fas fa-eye"></i></span></a>
-                    </div>
-                </div>
-                <div class="collection-item card">
-                    <div class="collection-item-words">
-                        <p>this is a
-                            namewwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
-                        </p>
-                    </div>
-
-                    <div class="collection-item-icon control">
-                        <a class="button"><span class="icon is-small"><i class="fas fa-pen"></i></span></a>
-                    </div>
-                    <div class="collection-item-icon control">
-                        <a class="button"><span class="icon is-small"><i class="fas fa-trash"></i></a>
-                    </div>
-                    <div class="collection-item-icon control">
-                        <a class="button"><span class="icon is-small"><i class="fas fa-eye-slash"></i></span></a>
-                    </div>
-                </div>
-
+            <div id="ccn-calendar-sharingList" style="display: flex; flex-flow: column; margin-top: 1.25rem;">
             </div>
         </div>
 
@@ -301,26 +249,7 @@
                 </div>
             </div>
 
-            <div style="display: flex; flex-flow: column; margin-top: 1.25rem;">
-                <div class="collection-item card">
-                    <div class="collection-item-words">
-                        <p>yyc12345</p>
-                    </div>
-
-                    <div class="collection-item-icon control">
-                        <a class="button"><span class="icon is-small"><i class="fas fa-trash"></i></span></a>
-                    </div>
-                </div>
-                <div class="collection-item card">
-                    <div class="collection-item-words">
-                        <p>boluo</p>
-                    </div>
-
-                    <div class="collection-item-icon control">
-                        <a class="button"><span class="icon is-small"><i class="fas fa-trash"></i></span></a>
-                    </div>
-                </div>
-
+            <div id="ccn-calendar-sharingTargetList" style="display: flex; flex-flow: column; margin-top: 1.25rem;">
             </div>
         </div>
 

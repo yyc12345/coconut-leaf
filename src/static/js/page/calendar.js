@@ -1,3 +1,7 @@
+var ccn_calendar_sharingListCache = [];
+var ccn_calendar_sharingTargetListCache = [];
+var ccn_calendar_sharedListCache = [];
+
 $(document).ready(function() {
     ccn_pages_currentPage = ccn_pages_enumPages.calendar;
         
@@ -29,9 +33,54 @@ $(document).ready(function() {
     ccn_tabcontrol_SwitchTab(1, 1);
 
     // apply i18n
+    ccn_i18n_LoadLanguage();
     ccn_i18n_ApplyLanguage();
 });
 
 function ccn_calendar_LoadCalendarBody() {
     $('#ccn-calendar-calendarBbody').append(ccn_template_calendarItem.render());
+}
+
+// ================== calendar
+
+
+// ================== collection
+
+function ccn_calendar_sharing_Refresh() {
+    ccn_calendar_sharingListCache = new Array();
+
+    var result = ccn_api_collection_getFullOwn();
+    if(typeof(result) != 'undefined') {
+        for(var index in result) {
+            ccn_calendar_sharingListCache[result[index][0]] = result[index];
+        }
+    }
+
+    // render
+    $('#ccn-admin-userList').empty();
+
+    var listDOM = $('#ccn-admin-userList');
+    for(var index in ccn_admin_userListCache) {
+        ccn_admin_userList_RenderItem(
+            ccn_admin_userListCache[index],
+            index,
+            listDOM
+        )
+    }
+}
+
+function ccn_calendar_sharing_RenderItem() {
+    
+}
+
+function ccn_calendar_sharingTarget_Refresh() {
+
+}
+
+function ccn_calendar_sharingTarget_RenderItem() {
+    
+}
+
+function ccn_calendar_shared_Refresh() {
+
 }

@@ -21,6 +21,7 @@
     <script type="text/javascript" src="/static/js/api.js"></script>
     <script type="text/javascript" src="/static/js/template.js"></script>
     <script type="text/javascript" src="/static/js/headerNav.js"></script>
+    <script type="text/javascript" src="/static/js/tabcontrol.js"></script>
     <script type="text/javascript" src="/static/js/messagebox.js"></script>
     
     <script type="text/javascript" src="/static/js/page/admin.js"></script>
@@ -28,70 +29,55 @@
 </head>
 
 <body>
-    <div class="container" style="display: flex; flex-flow: column; margin-top: 1.25rem;">
-        <h1 class="title">My account</h1>
+
+    <div class="container" style="margin-top: 20px;">
+        <div class="tabs">
+            <ul>
+                <li id="tabcontrol-tab-1-1" class="tabcontrol-tab-1"><a
+                        i18n-name="ccn-admin-tabcontrol-tabProfile"></a></li>
+                <li id="tabcontrol-tab-1-2" class="tabcontrol-tab-1"><a
+                        i18n-name="ccn-admin-tabcontrol-tabUserList"></a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="tabcontrol-panel-1-1" class="container tabcontrol-panel-1" style="margin-top: 20px;">
         <div class="field">
-            <label class="label">Change password</label>
+            <label class="label" i18n-name="ccn-admin-changePassword"></label>
             <div class="field has-addons">
                 <div class="control">
-                    <input class="input" type="password" placeholder="New password">
+                    <input id="ccn-admin-profile-inputPassword" class="input" type="password">
                 </div>
                 <div class="control">
-                    <a class="button is-primary">
+                    <a id="ccn-admin-profile-btnChangePassword" class="button is-primary">
                         <span class="icon is-small"><i class="fas fa-key"></i></span>
                     </a>
                 </div>
             </div>
         </div>
+    </div>
 
-        <h1 class="title">User list</h1>
+    <div id="tabcontrol-panel-1-2" class="container tabcontrol-panel-1" style="margin-top: 20px;">
+        <h1 class="title" i18n-name="ccn-admin-userList"></h1>
         <div class="control-list">
             <div class="field has-addons">
                 <div class="control">
-                    <input class="input" type="text">
+                    <input id="ccn-admin-userList-inputUsername" class="input" type="text">
                 </div>
-                <div class="control">
+                <div id="ccn-admin-userList-btnAdd" class="control">
                     <a class="button is-primary">
                         <span class="icon is-small"><i class="fas fa-plus"></i></span>
                     </a>
                 </div>
             </div>
-            <div class="control">
+            <div id="ccn-admin-userList-btnRefresh" class="control">
                 <a class="button is-primary">
                     <span class="icon is-small"><i class="fas fa-sync"></i></span>
                 </a>
             </div>
         </div>
 
-        <div style="display: flex; flex-flow: column; margin-top: 1.25rem;">
-            <div class="user-item card">
-                <div class="user-item-words">
-                    <p><b>this is a name</b></p>
-                </div>
-
-                <div class="user-item-icon control">
-                    <a class="button"><span class="icon is-small"><i class="fas fa-pen"></i></span></a>
-                </div>
-                <div class="user-item-icon control">
-                    <a class="button"><span class="icon is-small"><i class="fas fa-trash"></i></span></a>
-                </div>
-            </div>
-            <div class="user-item card">
-                <div class="user-item-words">
-                    <p><b>this is a name</b></p>
-                    <div class="control">
-                        <input class="input" type="password" placeholder="New password"></input>
-                    </div>
-                </div>
-
-                <div class="user-item-icon control">
-                    <a class="button" href="javascript:void(0);"><span class="icon is-small"><i class="fas fa-check"></i></span></a>
-                </div>
-                <div class="user-item-icon control">
-                    <a class="button" href="javascript:void(0);"><span class="icon is-small"><i class="fas fa-times"></i></span></a>
-                </div>
-            </div>
-
+        <div id="ccn-admin-userList" style="display: flex; flex-flow: column; margin-top: 1.25rem;">
         </div>
     </div>
 

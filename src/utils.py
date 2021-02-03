@@ -39,3 +39,7 @@ def GetCurrentTimestamp():
 
 def GetTokenExpireOn():
     return GetCurrentTimestamp() + 60 * 60 * 24 * 2 # add 2 day from now
+
+def Str2Bool(strl):
+    return strl.lower() == 'true'
+        

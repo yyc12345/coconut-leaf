@@ -2,6 +2,9 @@ var ccn_template_headerNav = undefined;
 var ccn_template_messagebox = undefined;
 var ccn_template_calendarItem = undefined;
 var ccn_template_scheduleItem = undefined;
+var ccn_template_sharingItem = undefined;
+var ccn_template_sharingTargetItem = undefined;
+var ccn_template_sharedItem = undefined;
 var ccn_template_userItem = undefined;
 var ccn_template_todoItem = undefined;
 
@@ -37,6 +40,30 @@ function ccn_template_Load() {
             });
             $.ajax({
                 url: $("#jsrender-tmpl-scheduleItem").attr('src'),
+                type: "GET",
+                async: false,
+                success: function (data) {
+                    ccn_template_scheduleItem = $.templates(data);
+                }
+            });
+            $.ajax({
+                url: $("#jsrender-tmpl-sharingItem").attr('src'),
+                type: "GET",
+                async: false,
+                success: function (data) {
+                    ccn_template_sharingItem = $.templates(data);
+                }
+            });
+            $.ajax({
+                url: $("#jsrender-tmpl-sharingTargetItem").attr('src'),
+                type: "GET",
+                async: false,
+                success: function (data) {
+                    ccn_template_scheduleItem = $.templates(data);
+                }
+            });
+            $.ajax({
+                url: $("#jsrender-tmpl-sharedItem").attr('src'),
                 type: "GET",
                 async: false,
                 success: function (data) {

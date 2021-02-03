@@ -29,6 +29,7 @@ function ccn_headerNav_BindEvents() {
     $("#ccn-header-language > *").each(function(){
         $(this).click(function(){
             ccn_i18n_ChangeLanguage($(this).attr("language"));
+            ccn_i18n_LoadLanguage();
             ccn_i18n_ApplyLanguage();
         });
     });

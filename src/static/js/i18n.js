@@ -23,41 +23,48 @@ function ccn_i18n_ChangeLanguage(newLang) {
     return true;
 }
 
-function ccn_i18n_ApplyLanguage() {
+function ccn_i18n_LoadLanguage() {
     $.i18n.properties({
         name: 'strings_' + ccn_i18n_currentLanguage,
         path: '/static/i18n/',
         encoding: 'utf-8',
         mode: 'map',
-        async: true,
+        async: false,
         cache: false,
-        language: ccn_i18n_currentLanguage,
-        callback: function() {
-            //set usual block
-            var cache = $("[i18n-name]");
-            cache.each(function() {
-                $(this).html($.i18n.prop($(this).attr('i18n-name')));
-            });
+        language: ccn_i18n_currentLanguage
+    });
+}
 
-            //set unusual block
-            //set title
-            switch(ccn_pages_currentPage) {
-                case ccn_pages_enumPages.home:
-                    $('#ccn-pageName').html($.i18n.prop('ccn-pageName-home'));
-                    break;
-                case ccn_pages_enumPages.calendar:
-                    $('#ccn-pageName').html($.i18n.prop('ccn-pageName-calendar'));
-                    break;
-                case ccn_pages_enumPages.todo:
-                    $('#ccn-pageName').html($.i18n.prop('ccn-pageName-todo'));
-                    break;
-                case ccn_pages_enumPages.admin:
-                    $('#ccn-pageName').html($.i18n.prop('ccn-pageName-admin'));
-                    break;
-                case ccn_pages_enumPages.login:
-                    $('#ccn-pageName').html($.i18n.prop('ccn-pageName-login'));
-                    break;
-            }
-        }
+function ccn_i18n_ApplyLanguage() {
+    //set usual block
+    var cache = $("[i18n-name]");
+    cache.each(function() {
+        $(this).html($.i18n.prop($(this).attr('i18n-name')));
+    });
+
+    //set unusual block
+    //set title
+    switch(ccn_pages_currentPage) {
+        case ccn_pages_enumPages.home:
+            $('#ccn-pageName').html($.i18n.prop('ccn-pageName-home'));
+            break;
+        case ccn_pages_enumPages.calendar:
+            $('#ccn-pageName').html($.i18n.prop('ccn-pageName-calendar'));
+            break;
+        case ccn_pages_enumPages.todo:
+            $('#ccn-pageName').html($.i18n.prop('ccn-pageName-todo'));
+            break;
+        case ccn_pages_enumPages.admin:
+            $('#ccn-pageName').html($.i18n.prop('ccn-pageName-admin'));
+            break;
+        case ccn_pages_enumPages.login:
+            $('#ccn-pageName').html($.i18n.prop('ccn-pageName-login'));
+            break;
+    }
+}
+
+function ccn_i18n_ApplyLanguage2Content(ctx) {
+    ctx.find("[i18n-name]").each(function() {
+        $(this).html($.i18n.prop($(this).attr('i18n-name')));
     });
 }

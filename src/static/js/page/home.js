@@ -14,5 +14,6 @@ $(document).ready(function() {
     ccn_messagebox_BindEvent();
     
     // apply i18n
+    ccn_i18n_LoadLanguage();
     ccn_i18n_ApplyLanguage();
 });

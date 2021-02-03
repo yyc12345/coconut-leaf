@@ -12,6 +12,7 @@ import os
 
 import config
 import database
+import utils
 
 app = Flask(__name__)
 calendar_db = database.CalendarDatabase()
@@ -289,7 +290,7 @@ def api_admin_updateHandle():
     (('token', str, False), 
     ('username', str, False),
     ('password', str, True),
-    ('isAdmin', bool, True)))
+    ('isAdmin', utils.Str2Bool, True)))
 
 @app.route('/api/admin/delete', methods=['POST'])
 def api_admin_deleteHandle():

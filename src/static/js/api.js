@@ -406,14 +406,18 @@ function ccn_api_admin_add(_username) {
 }
 
 function ccn_api_admin_update(_username, _password, _isAdmin) {
-    return ccn_api_dataTemplate(
+    var data = {};
+    if (typeof(_password) != 'undefined')
+        data.password = _password;
+    if (typeof(_isAdmin) != 'undefined')
+        data.isAdmin = _isAdmin;
+
+    if (Object.getOwnPropertyNames(data).length == 0) return false;
+    data.token = GetApiToken();
+    data.username = _username;
+    return ccn_api_boolTemplate(
         '/api/admin/update',
-        {
-            token: GetApiToken(),
-            username: _username,
-            password: _password,
-            isAdmin: _isAdmin
-        }
+        data
     );
 }
 

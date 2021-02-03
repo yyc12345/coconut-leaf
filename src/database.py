@@ -108,7 +108,7 @@ class CalendarDatabase(object):
     def tokenOper_is_admin(self, username):
         self.cursor.execute('SELECT [ccn_isAdmin] FROM user WHERE [ccn_name] = ?;',(username, ))
         cache = self.cursor.fetchone()[0]
-        return True if cache == 1 else False
+        return cache == 1
 
     def tokenOper_get_username(self, token):
         self.cursor.execute('SELECT [ccn_user] FROM token WHERE [ccn_token] = ? AND [ccn_tokenExpireOn] > ?;',(
@@ -239,35 +239,35 @@ class CalendarDatabase(object):
         # analyse opt arg
         reAnalyseLoop = False
 
-        cache = optArgs.get('belongTo', default=None)
+        cache = optArgs.get('belongTo', None)
         if cache is not None:
             sqlList.append('[ccn_belongTo] = ?')
             argumentsList.append(cache)
-        cache = optArgs.get('title', default=None)
+        cache = optArgs.get('title', None)
         if cache is not None:
             sqlList.append('[ccn_title] = ?')
             argumentsList.append(cache)
-        cache = optArgs.get('description', default=None)
+        cache = optArgs.get('description', None)
         if cache is not None:
             sqlList.append('[ccn_description] = ?')
             argumentsList.append(cache)
-        cache = optArgs.get('eventDateTimeStart', default=None)
+        cache = optArgs.get('eventDateTimeStart', None)
         if cache is not None:
             sqlList.append('[ccn_eventDateTimeStart] = ?')
             argumentsList.append(cache)
             reAnalyseLoop = True
             analyseData[5] = cache
-        cache = optArgs.get('eventDateTimeEnd', default=None)
+        cache = optArgs.get('eventDateTimeEnd', None)
         if cache is not None:
             sqlList.append('[ccn_eventDateTimeEnd] = ?')
             argumentsList.append(cache)
-        cache = optArgs.get('loopRules', default=None)
+        cache = optArgs.get('loopRules', None)
         if cache is not None:
             sqlList.append('[ccn_loopRules] = ?')
             argumentsList.append(cache)
             reAnalyseLoop = True
             analyseData[8] = cache
-        cache = optArgs.get('timezoneOffset', default=None)
+        cache = optArgs.get('timezoneOffset', None)
         if cache is not None:
             sqlList.append('[ccn_timezoneOffset] = ?')
             argumentsList.append(cache)
@@ -486,7 +486,7 @@ class CalendarDatabase(object):
     @SafeDatabaseOperation
     def admin_get(self, token):
         username = self.tokenOper_get_username(token)
-        if not tokenOper_is_admin(username):
+        if not self.tokenOper_is_admin(username):
             raise Exception('Permission denied.')
 
         self.cursor.execute('SELECT [ccn_name], [ccn_isAdmin] FROM user;')
@@ -495,7 +495,7 @@ class CalendarDatabase(object):
     @SafeDatabaseOperation
     def admin_add(self, token, newname):
         username = self.tokenOper_get_username(token)
-        if not tokenOper_is_admin(username):
+        if not self.tokenOper_is_admin(username):
             raise Exception('Permission denied.')
 
         newpassword = utils.ComputePasswordHash(utils.GenerateUUID())
@@ -508,9 +508,9 @@ class CalendarDatabase(object):
         return (newname, False)
 
     @SafeDatabaseOperation
-    def admin_update(self, token, username, **optArgs):
+    def admin_update(self, token, _username, **optArgs):
         username = self.tokenOper_get_username(token)
-        if not tokenOper_is_admin(username):
+        if not self.tokenOper_is_admin(username):
             raise Exception('Permission denied.')
 
         # construct data
@@ -518,19 +518,21 @@ class CalendarDatabase(object):
         argumentsList = []
 
         # analyse opt arg
-        cache = optArgs.get('password', default=None)
+        cache = optArgs.get('password', None)
         if cache is not None:
             sqlList.append('[ccn_password] = ?')
             argumentsList.append(utils.ComputePasswordHash(cache))
-        cache = optArgs.get('isAdmin', default=None)
+        cache = optArgs.get('isAdmin', None)
         if cache is not None:
             sqlList.append('[ccn_isAdmin] = ?')
             argumentsList.append(1 if cache else 0)
 
         # execute
-        argumentsList.append(username)
+        argumentsList.append(_username)
         self.cursor.execute('UPDATE user SET {} WHERE [ccn_name] = ?;'.format(', '.join(sqlList)), 
         tuple(argumentsList))
+        print(cache)
+        print(tuple(argumentsList))
         if self.cursor.rowcount != 1:
             raise Exception('Fail to update due to no matched rows or too much rows.')
         return True
@@ -538,7 +540,7 @@ class CalendarDatabase(object):
     @SafeDatabaseOperation
     def admin_delete(self, token, username):
         _username = self.tokenOper_get_username(token)
-        if not tokenOper_is_admin(_username):
+        if not self.tokenOper_is_admin(_username):
             raise Exception('Permission denied.')
 
         # delete

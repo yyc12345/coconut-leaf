@@ -16,6 +16,7 @@ $(document).ready(function() {
     ccn_messagebox_BindEvent();
 
     // apply i18n
+    ccn_i18n_LoadLanguage();
     ccn_i18n_ApplyLanguage();
     
     // refresh once
@@ -103,7 +104,7 @@ function ccn_todo_Add() {
     var result = ccn_api_todo_add();
     if (typeof(result) == 'undefined') {
         // fail
-        ccn_messagebox_Show($.i18n.prop("ccn-js-fail-operate"));
+        ccn_messagebox_Show($.i18n.prop("ccn-js-fail-add"));
     } else {
         // add into cache
         ccn_todo_todoListCache[result[0]] = result;
@@ -147,9 +148,9 @@ function ccn_todo_ItemDelete() {
         ccn_todo_todoListCache[uuid][3]
     );
 
-    if(typeof(result) == 'undefined') {
+    if(!result) {
         // fail
-        ccn_messagebox_Show($.i18n.prop("ccn-js-fail-operate"));
+        ccn_messagebox_Show($.i18n.prop("ccn-js-fail-delete"));
     } else {
         // remove body
         $("#ccn-todo-todoItem-" + uuid).remove();
@@ -168,7 +169,7 @@ function ccn_todo_ItemUpdate() {
 
     if (typeof(result) == 'undefined') {
         // fail
-        ccn_messagebox_Show($.i18n.prop("ccn-js-fail-operate"));
+        ccn_messagebox_Show($.i18n.prop("ccn-js-fail-update"));
     } else {
         // safely update data & lastChanged and control
         ccn_todo_todoListCache[uuid][2] = newData;

@@ -1,27 +1,35 @@
-<div class="user-item card">
+<div id="ccn-admin-userItem-{{:uuid}}" class="user-item card">
     <div class="user-item-words">
-        <p><b>this is a name</b></p>
-    </div>
-
-    <div class="user-item-icon control">
-        <a class="button"><span class="icon is-small"><i class="fas fa-pen"></i></span></a>
-    </div>
-    <div class="user-item-icon control">
-        <a class="button"><span class="icon is-small"><i class="fas fa-trash"></i></span></a>
-    </div>
-</div>
-<div class="user-item card">
-    <div class="user-item-words">
-        <p><b>this is a name</b></p>
-        <div class="control">
-            <input class="input" type="password" placeholder="New password"></input>
+        <div class="control" style="display: flex; flex-flow: row; align-items: center;">
+            <div id="ccn-admin-userItem-iconIsAdmin-{{:uuid}}" class="icon is-small" style="margin-right: 1rem;">
+                <i class="fas fa-wrench"></i>
+            </div>
+            <div id="ccn-admin-userItem-textName-{{:uuid}}">{{>username}}</div>
+        </div>
+        <div id="ccn-admin-userItem-boxPassword-{{:uuid}}" class="field">
+            <label class="label" i18n-name="ccn-admin-userItem-newPassword"></label>
+            <div class="control">
+                <input id="ccn-admin-userItem-inputPassword-{{:uuid}}" class="input" type="password"></input>
+            </div>
+        </div>
+        <div id="ccn-admin-userItem-boxIsAdmin-{{:uuid}}" class="field">
+            <label class="checkbox">
+                <input id="ccn-admin-userItem-inputIsAdmin-{{:uuid}}" type="checkbox"><span i18n-name="ccn-admin-userItem-isAdmin"></span>
+            </label>
         </div>
     </div>
 
-    <div class="user-item-icon control">
-        <a class="button" href="javascript:void(0);"><span class="icon is-small"><i class="fas fa-check"></i></span></a>
+    <div id="ccn-admin-userItem-btnEdit-{{:uuid}}" uuid="{{:uuid}}" class="user-item-icon control">
+        <a class="button"><span class="icon is-small"><i class="fas fa-pen"></i></span></a>
     </div>
-    <div class="user-item-icon control">
-        <a class="button" href="javascript:void(0);"><span class="icon is-small"><i class="fas fa-times"></i></span></a>
+    <div id="ccn-admin-userItem-btnDelete-{{:uuid}}" uuid="{{:uuid}}" class="user-item-icon control">
+        <a class="button"><span class="icon is-small"><i class="fas fa-trash"></i></span></a>
+    </div>
+
+    <div id="ccn-admin-userItem-btnUpdate-{{:uuid}}" uuid="{{:uuid}}" class="user-item-icon control">
+        <a class="button"><span class="icon is-small"><i class="fas fa-check"></i></span></a>
+    </div>
+    <div id="ccn-admin-userItem-btnCancelUpdate-{{:uuid}}" uuid="{{:uuid}}" class="user-item-icon control">
+        <a class="button"><span class="icon is-small"><i class="fas fa-times"></i></span></a>
     </div>
 </div>
