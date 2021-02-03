@@ -66,7 +66,7 @@ function ccn_admin_userList_RefreshCacheList() {
     }
 }
 
-function ccn_admin_userList_RenderItem(item, index, listDOM, renderdata) {
+function ccn_admin_userList_RenderItem(item, index, listDOM) {
     var renderdata = {
         uuid: index, // use index for uuid. there are no uuid for user
         username: item[0]
