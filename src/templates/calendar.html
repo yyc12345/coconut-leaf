@@ -186,7 +186,7 @@
         <div class="container" style="display: flex; flex-flow: column;">
             <h1 i18n-name="ccn-calendar-shared-list" class="title"></h1>
             <div class="field">
-                <div class="control">
+                <div id="ccn-calendar-shared-btnRefresh" class="control">
                     <a class="button is-primary">
                         <span class="icon is-small"><i class="fas fa-sync"></i></span>
                     </a>
@@ -207,15 +207,15 @@
             <div class="control-list">
                 <div class="field has-addons">
                     <div class="control">
-                        <input class="input" type="text">
+                        <input id="ccn-calendar-sharing-inputAdd" class="input" type="text">
                     </div>
-                    <div class="control">
+                    <div id="ccn-calendar-sharing-btnAdd" class="control">
                         <a class="button is-primary">
                             <span class="icon is-small"><i class="fas fa-plus"></i></span>
                         </a>
                     </div>
                 </div>
-                <div class="control">
+                <div id="ccn-calendar-sharing-btnRefresh" class="control">
                     <a class="button is-primary">
                         <span class="icon is-small"><i class="fas fa-sync"></i></span>
                     </a>
@@ -229,20 +229,22 @@
         <div class="container" style="display: flex; flex-flow: column;">
             <h1 i18n-name="ccn-calendar-sharing-sharingTargetList" class="title"></h1>
             <label class="label"><span
-                    i18n-name="ccn-calendar-sharing-sharingTargetEditing"></span><span>xxx</span></label>
+                    i18n-name="ccn-calendar-sharing-sharingTargetEditing"></span>
+                    <span id="ccn-calendar-sharing-sharingEditing"></span>
+                </label>
 
             <div class="control-list">
                 <div class="field has-addons">
                     <div class="control">
-                        <input class="input" type="text">
+                        <input id="ccn-calendar-sharingTarget-inputAdd" class="input" type="text">
                     </div>
-                    <div class="control">
+                    <div id="ccn-calendar-sharingTarget-btnAdd" class="control">
                         <a class="button is-primary">
                             <span class="icon is-small"><i class="fas fa-plus"></i></span>
                         </a>
                     </div>
                 </div>
-                <div class="control">
+                <div id="ccn-calendar-sharingTarget-btnRefresh" class="control">
                     <a class="button is-primary">
                         <span class="icon is-small"><i class="fas fa-sync"></i></span>
                     </a>

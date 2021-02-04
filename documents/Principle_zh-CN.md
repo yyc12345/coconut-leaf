@@ -299,7 +299,7 @@ Collection类下的为日历集合请求接口
 |:---|:---|:---|
 |token|string|用于用户鉴权的字符串|
 
-返回参数：一个json，返回collection数据表中符合条件的条目组合成的数组
+返回参数：一个json，返回collection数据表中除去ccn_user字段的符合条件的条目组合成的数组
 
 #### getListOwn
 
@@ -324,7 +324,7 @@ Collection类下的为日历集合请求接口
 |token|string|用于用户鉴权的字符串|
 |uuid|string|需要获取集合的uuid|
 
-返回参数：一个json，返回collection数据表中对应uuid的条目。没有符合条件的则返回null。
+返回参数：一个json，返回collection数据表中对应uuid的除去ccn_user字段的条目。没有符合条件的则返回null。
 
 #### addOwn
 

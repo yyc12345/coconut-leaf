@@ -44,14 +44,20 @@ $(document).ready(function() {
     // apply i18n
     ccn_i18n_LoadLanguage();
     ccn_i18n_ApplyLanguage();
+
+    // bind event
+    $('#ccn-calendar-shared-btnRefresh').click(ccn_calendar_shared_Refresh);
+    $('#ccn-calendar-sharing-btnAdd').click(ccn_calendar_sharingList_Add);
+    $('#ccn-calendar-sharing-btnRefresh').click(ccn_calendar_sharing_Refresh);
+    $('#ccn-calendar-sharingTarget-btnAdd').click(ccn_calendar_sharingTargetList_Add);
+    $('#ccn-calendar-sharingTarget-btnRefresh').click(ccn_calendar_sharingTarget_Refresh);
 });
+
+// ================== calendar
 
 function ccn_calendar_LoadCalendarBody() {
     $('#ccn-calendar-calendarBbody').append(ccn_template_calendarItem.render());
 }
-
-// ================== calendar
-
 
 // ================== collection
 
@@ -152,6 +158,9 @@ function ccn_calendar_sharingTarget_Refresh() {
                 // also, sharingTarget don't have uuid, use index instead
             }
         }
+
+        // update editing text
+        $('#ccn-calendar-sharing-sharingEditing').text(ccn_calendar_sharingListCache[uuid][1]);
     }
 
     var listDOM = $('#ccn-calendar-sharingTargetList');
@@ -230,43 +239,135 @@ function ccn_calendar_shared_ChangeDisplayMode(uuid, isShow) {
 // ========================= input operation
 
 function ccn_calendar_sharingList_Add() {
+    var newname = $('#ccn-calendar-sharing-inputAdd').val();
+    if (newname == "") return;
 
+    var result = ccn_api_collection_addOwn(newname);
+    if (typeof(result) == 'undefined') ccn_messagebox_Show($.i18n.prop("ccn-js-fail-add"));
+    else {
+        // second get. get detail
+        result = ccn_api_collection_getDetailOwn(result);
+
+        if (typeof(result) == 'undefined') ccn_messagebox_Show($.i18n.prop("ccn-js-fail-get"));
+        else {
+            // render
+            ccn_admin_userListCache[result[0]] = result;
+            var listDOM = $('#ccn-calendar-sharingList');
+            ccn_calendar_sharing_RenderItem(result, listDOM);
+        }
+    }
 }
 
 function ccn_calendar_sharingList_ItemEdit() {
+    var uuid = $(this).attr("uuid");
 
+    // preset inputbox
+    $('#ccn-admin-userItem-inputName-' + uuid).val(
+        ccn_calendar_sharingListCache[uuid][1]
+    );
+
+    // switch to edit mode
+    ccn_calendar_sharing_ChangeDisplayMode(uuid, undefined, true);
 }
 
 function ccn_calendar_sharingList_ItemDelete() {
+    var uuid = $(this).attr("uuid");
 
+    var result = ccn_api_collection_deleteOwn(
+        uuid,
+        ccn_calendar_sharingListCache[uuid][2]
+    );
+    if (!result) ccn_messagebox_Show($.i18n.prop("ccn-js-fail-delete"));
+    else {
+        $('#ccn-calendar-sharingItem-' + uuid).remove();
+
+        // also, we should notice sharing target, and try clean it
+        if (ccn_calendar_editingSharing == uuid) {
+            ccn_calendar_editingSharing = undefined;
+            ccn_calendar_sharingTarget_Refresh();
+        }
+    }
 }
 
 function ccn_calendar_sharingList_ItemUpdate() {
+    var uuid = $(this).attr("uuid");
+    var newname = $('#ccn-admin-userItem-inputName-' + uuid).val();
 
+    var result = ccn_api_collection_updateOwn(uuid, newname, ccn_calendar_sharingListCache[uuid][2]);
+    if (typeof(result) == 'undefined') ccn_messagebox_Show($.i18n.prop("ccn-js-fail-update"));
+    else {
+        // update last change
+        ccn_calendar_sharingListCache[uuid][2] = result;
+        ccn_calendar_sharingListCache[uuid][1] = newname;
+        // update elements
+        $('#ccn-admin-userItem-textName-' + uuid).text(newname);
+        // if editing, update sharing target
+        if (ccn_calendar_editingSharing == uuid)
+            ccn_calendar_sharingTarget_Refresh();
+        // back to normal mode
+        ccn_calendar_sharing_ChangeDisplayMode(uuid, undefined, false);
+    }
 }
 
 function ccn_calendar_sharingList_ItemCancelUpdate() {
-
+    var uuid = $(this).attr("uuid");
+    ccn_calendar_sharing_ChangeDisplayMode(uuid, undefined, false);
 }
 
 function ccn_calendar_sharingList_ItemSwitchDisplay() {
-
+    var uuid = $(this).attr("uuid");
+    ccn_calendar_sharing_displayCache[uuid] = !(ccn_calendar_sharing_displayCache[uuid]);
+    ccn_calendar_sharing_ChangeDisplayMode(uuid, ccn_calendar_sharing_displayCache[uuid], undefined);
 }
 
 function ccn_calendar_sharingList_ItemShare() {
-
+    var uuid = $(this).attr("uuid");
+    ccn_calendar_editingSharing = uuid;
+    ccn_calendar_sharingTarget_Refresh();
 }
 
 
 function ccn_calendar_sharingTargetList_Add() {
-    
+    var newusername = $('#ccn-calendar-sharingTarget-inputAdd').val();
+    if (newusername == "" || typeof(ccn_calendar_editingSharing) == 'undefined') return;
+
+    var result = ccn_api_collection_addSharing(
+        ccn_calendar_editingSharing,
+        newusername,
+        ccn_calendar_sharingListCache[ccn_calendar_editingSharing][2]
+    );
+    if (typeof(result) == 'undefined') ccn_messagebox_Show($.i18n.prop("ccn-js-fail-add"));
+    else {
+        // add new item
+        var index = ccn_calendar_sharingTargetListCache.push(newusername) - 1;
+        var listDOM = $('#ccn-calendar-sharingTargetList');
+        ccn_calendar_sharingTarget_RenderItem(newusername, index, listDOM);
+        // update last change
+        ccn_calendar_sharingListCache[ccn_calendar_editingSharing][2] = result;
+    }
 }
 
 function ccn_calendar_sharingTargetList_ItemDelete() {
+    var uuid = $(this).attr("uuid");
+    var username = ccn_calendar_sharingTargetListCache[uuid];
 
+    var result = ccn_api_collection_deleteSharing(
+        ccn_calendar_editingSharing,
+        username,
+        ccn_calendar_sharingListCache[ccn_calendar_editingSharing][2]
+    );
+    if (typeof(result) == 'undefined') ccn_messagebox_Show($.i18n.prop("ccn-js-fail-delete"));
+    else {
+        // remove item in ui
+        $('#ccn-calendar-sharingTargetItem-' + uuid).remove();
+        // update last change
+        ccn_calendar_sharingListCache[ccn_calendar_editingSharing][2] = result;
+    }
 }
 
 
 function ccn_calendar_sharedList_ItemSwitchDisplay() {
-    
+    var uuid = $(this).attr("uuid");
+    ccn_calendar_shared_displayCache[uuid] = !(ccn_calendar_shared_displayCache[uuid]);
+    ccn_calendar_shared_ChangeDisplayMode(uuid, ccn_calendar_shared_displayCache[uuid]);
 }
