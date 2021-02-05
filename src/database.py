@@ -54,6 +54,8 @@ class CalendarDatabase(object):
 
         if config.CustomConfig['database-type'] == 'sqlite':
             self.db = sqlite3.connect(config.CustomConfig['database-config']['url'], check_same_thread = False)
+            self.db.execute('PRAGMA encoding = "UTF-8";')
+            self.db.execute('PRAGMA foreign_keys = ON;')
         elif config.CustomConfig['database-type'] == 'mysql':
             raise Exception('Not implemented database')
         else:
@@ -323,7 +325,7 @@ class CalendarDatabase(object):
     @SafeDatabaseOperation
     def collection_getFullOwn(self, token):
         username = self.tokenOper_get_username(token)
-        self.cursor.execute('SELECT * FROM collection WHERE [ccn_user] = ?;', (username, ))
+        self.cursor.execute('SELECT [ccn_uuid], [ccn_name], [ccn_lastChange] FROM collection WHERE [ccn_user] = ?;', (username, ))
         return self.cursor.fetchall()
 
     @SafeDatabaseOperation
@@ -335,7 +337,7 @@ class CalendarDatabase(object):
     @SafeDatabaseOperation
     def collection_getDetailOwn(self, token, uuid):
         username = self.tokenOper_get_username(token)
-        self.cursor.execute('SELECT * FROM collection WHERE [ccn_user] = ? AND [ccn_uuid] = ?;', (username, uuid))
+        self.cursor.execute('SELECT [ccn_uuid], [ccn_name], [ccn_lastChange] FROM collection WHERE [ccn_user] = ? AND [ccn_uuid] = ?;', (username, uuid))
         return self.cursor.fetchone()
 
     @SafeDatabaseOperation
@@ -352,7 +354,7 @@ class CalendarDatabase(object):
         self.tokenOper_check_valid(token)
 
         lastupdate = utils.GenerateUUID()
-        self.cursor.execute('UPDATE collection SET [ccn_name] = ? [ccn_lastChange] = ? WHERE [ccn_uuid] = ?, [ccn_lastChange] = ?;', (
+        self.cursor.execute('UPDATE collection SET [ccn_name] = ?, [ccn_lastChange] = ? WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (
             newname,
             lastupdate,
             uuid,
@@ -366,7 +368,7 @@ class CalendarDatabase(object):
     def collection_deleteOwn(self, token, uuid, lastChange):
         self.tokenOper_check_valid(token)
 
-        self.cursor.execute('DELETE FROM collection WHERE [ccn_uuid] = ?, [ccn_lastChange] = ?;', (
+        self.cursor.execute('DELETE FROM collection WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (
             uuid,
             lastChange
         ))
@@ -385,7 +387,7 @@ class CalendarDatabase(object):
         self.tokenOper_check_valid(token)
 
         lastupdate = utils.GenerateUUID()
-        self.cursor.execute('UPDATE share SET [ccn_lastChange] = ? WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (lastupdate, uuid, lastChange))
+        self.cursor.execute('UPDATE collection SET [ccn_lastChange] = ?, WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (lastupdate, uuid, lastChange))
         if self.cursor.rowcount != 1:
             raise Exception('Fail to delete due to no matched rows or too much rows.')
 
@@ -400,11 +402,11 @@ class CalendarDatabase(object):
         self.tokenOper_check_valid(token)
 
         lastupdate = utils.GenerateUUID()
-        self.cursor.execute('UPDATE share SET [ccn_lastChange] = ? WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (lastupdate, uuid, lastChange))
+        self.cursor.execute('UPDATE collection SET [ccn_lastChange] = ? WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (lastupdate, uuid, lastChange))
         if self.cursor.rowcount != 1:
             raise Exception('Fail to delete due to no matched rows or too much rows.')
 
-        self.cursor.execute('SELECT * FROM share WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (uuid, target))
+        self.cursor.execute('SELECT * FROM share WHERE [ccn_uuid] = ? AND [ccn_target] = ?;', (uuid, target))
         if len(self.cursor.fetchall()) != 0:
             raise Exception('Fail to insert duplicated item.')
         self.cursor.execute('INSERT INTO share VALUES (?, ?);', (uuid, target))
@@ -414,7 +416,7 @@ class CalendarDatabase(object):
     @SafeDatabaseOperation
     def collection_getShared(self, token):
         username = self.tokenOper_get_username(token)
-        self.cursor.execute('SELECT collection.ccn_uuid, collection.name, collection.user \
+        self.cursor.execute('SELECT collection.ccn_uuid, collection.ccn_name, collection.ccn_user \
                 FROM share INNER JOIN collection \
                 ON share.ccn_uuid = collection.ccn_uuid \
                 WHERE share.ccn_target = ?;', (username, ))

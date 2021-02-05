@@ -334,7 +334,7 @@ function ccn_api_collection_addSharing(_uuid, _target, _lastChange) {
 
 function ccn_api_collection_getShared() {
     return ccn_api_dataTemplate(
-        '/api/collection/addSharing',
+        '/api/collection/getShared',
         {
             token: GetApiToken()
         }

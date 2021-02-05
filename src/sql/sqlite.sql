@@ -1,6 +1,3 @@
-PRAGMA encoding = "UTF-8";
-PRAGMA foreign_keys = ON;
-
 CREATE TABLE user(
     [ccn_name] TEXT NOT NULL,
     [ccn_password] TEXT NOT NULL,
