@@ -12,7 +12,6 @@ MIN_TIMESTAMP = int(MIN_DATETIME.timestamp() / 60)
 MAX_TIMESTAMP = int(MAX_DATETIME.timestamp() / 60)
 DAY1_SPAN = 60 * 24
 DAY7_SPAN = 7 * DAY1_SPAN
-YEAR400_SPAN = DAY1_SPAN * 400 * 365
 
 def ResolveLoopStr(strl, starttime, tzoffset):
     # check no loop
@@ -91,7 +90,7 @@ def LoopHandle_Month(searchResult, starttime, times, tzoffset):
         if loopType == 'A':
             while times > 0:
                 newMonth += 1
-                if newMonth > 12
+                if newMonth > 12:
                     newMonth = 1
                     newYear += 1
                 maxDays = MonthDayCount[newMonth - 1] + (1 if newMonth == 2 and IsLeapYear(newYear) else 0)
@@ -100,7 +99,7 @@ def LoopHandle_Month(searchResult, starttime, times, tzoffset):
         elif loopType == 'B':
             while times > 0:
                 newMonth += 1
-                if newMonth > 12
+                if newMonth > 12:
                     newMonth = 1
                     newYear += 1
                 maxDays = MonthDayCount[newMonth - 1] + (1 if newMonth == 2 and IsLeapYear(newYear) else 0)
@@ -109,7 +108,7 @@ def LoopHandle_Month(searchResult, starttime, times, tzoffset):
         elif loopType == 'C':
             while times > 0:
                 newMonth += 1
-                if newMonth > 12
+                if newMonth > 12:
                     newMonth = 1
                     newYear += 1
                 monthStatistics = GetMonthWeekStatistics(newYear, newMonth)
@@ -118,7 +117,7 @@ def LoopHandle_Month(searchResult, starttime, times, tzoffset):
         elif loopType == 'D':
             while times > 0:
                 newMonth += 1
-                if newMonth > 12
+                if newMonth > 12:
                     newMonth = 1
                     newYear += 1
                 monthStatistics = GetMonthWeekStatistics(newYear, newMonth)
@@ -172,8 +171,8 @@ precompiledLoopRules = (
 )
 
 precompiledLoopStopRules = {
-    'infinity': re.compile(r'F')
-    'datetime': re.compile(r'^D([1-9]\d*|0)$')
+    'infinity': re.compile(r'F'),
+    'datetime': re.compile(r'^D([1-9]\d*|0)$'),
     'times': re.compile(r'^T([1-9]\d*)$')
 }
 

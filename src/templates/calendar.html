@@ -21,6 +21,7 @@
     <script type="text/x-jsrender" id="jsrender-tmpl-sharedItem" src="/static/tmpl/sharedItem.tmpl"></script>
 
     <script type="text/javascript" src="/static/js/localStorageAssist.js"></script>
+    <script type="text/javascript" src="/static/js/datetime.js"></script>
     <script type="text/javascript" src="/static/js/i18n.js"></script>
     <script type="text/javascript" src="/static/js/utils.js"></script>
     <script type="text/javascript" src="/static/js/api.js"></script>
@@ -53,38 +54,41 @@
             <div class="level-item">
                 <div class="field has-addons">
                     <div class="control">
-                        <input class="input" type="date">
+                        <input datetimepicker="4" class="input datetimepicker-year" type="number">
                     </div>
                     <div class="control">
-                        <button i18n-name="ccn-calendar-calendar-jump" class="button is-info"></button>
+                        <input datetimepicker="4" class="input datetimepicker-month" type="number">
+                    </div>
+                    <div class="control">
+                        <a id="ccn-calendar-calendar-btnJump" i18n-name="ccn-calendar-calendar-jump" class="button is-info"></a>
                     </div>
                 </div>
             </div>
 
             <div class="level-item control">
-                <a i18n-name="ccn-calendar-calendar-today" class="button is-info"></a>
+                <a id="ccn-calendar-calendar-btnToday" i18n-name="ccn-calendar-calendar-today" class="button is-info"></a>
             </div>
             <div class="level-item control">
-                <a i18n-name="ccn-calendar-calendar-add" class="button is-primary"></a>
+                <a id="ccn-calendar-calendar-btnAdd" i18n-name="ccn-calendar-calendar-add" class="button is-primary"></a>
             </div>
         </nav>
 
-        <div id="ccn-calendar-calendarBbody" class="card" style="padding: 1.25rem; display: flex; flex-flow: column;">
+        <div id="ccn-calendar-calendarBody" class="card" style="padding: 1.25rem; display: flex; flex-flow: column;">
             <div style="margin: 0 0 0.75em 0;">
-                <div><b i18n-name="ccn-calendar-week-monday"></b></div>
-                <div><b i18n-name="ccn-calendar-week-tuesday"></b></div>
-                <div><b i18n-name="ccn-calendar-week-wednesday"></b></div>
-                <div><b i18n-name="ccn-calendar-week-thursday"></b></div>
-                <div><b i18n-name="ccn-calendar-week-friday"></b></div>
-                <div><b i18n-name="ccn-calendar-week-saturday" style="color: red;"></b></div>
-                <div><b i18n-name="ccn-calendar-week-sunday" style="color: red;"></b></div>
+                <div><b i18n-name="ccn-calendar-week-1"></b></div>
+                <div><b i18n-name="ccn-calendar-week-2"></b></div>
+                <div><b i18n-name="ccn-calendar-week-3"></b></div>
+                <div><b i18n-name="ccn-calendar-week-4"></b></div>
+                <div><b i18n-name="ccn-calendar-week-5"></b></div>
+                <div><b i18n-name="ccn-calendar-week-6" style="color: red;"></b></div>
+                <div><b i18n-name="ccn-calendar-week-7" style="color: red;"></b></div>
             </div>
         </div>
 
         <div class="container" style="padding: 1.25rem; display: flex; flex-flow: column; margin-top: 1.25rem;">
             <h1 i18n-name="ccn-calendar-calendar-scheduleList" class="title"></h1>
 
-            <div id="schedule-list">
+            <div id="ccn-calendar-scheduleList">
                 <div class="schedule-day container">
                     <div class="schedule-day-words">
                         <b>13</b>
@@ -203,7 +207,7 @@
     <div id="tabcontrol-panel-1-3" class="container tabcontrol-panel-1" style="margin-top: 20px;">
 
         <div class="container" style="display: flex; flex-flow: column;">
-            <h1 i18n-name="ccn-calendar-ownedList" class="title"></h1>
+            <h1 i18n-name="ccn-calendar-owned-list" class="title"></h1>
             <div class="control-list">
                 <div class="field has-addons">
                     <div class="control">
@@ -215,7 +219,7 @@
                         </a>
                     </div>
                 </div>
-                <div id="ccn-calendar-own-btnRefresh" class="control">
+                <div id="ccn-calendar-owned-btnRefresh" class="control">
                     <a class="button is-primary">
                         <span class="icon is-small"><i class="fas fa-sync"></i></span>
                     </a>
@@ -227,11 +231,10 @@
         </div>
 
         <div id="ccn-calendar-sharing-container" class="container" style="display: flex; flex-flow: column;">
-            <h1 i18n-name="ccn-calendar-sharing-sharingTargetList" class="title"></h1>
-            <label class="label"><span
-                    i18n-name="ccn-calendar-sharing-sharingTargetEditing"></span>
-                    <span id="ccn-calendar-sharing-sharingEditing"></span>
-                </label>
+            <h1 i18n-name="ccn-calendar-sharing-list" class="title"></h1>
+            <label class="label"><span i18n-name="ccn-calendar-sharing-editing"></span>
+                <span id="ccn-calendar-sharing-sharingEditing"></span>
+            </label>
 
             <div class="control-list">
                 <div class="field has-addons">
@@ -259,192 +262,309 @@
     </div>
 
     <!-- add is-active in class to show this-->
-    <div class="modal" style="float: left; position: fixed; top: 0; bottom: 0; left: 0; right: 0;">
+    <div id="ccn-calendar-modalEvent" class="modal"
+        style="float: left; position: fixed; top: 0; bottom: 0; left: 0; right: 0;">
         <div class="modal-background"></div>
         <div class="modal-card">
             <header class="modal-card-head">
-                <p class="modal-card-title">Modal title</p>
-                <button class="delete" aria-label="close"></button>
+                <p i18n-name="ccn-calendar-modalEvent-header" class="modal-card-title"></p>
+                <a id="ccn-calendar-modalEvent-btnClose" class="delete" aria-label="close"></a>
             </header>
             <div class="modal-card-body" style="word-break: break-all;">
                 <div class="field">
-                    <label class="label">Title</label>
+                    <label class="label" i18n-name="ccn-calendar-modalEvent-title"></label>
                     <div class="control">
-                        <input class="input" type="text">
+                        <input id="ccn-calendar-modalEvent-inputTitle" class="input" type="text">
                     </div>
                 </div>
                 <div class="field">
-                    <label class="label">Description</label>
+                    <label class="label" i18n-name="ccn-calendar-modalEvent-description"></label>
                     <div class="control">
-                        <textarea class="textarea"></textarea>
+                        <textarea id="ccn-calendar-modalEvent-inputDescription" class="textarea"></textarea>
                     </div>
                 </div>
 
                 <div class="field">
-                    <label class="label">Collection</label>
+                    <label class="label" i18n-name="ccn-calendar-modalEvent-collection"></label>
                     <div class="control">
                         <div class="select">
-                            <select>
-                                <option>Select dropdown</option>
-                                <option>With options</option>
-                            </select>
+                            <select id="ccn-calendar-modalEvent-inputCollection"></select>
                         </div>
                     </div>
                 </div>
 
-                <label class="label">Start date</label>
+                <label class="label" i18n-name="ccn-calendar-modalEvent-startDateTime"></label>
                 <div class="control-list">
-                    <div class="control">
-                        <input class="input" type="date">
-                    </div>
-                    <div class="control">
-                        <input class="input" type="time">
-                    </div>
-                </div>
-
-                <label class="label">End date</label>
-                <div class="control-list">
-                    <div class="control">
-                        <button class="button is-link">Spot</button>
-                    </div>
-                    <div class="control">
-                        <button class="button is-link">Full day</button>
-                    </div>
-                </div>
-                <div class="control-list">
-                    <div class="control">
-                        <input class="input" type="date">
-                    </div>
-                    <div class="control">
-                        <input class="input" type="time">
-                    </div>
-                </div>
-
-                <label class="label">Loop</label>
-                <label class="label">Loop method</label>
-                <div class="control-list">
-                    <label class="radio">
-                        <input type="radio" name="loop-method">Never
-                    </label>
-                    <label class="radio">
-                        <input type="radio" name="loop-method">Day
-                    </label>
-                    <label class="radio">
-                        <input type="radio" name="loop-method">Week
-                    </label>
-                    <label class="radio">
-                        <input type="radio" name="loop-method">Month
-                    </label>
-                    <label class="radio">
-                        <input type="radio" name="loop-method">Year
-                    </label>
-                </div>
-                <div>
                     <div class="field">
-                        <label class="label">Day loop span</label>
+                        <label class="label" i18n-name="ccn-calendar-text-year"></label>
                         <div class="control">
-                            <input class="input" type="text">
+                            <input datetimepicker="1" class="input datetimepicker-year" type="number">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-calendar-text-month"></label>
+                        <div class="control">
+                            <input datetimepicker="1" class="input datetimepicker-month" type="number">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-calendar-text-day"></label>
+                        <div class="control">
+                            <input datetimepicker="1" class="input datetimepicker-day" type="number">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-calendar-text-hour"></label>
+                        <div class="control">
+                            <input datetimepicker="1" class="input datetimepicker-hour" type="number">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-calendar-text-minute"></label>
+                        <div class="control">
+                            <input datetimepicker="1" class="input datetimepicker-minute" type="number">
                         </div>
                     </div>
                 </div>
-                <div>
+
+                <label class="label" i18n-name="ccn-calendar-modalEvent-endDateTime"></label>
+                <div class="control-list">
+                    <div class="control">
+                        <a id="ccn-calendar-modalEvent-btnSpot" class="button is-link" i18n-name="ccn-calendar-modalEvent-btnSpot"></a>
+                    </div>
+                    <div class="control">
+                        <a id="ccn-calendar-modalEvent-btnFullDay" class="button is-link" i18n-name="ccn-calendar-modalEvent-btnFullDay"></a>
+                    </div>
+                </div>
+                <div class="control-list">
                     <div class="field">
-                        <label class="label">Week loop span</label>
+                        <label class="label" i18n-name="ccn-calendar-text-year"></label>
                         <div class="control">
-                            <input class="input" type="text">
+                            <input datetimepicker="2" class="input datetimepicker-year" type="number">
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label">Week option</label>
+                        <label class="label" i18n-name="ccn-calendar-text-month"></label>
+                        <div class="control">
+                            <input datetimepicker="2" class="input datetimepicker-month" type="number">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-calendar-text-day"></label>
+                        <div class="control">
+                            <input datetimepicker="2" class="input datetimepicker-day" type="number">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-calendar-text-hour"></label>
+                        <div class="control">
+                            <input datetimepicker="2" class="input datetimepicker-hour" type="number">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-calendar-text-minute"></label>
+                        <div class="control">
+                            <input datetimepicker="2" class="input datetimepicker-minute" type="number">
+                        </div>
+                    </div>
+                </div>
+
+                <label class="label" i18n-name="ccn-calendar-modalEvent-loop"></label>
+                <div class="control-list">
+                    <label class="radio">
+                        <input id="ccn-calendar-modalEvent-radioLoopNever" type="radio" name="loop-method">
+                        <span i18n-name="ccn-calendar-modalEvent-loop-never"></span>
+                    </label>
+                    <label class="radio">
+                        <input id="ccn-calendar-modalEvent-radioLoopDay" type="radio" name="loop-method">
+                        <span i18n-name="ccn-calendar-modalEvent-loop-day"></span>
+                    </label>
+                    <label class="radio">
+                        <input id="ccn-calendar-modalEvent-radioLoopWeek" type="radio" name="loop-method">
+                        <span i18n-name="ccn-calendar-modalEvent-loop-week"></span>
+                    </label>
+                    <label class="radio">
+                        <input id="ccn-calendar-modalEvent-radioLoopMonth" type="radio" name="loop-method">
+                        <span i18n-name="ccn-calendar-modalEvent-loop-month"></span>
+                    </label>
+                    <label class="radio">
+                        <input id="ccn-calendar-modalEvent-radioLoopYear" type="radio" name="loop-method">
+                        <span i18n-name="ccn-calendar-modalEvent-loop-year"></span>
+                    </label>
+                </div>
+                <div id="ccn-calendar-modalEvent-boxLoopDay">
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-calendar-modalEvent-loopDay-span"></label>
+                        <div class="control">
+                            <input id="ccn-calendar-modalEvent-loopDay-inputSpan" class="input spanpicker" type="number">
+                        </div>
+                    </div>
+                </div>
+                <div id="ccn-calendar-modalEvent-boxLoopWeek">
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-calendar-modalEvent-loopWeek-span"></label>
+                        <div class="control">
+                            <input id="ccn-calendar-modalEvent-loopWeek-inputSpan" class="input spanpicker" type="number">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-calendar-modalEvent-loopWeek-option"></label>
                         <div class="control-list">
                             <label class="checkbox">
-                                <input type="checkbox">Monday
+                                <input id="ccn-calendar-modalEvent-loopWeek-check1" type="checkbox">
+                                <span i18n-name="ccn-calendar-week-1"></span>
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox">Tuesday
+                                <input id="ccn-calendar-modalEvent-loopWeek-check2" type="checkbox">
+                                <span i18n-name="ccn-calendar-week-2"></span>
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox">Wednesdayday
+                                <input id="ccn-calendar-modalEvent-loopWeek-check3" type="checkbox">
+                                <span i18n-name="ccn-calendar-week-3"></span>
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox">Thursday
+                                <input id="ccn-calendar-modalEvent-loopWeek-check4" type="checkbox">
+                                <span i18n-name="ccn-calendar-week-4"></span>
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox">Firday
+                                <input id="ccn-calendar-modalEvent-loopWeek-check5" type="checkbox">
+                                <span i18n-name="ccn-calendar-week-5"></span>
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox">Saturday
+                                <input id="ccn-calendar-modalEvent-loopWeek-check6" type="checkbox">
+                                <span i18n-name="ccn-calendar-week-6"></span>
                             </label>
                             <label class="checkbox">
-                                <input type="checkbox">Sunday
+                                <input id="ccn-calendar-modalEvent-loopWeek-check7" type="checkbox">
+                                <span i18n-name="ccn-calendar-week-7"></span>
                             </label>
                         </div>
                     </div>
                 </div>
-                <div>
+                <div id="ccn-calendar-modalEvent-boxLoopMonth">
                     <div class="field">
-                        <label class="label">Month loop span</label>
+                        <label class="label" i18n-name="ccn-calendar-modalEvent-loopMonth-span"></label>
                         <div class="control">
-                            <input class="input" type="text">
+                            <input id="ccn-calendar-modalEvent-loopMonth-inputSpan" class="input spanpicker" type="number">
                         </div>
                     </div>
                     <div class="field">
-                        <label class="label">Month option</label>
+                        <label class="label" i18n-name="ccn-calendar-modalEvent-loopWeek-option"></label>
                         <div class="control-list">
                             <label class="radio">
-                                <input type="radio" name="month-loop-method">每月第X天
+                                <input id="ccn-calendar-modalEvent-loopMonth-radioA" type="radio" name="month-loop-method">
+                                <span id="ccn-calendar-modalEvent-loopMonth-textA"></span>
                             </label>
                             <label class="radio">
-                                <input type="radio" name="month-loop-method">每月倒数第X天
+                                <input id="ccn-calendar-modalEvent-loopMonth-radioB" type="radio" name="month-loop-method">
+                                <span id="ccn-calendar-modalEvent-loopMonth-textB"></span>
                             </label>
                             <label class="radio">
-                                <input type="radio" name="month-loop-method">每月第X个星期第Y天
+                                <input id="ccn-calendar-modalEvent-loopMonth-radioC" type="radio" name="month-loop-method">
+                                <span id="ccn-calendar-modalEvent-loopMonth-textC"></span>
                             </label>
                             <label class="radio">
-                                <input type="radio" name="month-loop-method">每月倒数第X个星期第Y天
+                                <input id="ccn-calendar-modalEvent-loopMonth-radioD" type="radio" name="month-loop-method">
+                                <span id="ccn-calendar-modalEvent-loopMonth-textD"></span>
                             </label>
                         </div>
                     </div>
                 </div>
-                <div>
+                <div id="ccn-calendar-modalEvent-boxLoopYear">
                     <div class="field">
-                        <label class="label">Year loop span</label>
+                        <label class="label" i18n-name="ccn-calendar-modalEvent-loopYear-span"></label>
                         <div class="control">
-                            <input class="input" type="text">
+                            <input id="ccn-calendar-modalEvent-loopYear-inputSpan" class="input spanpicker" type="number">
                         </div>
                     </div>
                 </div>
 
-                <div class="field">
-                    <label class="label">Loop end with</label>
+                <div id="ccn-calendar-modalEvent-boxLoopStop">
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-calendar-modalEvent-loopStop"></label>
+                        <div class="control-list">
+                            <label class="radio">
+                                <input id="ccn-calendar-modalEvent-loopStop-radioForever" type="radio" name="loop-end">
+                                <span i18n-name="ccn-calendar-modalEvent-loopStop-forever"></span>
+                            </label>
+                            <label class="radio">
+                                <input id="ccn-calendar-modalEvent-loopStop-radioDateTime" type="radio" name="loop-end">
+                                <span i18n-name="ccn-calendar-modalEvent-loopStop-datetime"></span>
+                            </label>
+                            <label class="radio">
+                                <input id="ccn-calendar-modalEvent-loopStop-radioTimes" type="radio" name="loop-end">
+                                <span i18n-name="ccn-calendar-modalEvent-loopStop-times"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="ccn-calendar-modalEvent-boxLoopStopDateTime">
+                        <div class="field">
+                            <div class="control-list">
+                                <div class="field">
+                                    <label class="label" i18n-name="ccn-calendar-text-year"></label>
+                                    <div class="control">
+                                        <input datetimepicker="3" class="input datetimepicker-year" type="number">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label" i18n-name="ccn-calendar-text-month"></label>
+                                    <div class="control">
+                                        <input datetimepicker="3" class="input datetimepicker-month" type="number">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label" i18n-name="ccn-calendar-text-day"></label>
+                                    <div class="control">
+                                        <input datetimepicker="3" class="input datetimepicker-day" type="number">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                    
+                    </div>
+                    <div id="ccn-calendar-modalEvent-boxLoopStopTimes">
+                        <div class="field">
+                            <div class="control">
+                                <input id="ccn-calendar-modalEvent-loopStop-inputTimes" class="input" type="text">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="ccn-calendar-modalEvent-boxStrictMode" class="field">
+                    <label class="label" i18n-name="ccn-calendar-modalEvent-strictMode-title"></label>
+                    <p i18n-name="ccn-calendar-modalEvent-strictMode-warning"></p>
                     <div class="control-list">
                         <label class="radio">
-                            <input type="radio" name="loop-end">Forever
+                            <input id="ccn-calendar-modalEvent-strictMode-radioStrict" type="radio" name="timezone">
+                            <span i18n-name="ccn-calendar-modalEvent-strictMode-strict"></span>
                         </label>
                         <label class="radio">
-                            <input type="radio" name="loop-end">A date
-                        </label>
-                        <label class="radio">
-                            <input type="radio" name="loop-end">Times
+                            <input id="ccn-calendar-modalEvent-strictMode-radioRough" type="radio" name="timezone">
+                            <span i18n-name="ccn-calendar-modalEvent-strictMode-rough"></span>
                         </label>
                     </div>
                 </div>
-                <div class="field">
-                    <div class="control">
-                        <input class="input" type="date">
-                    </div>
-                </div>
-                <div class="field">
-                    <div class="control">
-                        <input class="input" type="text">
+
+                <div id="ccn-calendar-modalEvent-boxTimezone" class="field">
+                    <label class="label" i18n-name="ccn-calendar-modalEvent-timezone-title"></label>
+                    <p i18n-name="ccn-calendar-modalEvent-timezone-warning"></p>
+                    <div class="control-list">
+                        <label class="radio">
+                            <input id="ccn-calendar-modalEvent-timezone-radioKeep" type="radio" name="timezone">
+                            <span i18n-name="ccn-calendar-modalEvent-timezone-keep"></span>
+                        </label>
+                        <label class="radio">
+                            <input id="ccn-calendar-modalEvent-timezone-radioReplace" type="radio" name="timezone">
+                            <span i18n-name="ccn-calendar-modalEvent-timezone-replace"></span>
+                        </label>
                     </div>
                 </div>
 
             </div>
 
             <footer class="modal-card-foot">
-                <button class="button is-success">Submit</button>
-                <button class="button">Cancel</button>
+                <a id="ccn-calendar-modalEvent-btnSubmit" class="button is-success" i18n-name="ccn-calendar-modalEvent-btnSubmit"></a>
+                <a id="ccn-calendar-modalEvent-btnCancel" class="button" i18n-name="ccn-calendar-modalEvent-btnCancel"></a>
             </footer>
         </div>
     </div>

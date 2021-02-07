@@ -11,6 +11,13 @@ var ccn_calendar_sharing_editingOwned = undefined; // the uuid of owned collecti
 var ccn_calendar_sharing_displayCache = [];
 var ccn_calendar_shared_displayCache = [];
 
+// modal editing object.
+// undefined mean add
+// not undefined mean update
+var ccn_calendar_eventModal_editing = undefined;
+var ccn_calendar_calendar_listCache = [];
+var ccn_calendar_calendar_displayCache = [];
+
 $(document).ready(function() {
     ccn_pages_currentPage = ccn_pages_enumPages.calendar;
         
@@ -27,7 +34,7 @@ $(document).ready(function() {
     ccn_messagebox_BindEvent();
     
     // process calendar it self
-    ccn_calendar_LoadCalendarBody();
+    ccn_calendar_calendar_LoadCalendarBody();
 
     // bind tab control switcher and set current tab
     $("#tabcontrol-tab-1-1").click(function(){
@@ -41,6 +48,15 @@ $(document).ready(function() {
     });
     ccn_tabcontrol_SwitchTab(1, 1);
 
+    // init datetimepicker
+    ccn_calendar_datetimepicker_Init();
+
+    // init span picker
+    $('.spanpicker').attr('max', 100)
+    .attr('min', 1)
+    .attr('step', 1)
+    .val(1);
+
     // apply i18n
     ccn_i18n_LoadLanguage();
     ccn_i18n_ApplyLanguage();
@@ -52,15 +68,145 @@ $(document).ready(function() {
     // bind event
     $('#ccn-calendar-shared-btnRefresh').click(ccn_calendar_shared_Refresh);
     $('#ccn-calendar-owned-btnAdd').click(ccn_calendar_owned_Add);
-    $('#ccn-calendar-own-btnRefresh').click(ccn_calendar_owned_Refresh);
+    $('#ccn-calendar-owned-btnRefresh').click(ccn_calendar_owned_Refresh);
     $('#ccn-calendar-sharing-btnAdd').click(ccn_calendar_sharing_Add);
     $('#ccn-calendar-sharing-btnRefresh').click(ccn_calendar_sharing_Refresh);
+
+    $('#ccn-calendar-calendar-btnJump').click(ccn_calendar_calendar_Refresh);
+    $('#ccn-calendar-calendar-btnToday').click(ccn_calendar_calendar_Today);
+    $('#ccn-calendar-calendar-btnAdd').click(ccn_calendar_calendar_Add);
+
+    $('#ccn-calendar-modalEvent-btnSubmit').click(ccn_calendar_calendar_ItemUpdate);
+    $('#ccn-calendar-modalEvent-btnCancel').click(ccn_calendar_calendar_ItemCancel);
+    $('#ccn-calendar-modalEvent-btnClose').click(ccn_calendar_calendar_ItemCancel);
 });
+
+// ================== assist func
+
+function ccn_calendar_datetimepicker_Init() {
+    var nowtime = new Date();
+
+    $('.datetimepicker-year').attr('min', ccn_datetime_MIN_YEAR)
+    .attr('max', ccn_datetime_MAX_YEAR)
+    .attr('step', 1)
+    .val(nowtime.getFullYear())
+    .bind('propertychange', ccn_calendar_datetimepicker_Sync);
+
+    $('.datetimepicker-month').attr('min', 1)
+    .attr('max', 12)
+    .attr('step', 1)
+    .val(nowtime.getMonth() + 1)
+    .bind('propertychange', ccn_calendar_datetimepicker_Sync);
+
+    $('.datetimepicker-day').attr('min', 1)
+    .attr('step', 1)
+    .each(function(){
+        ccn_calendar_datetimepicker_SyncEx($(this).attr("datetimepicker"));
+    })
+    .val(nowtime.getDate());
+    
+    $('.datetimepicker-hour').attr('min', 0)
+    .attr('max', 23)
+    .attr('step', 1)
+    .val(nowtime.getHours());
+
+    $('.datetimepicker-minute').attr('min', 0)
+    .attr('max', 59)
+    .attr('step', 1)
+    .val(nowtime.getMinutes());
+}
+
+function ccn_calendar_datetimepicker_Sync() {
+    var pickerIndex = $(this).attr("datetimepicker");
+    ccn_calendar_datetimepicker_SyncEx(pickerIndex);
+}
+
+function ccn_calendar_datetimepicker_SyncEx(pickerIndex) {
+    year = $('.datetimepicker-year[datetimepicker=' + pickerIndex + ']').val();
+    month = $('.datetimepicker-month[datetimepicker=' + pickerIndex + ']').val();
+
+    dayDOM = $('.datetimepicker-day[datetimepicker=' + pickerIndex + ']');
+    if (typeof(year) == 'undefined' || typeof(month) == 'undefined') {
+        dayDOM.attr('max', 1)
+        .val(1);
+    } else {
+        dayDOM.attr('max', ccn_datetime_monthDayCount[month - 1] + ((month == 2 && ccn_datetime_IsLeapYear(year) ? 1 : 0)))
+        .val(1);
+    }
+}
+
+function ccn_calendar_datetimepicker_Set(pickerIndex, dt) {
+    $('.datetimepicker-year[datetimepicker=' + pickerIndex + ']').val(dt.getFullYear());
+    $('.datetimepicker-month[datetimepicker=' + pickerIndex + ']').val(dt.getMonth() + 1);
+    $('.datetimepicker-day[datetimepicker=' + pickerIndex + ']').val(dt.getDate());
+    $('.datetimepicker-hour[datetimepicker=' + pickerIndex + ']').val(dt.getHours());
+    $('.datetimepicker-minute[datetimepicker=' + pickerIndex + ']').val(dt.getMinutes());
+}
+
+function ccn_calendar_datetimepicker_Get(pickerIndex) {
+    year = $('.datetimepicker-year[datetimepicker=' + pickerIndex + ']').val();
+    month = $('.datetimepicker-month[datetimepicker=' + pickerIndex + ']').val();
+    day = $('.datetimepicker-day[datetimepicker=' + pickerIndex + ']').val();
+    hour = $('.datetimepicker-hour[datetimepicker=' + pickerIndex + ']').val();
+    minute = $('.datetimepicker-minute[datetimepicker=' + pickerIndex + ']').val();
+    if (IsUndefinedOrEmpty(year)) year = ccn_datetime_MIN_YEAR;
+    if (IsUndefinedOrEmpty(month)) month = 1;
+    if (IsUndefinedOrEmpty(day)) day = 1;
+    if (IsUndefinedOrEmpty(hour)) hour = 0;
+    if (IsUndefinedOrEmpty(minute)) minute = 0;
+
+    return new Date(year, month - 1, day, hour, minute, 0, 0);
+}
 
 // ================== calendar
 
-function ccn_calendar_LoadCalendarBody() {
-    $('#ccn-calendar-calendarBbody').append(ccn_template_calendarItem.render());
+function ccn_calendar_calendar_LoadCalendarBody() {
+    $('#ccn-calendar-calendarBody').append(ccn_template_calendarItem.render());
+}
+
+function ccn_calendar_calendar_Refresh() {
+    gottenDateTime = ccn_calendar_datetimepicker_Get(4);
+    gottenYear = gottenDateTime.getFullYear();
+    gottenMonth = gottenDateTime.getMonth() + 1;
+}
+
+function ccn_calendar_calendar_Render() {
+
+}
+
+function ccn_calendar_calendar_AnalyseEvent() {
+    
+}
+
+function ccn_calendar_calendar_Today() {
+    var nowtime = new Date();
+    ccn_calendar_datetimepicker_Set(4, nowtime);
+    ccn_calendar_calendar_Refresh();
+}
+
+function ccn_calendar_calendar_Add() {
+    $('#ccn-calendar-modalEvent').addClass('is-active');
+}
+
+function ccn_calendar_calendar_ItemEdit() {
+    $('#ccn-calendar-modalEvent').addClass('is-active');
+}
+
+function ccn_calendar_calendar_ItemUpdate() {
+    $('#ccn-calendar-modalEvent').removeClass('is-active');
+}
+
+function ccn_calendar_calendar_ItemCancel() {
+    $('#ccn-calendar-modalEvent').removeClass('is-active');
+}
+
+function ccn_calendar_calendar_DeployEventModal() {
+
+}
+
+// return undefined to indicate an error
+function ccn_calendar_calendar_GetEventModal() {
+
 }
 
 // ================== collection

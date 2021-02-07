@@ -40,3 +40,7 @@ function SetApiToken(value) {
 function LineBreaker2Br(strl) {
     return $('<div>').text(strl).html().replace(/\n/g,'<br />');
 }
+
+function IsUndefinedOrEmpty(data) {
+    return (typeof(data) == 'undefined' || data == "");
+}
