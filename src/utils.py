@@ -42,4 +42,10 @@ def GetTokenExpireOn():
 
 def Str2Bool(strl):
     return strl.lower() == 'true'
+
+def GCD(a, b):
+    return math.gcd(a, b)
+
+def LCM(a, b):
+    return a * b / GCD(a, b)
         

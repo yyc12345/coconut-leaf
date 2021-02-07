@@ -278,8 +278,15 @@ class CalendarDatabase(object):
             analyseData[7] = cache
 
         if reAnalyseLoop:
-            pass
-            # todo: finish this, re-compute loop data and upload it into list
+            # re-compute loop data and upload it into list
+            sqlList.append('[ccn_loopDateTimeStart] = ?')
+            argumentsList.append(analyseData[5])
+            sqlList.append('[ccn_loopDateTimeEnd] = ?')
+            argumentsList.append(dt.ResolveLoopStr(
+                analyseData[8],
+                analyseData[5],
+                analyseData[7]
+            ))
 
         # execute
         argumentsList.append(uuid)
@@ -296,9 +303,9 @@ class CalendarDatabase(object):
         newuuid = utils.GenerateUUID()
         lastupdate = utils.GenerateUUID()
 
-        # todo: analyse loopRules and output following 2 fileds.
+        # analyse loopRules and output following 2 fileds.
         loopDateTimeStart = eventDateTimeStart
-        loopDateTimeEnd = eventDateTimeEnd
+        loopDateTimeEnd = dt.ResolveLoopStr(loopRules, eventDateTimeStart, timezoneOffset)
 
         self.cursor.execute('INSERT INTO calendar VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);', 
         (newuuid,
