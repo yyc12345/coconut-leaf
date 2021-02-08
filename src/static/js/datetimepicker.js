@@ -5,13 +5,13 @@ function ccn_datetimepicker_Init() {
     .attr('max', ccn_datetime_MAX_YEAR)
     .attr('step', 1)
     .val(nowtime.getFullYear())
-    .bind('propertychange', ccn_datetimepicker_Sync);
+    .bind('input propertychange', ccn_datetimepicker_Sync);
 
     $('.datetimepicker-month').attr('min', 1)
     .attr('max', 12)
     .attr('step', 1)
     .val(nowtime.getMonth() + 1)
-    .bind('propertychange', ccn_datetimepicker_Sync);
+    .bind('input propertychange', ccn_datetimepicker_Sync);
 
     $('.datetimepicker-day').attr('min', 1)
     .attr('step', 1)
@@ -37,8 +37,8 @@ function ccn_datetimepicker_Sync() {
 }
 
 function ccn_datetimepicker_SyncEx(pickerIndex) {
-    year = $('.datetimepicker-year[datetimepicker=' + pickerIndex + ']').val();
-    month = $('.datetimepicker-month[datetimepicker=' + pickerIndex + ']').val();
+    year = parseInt($('.datetimepicker-year[datetimepicker=' + pickerIndex + ']').val());
+    month = parseInt($('.datetimepicker-month[datetimepicker=' + pickerIndex + ']').val());
 
     dayDOM = $('.datetimepicker-day[datetimepicker=' + pickerIndex + ']');
     if (typeof(year) == 'undefined' || typeof(month) == 'undefined') {
@@ -70,5 +70,5 @@ function ccn_datetimepicker_Get(pickerIndex) {
     if (IsUndefinedOrEmpty(hour)) hour = 0;
     if (IsUndefinedOrEmpty(minute)) minute = 0;
 
-    return new Date(year, month - 1, day, hour, minute, 0, 0);
+    return new Date(year, parseInt(month) - 1, day, hour, minute, 0, 0);
 }

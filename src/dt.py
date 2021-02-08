@@ -171,7 +171,7 @@ precompiledLoopRules = (
 )
 
 precompiledLoopStopRules = {
-    'infinity': re.compile(r'F'),
+    'infinity': re.compile(r'^F$'),
     'datetime': re.compile(r'^D([1-9]\d*|0)$'),
     'times': re.compile(r'^T([1-9]\d*)$')
 }

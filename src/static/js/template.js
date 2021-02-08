@@ -8,6 +8,7 @@ var ccn_template_displayOwnedItem = undefined;
 var ccn_template_displaySharedItem = undefined;
 var ccn_template_userItem = undefined;
 var ccn_template_todoItem = undefined;
+var ccn_template_optionItem = undefined;
 
 function ccn_template_Load() {
     $.ajax({
@@ -104,6 +105,13 @@ function ccn_template_Load() {
                 }
             });
         case ccn_pages_enumPages.event:
-            break;
+            $.ajax({
+                url: $("#jsrender-tmpl-optionItem").attr('src'),
+                type: "GET",
+                async: false,
+                success: function (data) {
+                    ccn_template_optionItem = $.templates(data);
+                }
+            });
     }
 }

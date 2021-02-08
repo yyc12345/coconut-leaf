@@ -44,3 +44,9 @@ function LineBreaker2Br(strl) {
 function IsUndefinedOrEmpty(data) {
     return (typeof(data) == 'undefined' || data == "");
 }
+
+function SmarterShowHide(boolean, element) {
+    if (typeof(element) == 'undefined') return;
+    if (boolean) element.show();
+    else element.hide();
+}
