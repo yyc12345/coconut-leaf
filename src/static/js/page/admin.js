@@ -46,10 +46,10 @@ function ccn_admin_profile_ChangePassword() {
 
     var result = ccn_api_common_changePassword(newpassword);
     if(result) {
-        ccn_messagebox_Show($.i18n.prop("ccn-js-success"));
+        ccn_messagebox_Show($.i18n.prop("ccn-i18n-js-success"));
         $('#ccn-admin-profile-inputPassword').val('');
     } else
-        ccn_messagebox_Show($.i18n.prop("ccn-js-fail-update"));
+        ccn_messagebox_Show($.i18n.prop("ccn-i18n-js-fail-update"));
     
 }
 
@@ -80,10 +80,10 @@ function ccn_admin_userList_RenderItem(item, index, listDOM) {
     ccn_admin_userList_ChangeDisplayMode(uuid, false, item[1])
 
     // bind event
-    $("#ccn-admin-userItem-btnEdit-" + uuid).click(ccn_admin_userList_ItemEdit);
-    $("#ccn-admin-userItem-btnDelete-" + uuid).click(ccn_admin_userList_ItemDelete);
-    $("#ccn-admin-userItem-btnUpdate-" + uuid).click(ccn_admin_userList_ItemUpdate);
-    $("#ccn-admin-userItem-btnCancelUpdate-" + uuid).click(ccn_admin_userList_ItemCancelUpdate);
+    $("#ccn-userItem-btnEdit-" + uuid).click(ccn_admin_userList_ItemEdit);
+    $("#ccn-userItem-btnDelete-" + uuid).click(ccn_admin_userList_ItemDelete);
+    $("#ccn-userItem-btnUpdate-" + uuid).click(ccn_admin_userList_ItemUpdate);
+    $("#ccn-userItem-btnCancelUpdate-" + uuid).click(ccn_admin_userList_ItemCancelUpdate);
 }
 
 function ccn_admin_userList_RenderCacheList() {
@@ -104,28 +104,28 @@ function ccn_admin_userList_RenderCacheList() {
 function ccn_admin_userList_ChangeDisplayMode(uuid, isEdit, isAdmin) {
     if (typeof(isAdmin) != 'undefined') {
         if (isAdmin)
-            $("#ccn-admin-userItem-iconIsAdmin-" + uuid).show();
+            $("#ccn-userItem-iconIsAdmin-" + uuid).show();
         else
-            $("#ccn-admin-userItem-iconIsAdmin-" + uuid).hide();
+            $("#ccn-userItem-iconIsAdmin-" + uuid).hide();
     }
 
     if (typeof(isEdit) != 'undefined') {
         if (isEdit) {
-            $("#ccn-admin-userItem-btnEdit-" + uuid).hide();
-            $("#ccn-admin-userItem-btnDelete-" + uuid).hide();
-            $("#ccn-admin-userItem-btnUpdate-" + uuid).show();
-            $("#ccn-admin-userItem-btnCancelUpdate-" + uuid).show();
+            $("#ccn-userItem-btnEdit-" + uuid).hide();
+            $("#ccn-userItem-btnDelete-" + uuid).hide();
+            $("#ccn-userItem-btnUpdate-" + uuid).show();
+            $("#ccn-userItem-btnCancelUpdate-" + uuid).show();
 
-            $("#ccn-admin-userItem-boxPassword-" + uuid).show();
-            $("#ccn-admin-userItem-boxIsAdmin-" + uuid).show();
+            $("#ccn-userItem-boxPassword-" + uuid).show();
+            $("#ccn-userItem-boxIsAdmin-" + uuid).show();
         } else {
-            $("#ccn-admin-userItem-btnEdit-" + uuid).show();
-            $("#ccn-admin-userItem-btnDelete-" + uuid).show();
-            $("#ccn-admin-userItem-btnUpdate-" + uuid).hide();
-            $("#ccn-admin-userItem-btnCancelUpdate-" + uuid).hide();
+            $("#ccn-userItem-btnEdit-" + uuid).show();
+            $("#ccn-userItem-btnDelete-" + uuid).show();
+            $("#ccn-userItem-btnUpdate-" + uuid).hide();
+            $("#ccn-userItem-btnCancelUpdate-" + uuid).hide();
             
-            $("#ccn-admin-userItem-boxPassword-" + uuid).hide();
-            $("#ccn-admin-userItem-boxIsAdmin-" + uuid).hide();
+            $("#ccn-userItem-boxPassword-" + uuid).hide();
+            $("#ccn-userItem-boxIsAdmin-" + uuid).hide();
         }
     }
 }
@@ -142,7 +142,7 @@ function ccn_admin_userList_Add() {
 
     var result = ccn_api_admin_add(username);
     if (typeof(result) == 'undefined') {
-        ccn_messagebox_Show($.i18n.prop("ccn-js-fail-add"));
+        ccn_messagebox_Show($.i18n.prop("ccn-i18n-js-fail-add"));
     } else {
         // render
         var index = ccn_admin_userListCache.push(result) - 1;
@@ -156,8 +156,8 @@ function ccn_admin_userList_ItemEdit() {
     var uuid = $(this).attr("uuid");
 
     // copy isAdmin to checkbox and clean password box
-    $('#ccn-admin-userItem-inputIsAdmin-' + uuid).prop("checked", ccn_admin_userListCache[uuid][1]);
-    $('#ccn-admin-userItem-inputPassword-' + uuid).val('');
+    $('#ccn-userItem-inputIsAdmin-' + uuid).prop("checked", ccn_admin_userListCache[uuid][1]);
+    $('#ccn-userItem-inputPassword-' + uuid).val('');
 
     // switch to edit mode
     ccn_admin_userList_ChangeDisplayMode(uuid, true, undefined);
@@ -170,17 +170,17 @@ function ccn_admin_userList_ItemDelete() {
 
     if(!result) {
         // fail
-        ccn_messagebox_Show($.i18n.prop("ccn-js-fail-delete"));
+        ccn_messagebox_Show($.i18n.prop("ccn-i18n-js-fail-delete"));
     } else {
         // remove body
-        $("#ccn-admin-userItem-" + uuid).remove();
+        $("#ccn-userItem-" + uuid).remove();
     }
 }
 
 function ccn_admin_userList_ItemUpdate() {
     var uuid = $(this).attr("uuid");
-    var newpassword = $('#ccn-admin-userItem-inputPassword-' + uuid).val();
-    var isAdmin = $('#ccn-admin-userItem-inputIsAdmin-' + uuid).prop("checked");
+    var newpassword = $('#ccn-userItem-inputPassword-' + uuid).val();
+    var isAdmin = $('#ccn-userItem-inputIsAdmin-' + uuid).prop("checked");
 
     var result = ccn_api_admin_update(
         ccn_admin_userListCache[uuid][0],
@@ -189,7 +189,7 @@ function ccn_admin_userList_ItemUpdate() {
 
     if (!result) {
         // fail
-        ccn_messagebox_Show($.i18n.prop("ccn-js-fail-update"));
+        ccn_messagebox_Show($.i18n.prop("ccn-i18n-js-fail-update"));
     } else {
         // safely update data
         ccn_admin_userListCache[uuid][1] = isAdmin

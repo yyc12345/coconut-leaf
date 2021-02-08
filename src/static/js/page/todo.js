@@ -64,32 +64,32 @@ function ccn_todo_RenderCacheList() {
         ccn_todo_ChangeDisplayMode(uuid, false);
 
         // bind event
-        $("#ccn-todo-todoItem-btnEdit-" + uuid).click(ccn_todo_ItemEdit);
-        $("#ccn-todo-todoItem-btnDelete-" + uuid).click(ccn_todo_ItemDelete);
-        $("#ccn-todo-todoItem-btnUpdate-" + uuid).click(ccn_todo_ItemUpdate);
-        $("#ccn-todo-todoItem-btnCancelUpdate-" + uuid).click(ccn_todo_ItemCancelUpdate);
+        $("#ccn-todoItem-btnEdit-" + uuid).click(ccn_todo_ItemEdit);
+        $("#ccn-todoItem-btnDelete-" + uuid).click(ccn_todo_ItemDelete);
+        $("#ccn-todoItem-btnUpdate-" + uuid).click(ccn_todo_ItemUpdate);
+        $("#ccn-todoItem-btnCancelUpdate-" + uuid).click(ccn_todo_ItemCancelUpdate);
     }
 }
 
 function ccn_todo_ChangeDisplayMode(uuid, isEdit) {
     if(isEdit) {
         // 4 buttons
-        $("#ccn-todo-todoItem-btnEdit-" + uuid).hide();
-        $("#ccn-todo-todoItem-btnDelete-" + uuid).hide();
-        $("#ccn-todo-todoItem-btnUpdate-" + uuid).show();
-        $("#ccn-todo-todoItem-btnCancelUpdate-" + uuid).show();
+        $("#ccn-todoItem-btnEdit-" + uuid).hide();
+        $("#ccn-todoItem-btnDelete-" + uuid).hide();
+        $("#ccn-todoItem-btnUpdate-" + uuid).show();
+        $("#ccn-todoItem-btnCancelUpdate-" + uuid).show();
 
         // 2 elements
-        $("#ccn-todo-todoItem-p-" + uuid).hide();
-        $("#ccn-todo-todoItem-textarea-" + uuid).show();
+        $("#ccn-todoItem-p-" + uuid).hide();
+        $("#ccn-todoItem-textarea-" + uuid).show();
     } else {
-        $("#ccn-todo-todoItem-btnEdit-" + uuid).show();
-        $("#ccn-todo-todoItem-btnDelete-" + uuid).show();
-        $("#ccn-todo-todoItem-btnUpdate-" + uuid).hide();
-        $("#ccn-todo-todoItem-btnCancelUpdate-" + uuid).hide();
+        $("#ccn-todoItem-btnEdit-" + uuid).show();
+        $("#ccn-todoItem-btnDelete-" + uuid).show();
+        $("#ccn-todoItem-btnUpdate-" + uuid).hide();
+        $("#ccn-todoItem-btnCancelUpdate-" + uuid).hide();
 
-        $("#ccn-todo-todoItem-p-" + uuid).show();
-        $("#ccn-todo-todoItem-textarea-" + uuid).hide();
+        $("#ccn-todoItem-p-" + uuid).show();
+        $("#ccn-todoItem-textarea-" + uuid).hide();
     }
 
 }
@@ -104,7 +104,7 @@ function ccn_todo_Add() {
     var result = ccn_api_todo_add();
     if (typeof(result) == 'undefined') {
         // fail
-        ccn_messagebox_Show($.i18n.prop("ccn-js-fail-add"));
+        ccn_messagebox_Show($.i18n.prop("ccn-i18n-js-fail-add"));
     } else {
         // add into cache
         ccn_todo_todoListCache[result[0]] = result;
@@ -121,10 +121,10 @@ function ccn_todo_Add() {
         ccn_todo_ChangeDisplayMode(uuid, false);
 
         // bind event
-        $("#ccn-todo-todoItem-btnEdit-" + uuid).click(ccn_todo_ItemEdit);
-        $("#ccn-todo-todoItem-btnDelete-" + uuid).click(ccn_todo_ItemDelete);
-        $("#ccn-todo-todoItem-btnUpdate-" + uuid).click(ccn_todo_ItemUpdate);
-        $("#ccn-todo-todoItem-btnCancelUpdate-" + uuid).click(ccn_todo_ItemCancelUpdate);
+        $("#ccn-todoItem-btnEdit-" + uuid).click(ccn_todo_ItemEdit);
+        $("#ccn-todoItem-btnDelete-" + uuid).click(ccn_todo_ItemDelete);
+        $("#ccn-todoItem-btnUpdate-" + uuid).click(ccn_todo_ItemUpdate);
+        $("#ccn-todoItem-btnCancelUpdate-" + uuid).click(ccn_todo_ItemCancelUpdate);
     }
 }
 
@@ -132,7 +132,7 @@ function ccn_todo_ItemEdit() {
     var uuid = $(this).attr("uuid");
 
     // copy current data to textarea
-    $("#ccn-todo-todoItem-textarea-" + uuid).val(
+    $("#ccn-todoItem-textarea-" + uuid).val(
         ccn_todo_todoListCache[uuid][2]
     );
 
@@ -150,17 +150,17 @@ function ccn_todo_ItemDelete() {
 
     if(!result) {
         // fail
-        ccn_messagebox_Show($.i18n.prop("ccn-js-fail-delete"));
+        ccn_messagebox_Show($.i18n.prop("ccn-i18n-js-fail-delete"));
     } else {
         // remove body
-        $("#ccn-todo-todoItem-" + uuid).remove();
+        $("#ccn-todoItem-" + uuid).remove();
     }
 }
 
 function ccn_todo_ItemUpdate() {
     var uuid = $(this).attr("uuid");
 
-    var newData = $("#ccn-todo-todoItem-textarea-" + uuid).val();
+    var newData = $("#ccn-todoItem-textarea-" + uuid).val();
     var result = ccn_api_todo_update(
         uuid, 
         newData, 
@@ -169,12 +169,12 @@ function ccn_todo_ItemUpdate() {
 
     if (typeof(result) == 'undefined') {
         // fail
-        ccn_messagebox_Show($.i18n.prop("ccn-js-fail-update"));
+        ccn_messagebox_Show($.i18n.prop("ccn-i18n-js-fail-update"));
     } else {
         // safely update data & lastChanged and control
         ccn_todo_todoListCache[uuid][2] = newData;
         ccn_todo_todoListCache[uuid][3] = result;
-        $("#ccn-todo-todoItem-p-" + uuid).html(LineBreaker2Br(newData));
+        $("#ccn-todoItem-p-" + uuid).html(LineBreaker2Br(newData));
 
         // switch to normal mode
         ccn_todo_ChangeDisplayMode(uuid, false);
@@ -184,7 +184,7 @@ function ccn_todo_ItemUpdate() {
 function ccn_todo_ItemCancelUpdate() {
     var uuid = $(this).attr("uuid");
     // clean data
-    $("#ccn-todo-todoItem-textarea-" + uuid).val("");
+    $("#ccn-todoItem-textarea-" + uuid).val("");
     // switch to normal mode
     ccn_todo_ChangeDisplayMode(uuid, false);
 }

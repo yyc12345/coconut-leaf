@@ -4,7 +4,8 @@ var ccn_template_calendarItem = undefined;
 var ccn_template_scheduleItem = undefined;
 var ccn_template_ownedItem = undefined;
 var ccn_template_sharingItem = undefined;
-var ccn_template_sharedItem = undefined;
+var ccn_template_displayOwnedItem = undefined;
+var ccn_template_displaySharedItem = undefined;
 var ccn_template_userItem = undefined;
 var ccn_template_todoItem = undefined;
 
@@ -47,27 +48,19 @@ function ccn_template_Load() {
                 }
             });
             $.ajax({
-                url: $("#jsrender-tmpl-ownedItem").attr('src'),
+                url: $("#jsrender-tmpl-displayOwnedItem").attr('src'),
                 type: "GET",
                 async: false,
                 success: function (data) {
-                    ccn_template_ownedItem = $.templates(data);
+                    ccn_template_displayOwnedItem = $.templates(data);
                 }
             });
             $.ajax({
-                url: $("#jsrender-tmpl-sharingItem").attr('src'),
+                url: $("#jsrender-tmpl-displaySharedItem").attr('src'),
                 type: "GET",
                 async: false,
                 success: function (data) {
-                    ccn_template_sharingItem = $.templates(data);
-                }
-            });
-            $.ajax({
-                url: $("#jsrender-tmpl-sharedItem").attr('src'),
-                type: "GET",
-                async: false,
-                success: function (data) {
-                    ccn_template_sharedItem = $.templates(data);
+                    ccn_template_displaySharedItem = $.templates(data);
                 }
             });
             break;
@@ -92,6 +85,25 @@ function ccn_template_Load() {
             });
             break;
         case ccn_pages_enumPages.login:
+            break;
+        case ccn_pages_enumPages.collection:
+            $.ajax({
+                url: $("#jsrender-tmpl-ownedItem").attr('src'),
+                type: "GET",
+                async: false,
+                success: function (data) {
+                    ccn_template_ownedItem = $.templates(data);
+                }
+            });
+            $.ajax({
+                url: $("#jsrender-tmpl-sharingItem").attr('src'),
+                type: "GET",
+                async: false,
+                success: function (data) {
+                    ccn_template_sharingItem = $.templates(data);
+                }
+            });
+        case ccn_pages_enumPages.event:
             break;
     }
 }

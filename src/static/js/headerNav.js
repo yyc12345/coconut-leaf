@@ -6,6 +6,7 @@ function ccn_headerNav_LoggedRefresh() {
     if (ccn_api_common_tokenValid()) {
         // logged, show all nav button and logout button
         $("#ccn-header-nav-home").show();
+        $("#ccn-header-nav-collection").show();
         $("#ccn-header-nav-calendar").show();
         $("#ccn-header-nav-todo").show();
         $("#ccn-header-nav-admin").show();
@@ -14,6 +15,7 @@ function ccn_headerNav_LoggedRefresh() {
         $("#ccn-header-user-logout").show();
     } else {
         $("#ccn-header-nav-home").show();
+        $("#ccn-header-nav-collection").hide();
         $("#ccn-header-nav-calendar").hide();
         $("#ccn-header-nav-todo").hide();
         $("#ccn-header-nav-admin").hide();
@@ -42,7 +44,7 @@ function ccn_headerNav_BindEvents() {
             window.location.href = '/web/home';
             return;
     
-        } else ccn_messagebox_Show($.i18n.prop("ccn-js-fail-logout"));
+        } else ccn_messagebox_Show($.i18n.prop("ccn-i18n-js-fail-logout"));
     });
 
     // bind burger menu

@@ -1,0 +1,11 @@
+div.control-list {
+    display: flex; 
+    flex-flow: row;
+    flex-wrap: wrap;
+}
+
+div.control-list > * {
+    margin-right: 0.75rem;
+    margin-bottom: 0.75rem;
+    margin-left: 0 !important;
+}

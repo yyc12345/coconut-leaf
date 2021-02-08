@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title id="ccn-pageName"></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/js/all.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.js"></script>
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/jquery-i18n-properties@1.2.7/jquery.i18n.properties.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jsrender@1.0.10/jsrender.min.js"></script>
+
+    <!-- if is empty, mean add, otherwise, it is a uuid-->
+    <meta name="uuid" content="{{uuidPath}}">
+
+    <script type="text/x-jsrender" id="jsrender-tmpl-headerNav" src="/static/tmpl/headerNav.tmpl"></script>
+    <script type="text/x-jsrender" id="jsrender-tmpl-messagebox" src="/static/tmpl/messagebox.tmpl"></script>
+
+    <script type="text/javascript" src="/static/js/localStorageAssist.js"></script>
+    <script type="text/javascript" src="/static/js/datetime.js"></script>
+    <script type="text/javascript" src="/static/js/i18n.js"></script>
+    <script type="text/javascript" src="/static/js/utils.js"></script>
+    <script type="text/javascript" src="/static/js/api.js"></script>
+    <script type="text/javascript" src="/static/js/template.js"></script>
+    <script type="text/javascript" src="/static/js/headerNav.js"></script>
+    <script type="text/javascript" src="/static/js/messagebox.js"></script>
+    <script type="text/javascript" src="/static/js/datetimepicker.js"></script>
+
+    <script type="text/javascript" src="/static/js/page/event.js"></script>
+    <link rel="stylesheet" href="/static/css/event.css">
+</head>
+
+<body>
+
+    <!-- add is-active in class to show this-->
+    <div style="margin-top: 20px;">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p i18n-name="ccn-i18n-event-header" class="modal-card-title"></p>
+                <a id="ccn-event-btnClose" class="delete" aria-label="close"></a>
+            </header>
+            <div class="modal-card-body" style="word-break: break-all;">
+                <div class="field">
+                    <label class="label" i18n-name="ccn-i18n-event-title"></label>
+                    <div class="control">
+                        <input id="ccn-event-inputTitle" class="input" type="text">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label" i18n-name="ccn-i18n-event-description"></label>
+                    <div class="control">
+                        <textarea id="ccn-event-inputDescription" class="textarea"></textarea>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label" i18n-name="ccn-i18n-event-collection"></label>
+                    <div class="control">
+                        <div class="select">
+                            <select id="ccn-event-inputCollection"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <label class="label" i18n-name="ccn-i18n-event-startDateTime"></label>
+                <div class="control-list">
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-i18n-universal-text-year"></label>
+                        <div class="control">
+                            <input datetimepicker="1" class="input datetimepicker-year" type="number">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-i18n-universal-text-month"></label>
+                        <div class="control">
+                            <input datetimepicker="1" class="input datetimepicker-month" type="number">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-i18n-universal-text-day"></label>
+                        <div class="control">
+                            <input datetimepicker="1" class="input datetimepicker-day" type="number">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-i18n-universal-text-hour"></label>
+                        <div class="control">
+                            <input datetimepicker="1" class="input datetimepicker-hour" type="number">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-i18n-universal-text-minute"></label>
+                        <div class="control">
+                            <input datetimepicker="1" class="input datetimepicker-minute" type="number">
+                        </div>
+                    </div>
+                </div>
+
+                <label class="label" i18n-name="ccn-i18n-event-endDateTime"></label>
+                <div class="control-list">
+                    <div class="control">
+                        <a id="ccn-event-btnSpot" class="button is-link" i18n-name="ccn-i18n-event-btnSpot"></a>
+                    </div>
+                    <div class="control">
+                        <a id="ccn-event-btnFullDay" class="button is-link" i18n-name="ccn-i18n-event-btnFullDay"></a>
+                    </div>
+                </div>
+                <div class="control-list">
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-i18n-universal-text-year"></label>
+                        <div class="control">
+                            <input datetimepicker="2" class="input datetimepicker-year" type="number">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-i18n-universal-text-month"></label>
+                        <div class="control">
+                            <input datetimepicker="2" class="input datetimepicker-month" type="number">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-i18n-universal-text-day"></label>
+                        <div class="control">
+                            <input datetimepicker="2" class="input datetimepicker-day" type="number">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-i18n-universal-text-hour"></label>
+                        <div class="control">
+                            <input datetimepicker="2" class="input datetimepicker-hour" type="number">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-i18n-universal-text-minute"></label>
+                        <div class="control">
+                            <input datetimepicker="2" class="input datetimepicker-minute" type="number">
+                        </div>
+                    </div>
+                </div>
+
+                <label class="label" i18n-name="ccn-i18n-event-loop"></label>
+                <div class="control-list">
+                    <label class="radio">
+                        <input id="ccn-event-radioLoopNever" type="radio" name="loop-method">
+                        <span i18n-name="ccn-i18n-event-loop-never"></span>
+                    </label>
+                    <label class="radio">
+                        <input id="ccn-event-radioLoopDay" type="radio" name="loop-method">
+                        <span i18n-name="ccn-i18n-event-loop-day"></span>
+                    </label>
+                    <label class="radio">
+                        <input id="ccn-event-radioLoopWeek" type="radio" name="loop-method">
+                        <span i18n-name="ccn-i18n-event-loop-week"></span>
+                    </label>
+                    <label class="radio">
+                        <input id="ccn-event-radioLoopMonth" type="radio" name="loop-method">
+                        <span i18n-name="ccn-i18n-event-loop-month"></span>
+                    </label>
+                    <label class="radio">
+                        <input id="ccn-event-radioLoopYear" type="radio" name="loop-method">
+                        <span i18n-name="ccn-i18n-event-loop-year"></span>
+                    </label>
+                </div>
+                <div id="ccn-event-boxLoopDay">
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-i18n-event-loopDay-span"></label>
+                        <div class="control">
+                            <input id="ccn-event-loopDay-inputSpan" class="input spanpicker" type="number">
+                        </div>
+                    </div>
+                </div>
+                <div id="ccn-event-boxLoopWeek">
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-i18n-event-loopWeek-span"></label>
+                        <div class="control">
+                            <input id="ccn-event-loopWeek-inputSpan" class="input spanpicker" type="number">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-i18n-event-loopWeek-option"></label>
+                        <div class="control-list">
+                            <label class="checkbox">
+                                <input id="ccn-event-loopWeek-check1" type="checkbox">
+                                <span i18n-name="ccn-i18n-universal-week-1"></span>
+                            </label>
+                            <label class="checkbox">
+                                <input id="ccn-event-loopWeek-check2" type="checkbox">
+                                <span i18n-name="ccn-i18n-universal-week-2"></span>
+                            </label>
+                            <label class="checkbox">
+                                <input id="ccn-event-loopWeek-check3" type="checkbox">
+                                <span i18n-name="ccn-i18n-universal-week-3"></span>
+                            </label>
+                            <label class="checkbox">
+                                <input id="ccn-event-loopWeek-check4" type="checkbox">
+                                <span i18n-name="ccn-i18n-universal-week-4"></span>
+                            </label>
+                            <label class="checkbox">
+                                <input id="ccn-event-loopWeek-check5" type="checkbox">
+                                <span i18n-name="ccn-i18n-universal-week-5"></span>
+                            </label>
+                            <label class="checkbox">
+                                <input id="ccn-event-loopWeek-check6" type="checkbox">
+                                <span i18n-name="ccn-i18n-universal-week-6"></span>
+                            </label>
+                            <label class="checkbox">
+                                <input id="ccn-event-loopWeek-check7" type="checkbox">
+                                <span i18n-name="ccn-i18n-universal-week-7"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div id="ccn-event-boxLoopMonth">
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-i18n-event-loopMonth-span"></label>
+                        <div class="control">
+                            <input id="ccn-event-loopMonth-inputSpan" class="input spanpicker" type="number">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-i18n-event-loopWeek-option"></label>
+                        <div class="control-list">
+                            <label class="radio">
+                                <input id="ccn-event-loopMonth-radioA" type="radio" name="month-loop-method">
+                                <span id="ccn-event-loopMonth-textA"></span>
+                            </label>
+                            <label class="radio">
+                                <input id="ccn-event-loopMonth-radioB" type="radio" name="month-loop-method">
+                                <span id="ccn-event-loopMonth-textB"></span>
+                            </label>
+                            <label class="radio">
+                                <input id="ccn-event-loopMonth-radioC" type="radio" name="month-loop-method">
+                                <span id="ccn-event-loopMonth-textC"></span>
+                            </label>
+                            <label class="radio">
+                                <input id="ccn-event-loopMonth-radioD" type="radio" name="month-loop-method">
+                                <span id="ccn-event-loopMonth-textD"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div id="ccn-event-boxLoopYear">
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-i18n-event-loopYear-span"></label>
+                        <div class="control">
+                            <input id="ccn-event-loopYear-inputSpan" class="input spanpicker" type="number">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="ccn-event-boxLoopStop">
+                    <div class="field">
+                        <label class="label" i18n-name="ccn-i18n-event-loopStop"></label>
+                        <div class="control-list">
+                            <label class="radio">
+                                <input id="ccn-event-loopStop-radioForever" type="radio" name="loop-end">
+                                <span i18n-name="ccn-i18n-event-loopStop-forever"></span>
+                            </label>
+                            <label class="radio">
+                                <input id="ccn-event-loopStop-radioDateTime" type="radio" name="loop-end">
+                                <span i18n-name="ccn-i18n-event-loopStop-datetime"></span>
+                            </label>
+                            <label class="radio">
+                                <input id="ccn-event-loopStop-radioTimes" type="radio" name="loop-end">
+                                <span i18n-name="ccn-i18n-event-loopStop-times"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="ccn-event-boxLoopStopDateTime">
+                        <div class="field">
+                            <div class="control-list">
+                                <div class="field">
+                                    <label class="label" i18n-name="ccn-i18n-universal-text-year"></label>
+                                    <div class="control">
+                                        <input datetimepicker="3" class="input datetimepicker-year" type="number">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label" i18n-name="ccn-i18n-universal-text-month"></label>
+                                    <div class="control">
+                                        <input datetimepicker="3" class="input datetimepicker-month" type="number">
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="label" i18n-name="ccn-i18n-universal-text-day"></label>
+                                    <div class="control">
+                                        <input datetimepicker="3" class="input datetimepicker-day" type="number">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                    
+                    </div>
+                    <div id="ccn-event-boxLoopStopTimes">
+                        <div class="field">
+                            <div class="control">
+                                <input id="ccn-event-loopStop-inputTimes" class="input" type="text">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="ccn-event-boxStrictMode" class="field">
+                    <label class="label" i18n-name="ccn-i18n-event-strictMode-title"></label>
+                    <p i18n-name="ccn-i18n-event-strictMode-warning"></p>
+                    <div class="control-list">
+                        <label class="radio">
+                            <input id="ccn-event-strictMode-radioStrict" type="radio" name="timezone">
+                            <span i18n-name="ccn-i18n-event-strictMode-strict"></span>
+                        </label>
+                        <label class="radio">
+                            <input id="ccn-event-strictMode-radioRough" type="radio" name="timezone">
+                            <span i18n-name="ccn-i18n-event-strictMode-rough"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="ccn-event-boxTimezone" class="field">
+                    <label class="label" i18n-name="ccn-i18n-event-timezone-title"></label>
+                    <p i18n-name="ccn-i18n-event-timezone-warning"></p>
+                    <div class="control-list">
+                        <label class="radio">
+                            <input id="ccn-event-timezone-radioKeep" type="radio" name="timezone">
+                            <span i18n-name="ccn-i18n-event-timezone-keep"></span>
+                        </label>
+                        <label class="radio">
+                            <input id="ccn-event-timezone-radioReplace" type="radio" name="timezone">
+                            <span i18n-name="ccn-i18n-event-timezone-replace"></span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+
+            <footer class="modal-card-foot">
+                <a id="ccn-event-btnSubmit" class="button is-success" i18n-name="ccn-i18n-event-btnSubmit"></a>
+                <a id="ccn-event-btnCancel" class="button" i18n-name="ccn-i18n-event-btnCancel"></a>
+            </footer>
+        </div>
+    </div>
+
+</body>
+
+</html>

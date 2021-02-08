@@ -66,6 +66,25 @@ def web_loginHandle():
     # UpdateStaticResources()
     return render_template("login.html")
 
+@app.route('/web/collection', methods=['GET'])
+def web_collectionHandle():
+    # UpdateStaticResources()
+    return render_template("collection.html")
+
+@app.route('/web/eventAdd', methods=['GET'])
+def web_eventAddHandle():
+    # UpdateStaticResources()
+    return render_template("event.html",
+        uuidPath=''
+    )
+
+@app.route('/web/eventUpdate/<path:uuidPath>', methods=['GET'])
+def web_eventUpdateHandle(uuidPath):
+    # UpdateStaticResources()
+    return render_template("event.html",
+        uuidPath = uuidPath
+    )
+
 # ============================================= query page route
 
 # ================================ common

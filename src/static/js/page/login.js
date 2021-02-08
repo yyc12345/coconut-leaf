@@ -40,8 +40,8 @@ function ccn_login_startLogin() {
             // jump into home page again
             window.location.href = '/web/home';
 
-        } else ccn_messagebox_Show($.i18n.prop("ccn-js-fail-login"));
-    } else ccn_messagebox_Show($.i18n.prop("ccn-js-fail-login"));
+        } else ccn_messagebox_Show($.i18n.prop("ccn-i18n-js-fail-login"));
+    } else ccn_messagebox_Show($.i18n.prop("ccn-i18n-js-fail-login"));
     */
    if (ccn_api_common_webLogin(username, password)) {
         // ok, logged
@@ -49,7 +49,7 @@ function ccn_login_startLogin() {
         window.location.href = '/web/home';
         return;
 
-    } else ccn_messagebox_Show($.i18n.prop("ccn-js-fail-login"));
+    } else ccn_messagebox_Show($.i18n.prop("ccn-i18n-js-fail-login"));
 
     // retore ui
     $("#ccn-login-form-login").removeAttr("disabled");

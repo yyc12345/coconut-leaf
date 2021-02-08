@@ -5,7 +5,9 @@ var ccn_pages_enumPages = {
     calendar: 1,
     todo: 2,
     admin: 3,
-    login: 4
+    login: 4,
+    collection: 5,
+    event: 6
 };
 var ccn_pages_currentPage = ccn_pages_enumPages.home;
 
@@ -46,19 +48,25 @@ function ccn_i18n_ApplyLanguage() {
     //set title
     switch(ccn_pages_currentPage) {
         case ccn_pages_enumPages.home:
-            $('#ccn-pageName').html($.i18n.prop('ccn-pageName-home'));
+            $('#ccn-pageName').html($.i18n.prop('ccn-i18n-pageName-home'));
             break;
         case ccn_pages_enumPages.calendar:
-            $('#ccn-pageName').html($.i18n.prop('ccn-pageName-calendar'));
+            $('#ccn-pageName').html($.i18n.prop('ccn-i18n-pageName-calendar'));
             break;
         case ccn_pages_enumPages.todo:
-            $('#ccn-pageName').html($.i18n.prop('ccn-pageName-todo'));
+            $('#ccn-pageName').html($.i18n.prop('ccn-i18n-pageName-todo'));
             break;
         case ccn_pages_enumPages.admin:
-            $('#ccn-pageName').html($.i18n.prop('ccn-pageName-admin'));
+            $('#ccn-pageName').html($.i18n.prop('ccn-i18n-pageName-admin'));
             break;
         case ccn_pages_enumPages.login:
-            $('#ccn-pageName').html($.i18n.prop('ccn-pageName-login'));
+            $('#ccn-pageName').html($.i18n.prop('ccn-i18n-pageName-login'));
+            break;
+        case ccn_pages_enumPages.collection:
+            $('#ccn-pageName').html($.i18n.prop('ccn-i18n-pageName-collection'));
+            break;
+        case ccn_pages_enumPages.event:
+            $('#ccn-pageName').html($.i18n.prop('ccn-i18n-pageName-event'));
             break;
     }
 }
