@@ -173,8 +173,7 @@ def api_calendar_addHandle():
     ('eventDateTimeStart', int, False),
     ('eventDateTimeEnd', int, False),
     ('loopRules', str, False),
-    ('timezoneOffset', int, False),
-    ('lastChange', str, False)))
+    ('timezoneOffset', int, False)))
 
 @app.route('/api/calendar/delete', methods=['POST'])
 def api_calendar_deleteHandle():

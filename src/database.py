@@ -228,7 +228,7 @@ class CalendarDatabase(object):
 
         # get prev data
         self.cursor.execute('SELECT * FROM calendar WHERE [ccn_uuid] = ? AND [ccn_lastChange] = ?;', (uuid, lastChange))
-        analyseData = self.cursor.fetchone()
+        analyseData = list(self.cursor.fetchone())
 
         # construct update data
         lastupdate = utils.GenerateUUID()

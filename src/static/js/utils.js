@@ -17,7 +17,7 @@ function ComputeSHA256(strl) {
 */
 
 function IsResponseOK(data) {
-    if (typeof(data) == 'undefined') {
+    if (typeof (data) == 'undefined') {
         console.log("Fail to execute an api!");
         return false;
     }
@@ -38,15 +38,31 @@ function SetApiToken(value) {
 }
 
 function LineBreaker2Br(strl) {
-    return $('<div>').text(strl).html().replace(/\n/g,'<br />');
+    return $('<div>').text(strl).html().replace(/\n/g, '<br />');
 }
 
 function IsUndefinedOrEmpty(data) {
-    return (typeof(data) == 'undefined' || data == "");
+    return (typeof (data) == 'undefined' || data == "");
 }
 
 function SmarterShowHide(boolean, element) {
-    if (typeof(element) == 'undefined') return;
+    if (typeof (element) == 'undefined') return;
     if (boolean) element.show();
     else element.hide();
 }
+
+String.prototype.format = function() { 
+    var e = arguments; 
+    return !!this && this.replace(
+        /\{(\d+)\}/g, 
+        function (t, n) { 
+            return e[n].toString() ? e[n].toString() : t;
+        }
+    );
+};
+
+Date.prototype.getWeekday = function() {
+    var temp = this.getDay();
+    if (temp == 0) return 6;
+    else return temp - 1;
+};

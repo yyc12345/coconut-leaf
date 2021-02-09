@@ -28,7 +28,7 @@ def ResolveLoopStr(strl, starttime, tzoffset):
         return int(cache.group(1)) # group 1 is datetime
     cache = precompiledLoopStopRules['times'].search(loopStopRules)
     if cache is not None:
-        loopTimes = cache   # for follwing calc
+        loopTimes = int(cache.group(1))   # for follwing calc
     else:
         raise Exception('Invalid loopStopRules')    # invalid rules
 
@@ -41,7 +41,7 @@ def ResolveLoopStr(strl, starttime, tzoffset):
 
 
 def LoopHandle_Year(searchResult, starttime, times, tzoffset):
-    clientDate = datetime.datetime.fromtimestamp(starttime, UTCTimezone(tzoffset))
+    clientDate = datetime.datetime.fromtimestamp(starttime * 60, UTCTimezone(tzoffset))
     isStrict = searchResult.group(1) == 'S'
     yearSpan = int(searchResult.group(2))
 
@@ -77,13 +77,14 @@ def LoopHandle_Month(searchResult, starttime, times, tzoffset):
 
     # we should get original data in each method
     times -= 1
-    clientDate = datetime.datetime.fromtimestamp(starttime, UTCTimezone(tzoffset))
+    clientDate = datetime.datetime.fromtimestamp(starttime * 60, UTCTimezone(tzoffset))
     newYear = clientYear = clientDate.year
     newMonth = clientMonth = clientDate.month
     newDay = clientDay = clientDate.day
     # data struct
     # dayStatistics =
-    # (dayForwards, dayBackwards, weeksForward, dayOfWeekForward, weeksBackwards, dayOfWeekBackward)
+    # (dayForwards || dayBackwards || weeksForward, dayOfWeek || weeksBackwards, dayOfWeek)
+    # ( A || B || C || D )
     dayStatistics = GetDayInMonth(clientYear, clientMonth, clientDay)
 
     if isStrict:
@@ -139,13 +140,16 @@ def LoopHandle_Week(searchResult, starttime, times, tzoffset):
         raise Exception('Invalid week format')
 
     weekSpan = int(searchResult.group(2))
-    nowDayOfWeek = datetime.datetime.fromtimestamp(starttime, UTCTimezone(tzoffset)).weekday()
+    nowDayOfWeek = datetime.datetime.fromtimestamp(starttime * 60, UTCTimezone(tzoffset)).weekday()
     if not weekOccupied[nowDayOfWeek]:
-        times+=1    # if first event is not suit for week loop rules, add one more event to suit it.
-    fullWeek = times / weekEventCount
+        times-=1    # if first event is not suit for week loop rules, minus one more event to suit it.
+    fullWeek = int(times / weekEventCount)
     remainEvent = times % weekEventCount
+    print(fullWeek)
+    print(remainEvent)
+    print(nowDayOfWeek)
     
-    val = DAY7_SPAN * fullWeek * weekSpan
+    val = starttime + DAY7_SPAN * fullWeek * weekSpan
     if val > MAX_TIMESTAMP:
         return MAX_TIMESTAMP    # return now, to reduce calc usage
 
@@ -231,21 +235,15 @@ def DayOfWeek(year, month, day):
 def GetDayInMonth(year, month, day):
     days = MonthDayCount[month - 1] + (1 if (month == 2 and IsLeapYear(year)) else 0)
     firstDayOfWeek = DayOfWeek(year, month, 1)
-    lastDayOfWeek = (firstDayOfWeek + days - 1) % 7
     dayOfWeek = (firstDayOfWeek + day - 1) % 7
 
     dayForwards = day
     dayBackwards = days - day + 1
 
-    weeksForward = (dayForwards - 1) / 7
-    weeksBackwards = (dayBackwards - 1) / 7
+    weeksForward = int((dayForwards - 1) / 7) + 1
+    weeksBackwards = int((dayBackwards - 1) / 7) + 1
 
-    dayOfWeekForward = (firstDayOfWeek + ((dayForwards - 1) % 7)) % 7
-    # 7 don't change week
-    # # just keep this is the positive number and prevent pretential minus number calc problem
-    dayOfWeekBackward = (7 + lastDayOfWeek - ((dayBackwards - 1) % 7)) % 7
-
-    return (dayForwards, dayBackwards, weeksForward, dayOfWeekForward, weeksBackwards, dayOfWeekBackward)
+    return (dayForwards, dayBackwards, weeksForward, dayOfWeek, weeksBackwards, dayOfWeek)
 
 def GetMonthWeekStatistics(year, month):
     days = MonthDayCount[month - 1] + (1 if (month == 2 and IsLeapYear(year)) else 0)
@@ -253,7 +251,7 @@ def GetMonthWeekStatistics(year, month):
     lastDayOfWeek = (firstDayOfWeek + days - 1) % 7
  
     result = [4, 4, 4, 4, 4, 4, 4]
-    remain = (days - 1) % 7
+    remain = days % 7
     week = firstDayOfWeek
     while remain > 0:
         result[week % 7] += 1
@@ -273,4 +271,4 @@ class UTCTimezone(datetime.tzinfo):
         return 'UTC {}'.format(self._offset)
 
     def dst(self, dt):
-        return timedelta(0)
+        return datetime.timedelta(0)

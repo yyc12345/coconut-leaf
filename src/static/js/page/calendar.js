@@ -66,7 +66,7 @@ function ccn_calendar_calendar_LoadCalendarBody() {
 }
 
 function ccn_calendar_calendar_Refresh() {
-    gottenDateTime = ccn_datetimepicker_Get(1);
+    gottenDateTime = ccn_datetimepicker_Get(1, false);
     gottenYear = gottenDateTime.getFullYear();
     gottenMonth = gottenDateTime.getMonth() + 1;
 }
@@ -81,7 +81,7 @@ function ccn_calendar_calendar_AnalyseEvent() {
 
 function ccn_calendar_calendar_Today() {
     var nowtime = new Date();
-    ccn_datetimepicker_Set(1, nowtime);
+    ccn_datetimepicker_Set(1, nowtime, false);
     ccn_calendar_calendar_Refresh();
 }
 

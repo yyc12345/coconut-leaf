@@ -50,15 +50,15 @@ function ccn_datetimepicker_SyncEx(pickerIndex) {
     }
 }
 
-function ccn_datetimepicker_Set(pickerIndex, dt) {
-    $('.datetimepicker-year[datetimepicker=' + pickerIndex + ']').val(dt.getFullYear());
-    $('.datetimepicker-month[datetimepicker=' + pickerIndex + ']').val(dt.getMonth() + 1);
-    $('.datetimepicker-day[datetimepicker=' + pickerIndex + ']').val(dt.getDate());
-    $('.datetimepicker-hour[datetimepicker=' + pickerIndex + ']').val(dt.getHours());
-    $('.datetimepicker-minute[datetimepicker=' + pickerIndex + ']').val(dt.getMinutes());
+function ccn_datetimepicker_Set(pickerIndex, dt, isUTC) {
+    $('.datetimepicker-year[datetimepicker=' + pickerIndex + ']').val(isUTC ? dt.getUTCFullYear() : dt.getFullYear());
+    $('.datetimepicker-month[datetimepicker=' + pickerIndex + ']').val((isUTC ? dt.getUTCMonth() : dt.getMonth()) + 1);
+    $('.datetimepicker-day[datetimepicker=' + pickerIndex + ']').val(isUTC ? dt.getUTCDate() : dt.getDate());
+    $('.datetimepicker-hour[datetimepicker=' + pickerIndex + ']').val(isUTC ? dt.getUTCHours() : dt.getHours());
+    $('.datetimepicker-minute[datetimepicker=' + pickerIndex + ']').val(isUTC ? dt.getUTCMinutes() : dt.getMinutes());
 }
 
-function ccn_datetimepicker_Get(pickerIndex) {
+function ccn_datetimepicker_Get(pickerIndex, isUTC) {
     year = $('.datetimepicker-year[datetimepicker=' + pickerIndex + ']').val();
     month = $('.datetimepicker-month[datetimepicker=' + pickerIndex + ']').val();
     day = $('.datetimepicker-day[datetimepicker=' + pickerIndex + ']').val();
@@ -70,5 +70,6 @@ function ccn_datetimepicker_Get(pickerIndex) {
     if (IsUndefinedOrEmpty(hour)) hour = 0;
     if (IsUndefinedOrEmpty(minute)) minute = 0;
 
-    return new Date(year, parseInt(month) - 1, day, hour, minute, 0, 0);
+    if (isUTC) return new Date(Date.UTC(year, parseInt(month) - 1, day, hour, minute, 0, 0));
+    else return new Date(year, parseInt(month) - 1, day, hour, minute, 0, 0);
 }

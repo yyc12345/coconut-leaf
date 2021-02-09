@@ -25,6 +25,15 @@ $(document).ready(function() {
     // bind event
     $('input[type=radio][name=loop-method]').click(ccn_event_RefreshRadioDiaplay);
     $('input[type=radio][name=loop-end]').click(ccn_event_RefreshRadioDiaplay);
+    $('.datetimepicker-year[datetimepicker=1],.datetimepicker-month[datetimepicker=1],.datetimepicker-day[datetimepicker=1]').bind(
+        'input propertychange',
+        ccn_event_RefreshLoopMonthType
+    );
+
+    $('#ccn-event-btnSubmit').click(ccn_event_btnSubmit);
+    $('#ccn-event-btnCancel').click(ccn_event_btnCancel);
+    $('#ccn-event-btnSpot').click(ccn_event_btnSpot);
+    $('#ccn-event-btnFullDay').click(ccn_event_btnFullDay);
 
     // init form
     ccn_event_Init();
@@ -91,7 +100,7 @@ function ccn_event_Init() {
     }
     // in add mode, set as -1, otherwise try to match original data
     // indexOf will return -1 if no matched item
-    collectionDOM.val(isAdd ? '' : ccn_calendar_eventModal_editing[1]);
+    collectionDOM.val(isAdd ? '' : ccn_event_editingEvent[1]);
 
     // init start and end datetime
     if (isAdd) {
@@ -100,18 +109,18 @@ function ccn_event_Init() {
         currentDateTime.setMilliseconds(0);
         currentDateTime.setSeconds(0);
         currentDateTime.setMinutes(0);
-        ccn_datetimepicker_Set(1, currentDateTime);
+        ccn_datetimepicker_Set(1, currentDateTime, false);
     
         // time span is 2 hours
         currentDateTime.setHours(currentDateTime.getHours() + 2);
-        ccn_datetimepicker_Set(2, currentDateTime);
+        ccn_datetimepicker_Set(2, currentDateTime, false);
     } else {
         // in update mode, match it with original data
-        var originalDateTime = new Date(ccn_event_editingEvent[5] * 60000);
-        ccn_datetimepicker_Set(1, originalDateTime);
+        var originalDateTime = new Date((ccn_event_editingEvent[5] + ccn_event_editingEvent[7]) * 60000);
+        ccn_datetimepicker_Set(1, originalDateTime, true);
 
-        originalDateTime = new Date(ccn_event_editingEvent[6] * 60000);
-        ccn_datetimepicker_Set(2, originalDateTime);
+        originalDateTime = new Date((ccn_event_editingEvent[6] + ccn_event_editingEvent[7]) * 60000);
+        ccn_datetimepicker_Set(2, originalDateTime, true);
     }
 
     // setup timezone here
@@ -120,7 +129,7 @@ function ccn_event_Init() {
     $('#ccn-event-timezone-radioKeep').prop('checked', true);   // give a default value
     var nowtime = new Date();
     SmarterShowHide(
-        (!isAdd) && nowtime.getTimezoneOffset() != ccn_event_editingEvent[7],
+        (!isAdd) && (-nowtime.getTimezoneOffset()) != ccn_event_editingEvent[7],
         $('#ccn-event-boxTimezone')
     );
 
@@ -133,23 +142,26 @@ function ccn_event_Init() {
 
     // give some value with a default value
     $('#ccn-event-loopMonth-radioA').prop('checked', true);
-    var weekDate = undefined;
-    if (isAdd) weekDate = nowtime;
-    else weekDate = new Date(ccn_event_editingEvent[5] * 60000);
-    $('#ccn-event-loopWeek-check' + (weekDate.getDay() + 1)).prop('checked', true);
+    $('#ccn-event-loopWeek-check' + (nowtime.getWeekday() + 1)).prop('checked', true);
+    $('#ccn-event-strictMode-radioStrict').prop('checked', true);
 
     // real process
-    if (isAdd) $('#ccn-event-radioLoopNever').prop('checked', true);
-    else {
+    if (isAdd) {
+        $('#ccn-event-radioLoopNever').prop('checked', true);
+    } else {
         switch(data[0][0]) {
             case 0:
                 $('#ccn-event-radioLoopYear').prop('checked', true);
                 $('#ccn-event-loopYear-inputSpan').val(data[0][2]);
+                if (data[0][1]) $('#ccn-event-strictMode-radioStrict').prop('checked', true);
+                else $('#ccn-event-strictMode-radioRough').prop('checked', true);
                 break;
             case 1:
                 $('#ccn-event-radioLoopMonth').prop('checked', true);
                 $('#ccn-event-loopMonth-inputSpan').val(data[0][3]);
                 $('#ccn-event-loopMonth-radio' + data[0][2]).prop('checked', true);
+                if (data[0][1]) $('#ccn-event-strictMode-radioStrict').prop('checked', true);
+                else $('#ccn-event-strictMode-radioRough').prop('checked', true);
                 break;
             case 2:
                 $('#ccn-event-radioLoopWeek').prop('checked', true);
@@ -165,9 +177,11 @@ function ccn_event_Init() {
         }
     }
 
+    // give some item a default value
+    ccn_datetimepicker_Set(3, nowtime, false);
+
     if (isAdd) {
         $('#ccn-event-loopStop-radioForever').prop('checked', true);
-        ccn_datetimepicker_Set(3, nowtime);
     } else {
         switch(data[1][0]) {
             case 0:
@@ -175,8 +189,8 @@ function ccn_event_Init() {
                 break;
             case 1:
                 $('#ccn-event-loopStop-radioDateTime').prop('checked', true);
-                var stopDatetime = new Date(data[1][1] * 60000);
-                ccn_datetimepicker_Set(3, stopDatetime);
+                var stopDatetime = new Date((data[1][1] + ccn_event_editingEvent[7]) * 60000);
+                ccn_datetimepicker_Set(3, stopDatetime, true);
                 break;
             case 2:
                 $('#ccn-event-loopStop-radioTimes').prop('checked', true);
@@ -212,11 +226,163 @@ function ccn_event_RefreshRadioDiaplay() {
 }
 
 function ccn_event_RefreshLoopMonthType() {
+    var picker = ccn_datetimepicker_Get(1, false);
+    var data = ccn_datetime_GetDayInMonth(picker.getFullYear(), picker.getMonth() + 1, picker.getDate());
 
+    $('#ccn-event-loopMonth-textA').text($.i18n.prop('ccn-i18n-event-loopWeek-optionA').format(data[0]));
+    $('#ccn-event-loopMonth-textB').text($.i18n.prop('ccn-i18n-event-loopWeek-optionB').format(data[1]));
+    $('#ccn-event-loopMonth-textC').text($.i18n.prop('ccn-i18n-event-loopWeek-optionC').format(data[2], data[3] + 1));
+    $('#ccn-event-loopMonth-textD').text($.i18n.prop('ccn-i18n-event-loopWeek-optionD').format(data[4], data[5] + 1));
 }
 
 // return undefined to indicate an error
-function ccn_event_Get() {
+// or
+// [belongTo, title, description, eventDateTimeStart, eventDateTimeEnd, timezoneOffset, loopRules]
+function ccn_event_GetForm() {
+    // basic
+    var title = $('#ccn-event-inputTitle').val();
+    if (title == '') return undefined;
+    var description = $('#ccn-event-inputDescription').val();
+    if (description == '') return undefined;
+    var belongTo = $('#ccn-event-inputCollection').val();
+    if (belongTo == null) return undefined; // if no selected item, val return null, not undefined
 
+    var isAdd = typeof(ccn_event_editingEvent) == 'undefined';
+    var keepTimezone = $('#ccn-event-timezone-radioKeep').prop('checked');
+    var isStrict = $('#ccn-event-strictMode-radioStrict').prop('checked');
+
+    // time
+    var eventDateTimeStart = undefined;
+    var eventDateTimeEnd = undefined;
+    var timezoneOffset = undefined;
+    if ((!isAdd) && (!keepTimezone)) {
+        // get datetime as utc, then minus original timezone to get unix timestamp
+        timezoneOffset = ccn_event_editingEvent[7]; // keep timezone
+        eventDateTimeStart = Math.floor(ccn_datetimepicker_Get(1, true).getTime() / 60000) - timezoneOffset;
+        eventDateTimeEnd = Math.floor(ccn_datetimepicker_Get(2, true).getTime() / 60000) - timezoneOffset;
+    } else {
+        // use my timezone, resolve presented data as my local time
+        var cache = ccn_datetimepicker_Get(1, false);
+        timezoneOffset = -cache.getTimezoneOffset();
+        eventDateTimeStart = Math.floor(cache.getTime() / 60000);
+        eventDateTimeEnd = Math.floor(ccn_datetimepicker_Get(2, false).getTime() / 60000);
+    }
+
+    // loopRules
+    var loopRules = undefined;
+    if ($('#ccn-event-radioLoopNever').prop('checked')) {
+        loopRules = "";
+    } else if ($('#ccn-event-radioLoopDay').prop('checked')) {
+        loopRules = "D{0}".format($('#ccn-event-loopDay-inputSpan').val());
+    } else if ($('#ccn-event-radioLoopWeek').prop('checked')) {
+        var cache = ""
+        for(var i = 1; i < 8; i++)
+            cache += $('#ccn-event-loopWeek-check' + i).prop('checked') ? 'T' : 'F';
+        loopRules = 'W{0}{1}'.format(
+            cache,
+            $('#ccn-event-loopWeek-inputSpan').val()
+        );
+    } else if ($('#ccn-event-radioLoopMonth').prop('checked')) {
+        var cache = undefined;
+        if ($('#ccn-event-loopMonth-radioA').prop('checked')) cache='A';
+        else if ($('#ccn-event-loopMonth-radioB').prop('checked')) cache='B';
+        else if ($('#ccn-event-loopMonth-radioC').prop('checked')) cache='C';
+        else if ($('#ccn-event-loopMonth-radioD').prop('checked')) cache='D';
+        else return undefined;
+
+        loopRules = "M{0}{1}{2}".format(
+            isStrict ? "S" : "R",
+            cache,
+            $('#ccn-event-loopMonth-inputSpan').val()
+        );
+    } else if ($('#ccn-event-radioLoopYear').prop('checked')) {
+        loopRules = "Y{0}{1}".format(
+            isStrict ? "S" : "R",
+            $('#ccn-event-loopDay-inputSpan').val()
+        );
+    }
+
+    // no need to process stop if this is not a loop event
+    if (loopRules != "") {
+        loopRules += '-';
+        if ($('#ccn-event-loopStop-radioForever').prop('checked')) {
+            loopRules += 'F';
+        } else if ($('#ccn-event-loopStop-radioDateTime').prop('checked')) {
+            var timestamp = undefined;
+            if ((!isAdd) && (!keepTimezone)) {
+                // keep timezone
+                var cache = ccn_datetimepicker_Get(3, true);
+                cache.setUTCHours(23);
+                cache.setUTCMinutes(59);
+                timestamp = Math.floor(cache.getTime() / 60000) - timezoneOffset;
+            } else {
+                // use my timezone
+                timestamp = Math.floor(ccn_datetimepicker_Get(3, false).getTime() / 60000);
+            }
+            
+            loopRules += 'D{0}'.format(timestamp);
+        } else if ($('#ccn-event-loopStop-radioTimes').prop('checked')) {
+            loopRules += 'T{0}'.format($('#ccn-event-loopStop-inputTimes').val());
+        }
+    }
+
+    return [belongTo, title, description, eventDateTimeStart, eventDateTimeEnd, timezoneOffset, loopRules];
+}
+
+function ccn_event_btnSpot() {
+    var datetime = ccn_datetimepicker_Get(1, false);
+    datetime.setMinutes(datetime.getMinutes() + 1);
+    ccn_datetimepicker_Set(2, datetime, false);
+}
+
+function ccn_event_btnFullDay() {
+    var datetime = ccn_datetimepicker_Get(1, false);
+    datetime.setMinutes(0);
+    datetime.setHours(0);
+    ccn_datetimepicker_Set(1, datetime, false);
+    datetime.setMinutes(59);
+    datetime.setHours(23);
+    ccn_datetimepicker_Set(2, datetime, false);
+}
+
+function ccn_event_btnCancel() {
+    window.location.href = '/web/calendar';
+}
+
+function ccn_event_btnSubmit() {
+    var submitData = ccn_event_GetForm();
+    if (typeof(submitData) == 'undefined') {
+        ccn_messagebox_Show($.i18n.prop("ccn-i18n-js-fail-form"));
+        return;
+    }
+
+    var isAdd = typeof(ccn_event_editingEvent) == 'undefined';
+    if (isAdd) {
+        var result = ccn_api_calendar_add(
+            submitData[0],
+            submitData[1],
+            submitData[2],
+            submitData[3],
+            submitData[4],
+            submitData[6],
+            submitData[5]
+        );
+        if (typeof(result) == 'undefined') ccn_messagebox_Show($.i18n.prop("ccn-i18n-js-fail-add"));
+        else window.location.href = '/web/calendar';
+    } else {
+        var result = ccn_api_calendar_update(
+            ccn_event_editingEvent[0],
+            ccn_event_editingEvent[1] == submitData[0] ? undefined : submitData[0],
+            ccn_event_editingEvent[2] == submitData[1] ? undefined : submitData[1],
+            ccn_event_editingEvent[3] == submitData[2] ? undefined : submitData[2],
+            ccn_event_editingEvent[5] == submitData[3] ? undefined : submitData[3],
+            ccn_event_editingEvent[6] == submitData[4] ? undefined : submitData[4],
+            ccn_event_editingEvent[8] == submitData[6] ? undefined : submitData[6],
+            ccn_event_editingEvent[7] == submitData[5] ? undefined : submitData[5],
+            ccn_event_editingEvent[4]
+        );
+        if (typeof(result) == 'undefined') ccn_messagebox_Show($.i18n.prop("ccn-i18n-js-fail-update"));
+        else window.location.href = '/web/calendar';
+    }
 }
 

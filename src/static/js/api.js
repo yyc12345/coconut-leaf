@@ -200,20 +200,28 @@ function ccn_api_calendar_getDetail(_uuid) {
 }
 
 function ccn_api_calendar_update(_uuid, _belongTo, _title, _description, _eventDateTimeStart, _eventDateTimeEnd, _loopRules, _timezoneOffset, _lastChange) {
+    var data = {};
+    if (typeof(_belongTo) != 'undefined')
+        data.belongTo = _belongTo;
+    if (typeof(_title) != 'undefined')
+        data.title = _title;
+    if (typeof(_description) != 'undefined')
+        data.description = _description;
+    if (typeof(_eventDateTimeStart) != 'undefined')
+        data.eventDateTimeStart = _eventDateTimeStart;
+    if (typeof(_eventDateTimeEnd) != 'undefined')
+        data.eventDateTimeEnd = _eventDateTimeEnd;
+    if (typeof(_loopRules) != 'undefined')
+        data.loopRules = _loopRules;
+    if (typeof(_timezoneOffset) != 'undefined')
+        data.timezoneOffset = _timezoneOffset;
+
+    data.token = GetApiToken();
+    data.uuid = _uuid;
+    data.lastChange = _lastChange;
     return ccn_api_dataTemplate(
         '/api/calendar/update',
-        {
-            token: GetApiToken(),
-            uuid: _uuid,
-            belongTo: _belongTo,
-            title: _title,
-            description: _description,
-            eventDateTimeStart: _eventDateTimeStart,
-            eventDateTimeEnd: _eventDateTimeEnd,
-            loopRules: _loopRules,
-            timezoneOffset: _timezoneOffset,
-            lastChange: _lastChange
-        }
+        data
     );
 }
 
