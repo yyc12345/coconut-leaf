@@ -10,6 +10,7 @@ var ccn_calendar_eventModal_editing = undefined;
 var ccn_calendar_eventModal_collectionCache = [];
 var ccn_calendar_calendar_listCache = [];
 var ccn_calendar_calendar_displayCache = [];
+var ccn_calendar_calendar_displayDateTime = 0;
 
 $(document).ready(function() {
     ccn_pages_currentPage = ccn_pages_enumPages.calendar;
@@ -50,13 +51,16 @@ $(document).ready(function() {
 
     //refresh once
     ccn_calendar_collection_Refresh();
+    ccn_calendar_calendar_Refresh();
+    ccn_calendar_calendar_Analyse();
+    ccn_calendar_calendar_Render();
 
     // bind event
     $('#ccn-calendar-collection-btnRefresh').click(ccn_calendar_collection_Refresh);
 
-    $('#ccn-calendar-calendar-btnJump').click(ccn_calendar_calendar_Refresh);
-    $('#ccn-calendar-calendar-btnToday').click(ccn_calendar_calendar_Today);
-    $('#ccn-calendar-calendar-btnAdd').click(ccn_calendar_calendar_Add);
+    $('#ccn-calendar-calendar-btnJump').click(ccn_calendar_calendar_btnRefresh);
+    $('#ccn-calendar-calendar-btnToday').click(ccn_calendar_calendar_btnToday);
+    $('#ccn-calendar-calendar-btnAdd').click(ccn_calendar_calendar_btnAdd);
 });
 
 // ================== calendar
@@ -65,27 +69,153 @@ function ccn_calendar_calendar_LoadCalendarBody() {
     $('#ccn-calendar-calendarBody').append(ccn_template_calendarItem.render());
 }
 
+// this function only refresh cache list
 function ccn_calendar_calendar_Refresh() {
-    gottenDateTime = ccn_datetimepicker_Get(1, false);
-    gottenYear = gottenDateTime.getFullYear();
-    gottenMonth = gottenDateTime.getMonth() + 1;
+    var gottenDateTime = ccn_datetimepicker_Get(1, false);
+    var gottenYear = gottenDateTime.getFullYear();
+    var gottenMonth = gottenDateTime.getMonth() + 1;
+    // don't need to set anything, because its default value is enough to use.
+
+    var gottenWeek = ccn_datetime_DayOfWeek(gottenYear, gottenMonth, 1);
+    var startTimestamp = Math.floor(gottenDateTime.getTime() / 60000) - gottenWeek * ccn_datetime_DAY1_SPAN;
+    var endTimestamp = startTimestamp + ccn_datetime_DAY1_SPAN * 6 * 7 - 1;
+
+    ccn_calendar_calendar_listCache = new Array();
+    var result = ccn_api_calendar_getFull(startTimestamp, endTimestamp);
+    if (typeof(result) != 'undefined') {
+        for(var index in result) {
+            ccn_calendar_calendar_listCache[result[index][0]] = result[index];
+        }
+    }
 }
 
+// this function take responsibility to analyse event
+// call datetime function to resolve loop event
+// and split event if some event cross 2+ days
+function ccn_calendar_calendar_Analyse() {
+    // first, we need construct ccn_calendar_calendar_displayCache
+    ccn_calendar_calendar_displayCache = new Array();
+    var gottenDateTime = ccn_datetimepicker_Get(1, false);
+    var gottenYear = gottenDateTime.getFullYear();
+    var gottenMonth = gottenDateTime.getMonth() + 1;
+    var gottenWeek = ccn_datetime_DayOfWeek(gottenYear, gottenMonth, 1);
+    var startTimestamp = Math.floor(gottenDateTime.getTime() / 60000) - gottenWeek * ccn_datetime_DAY1_SPAN;
+    var endTimestamp = startTimestamp + ccn_datetime_DAY1_SPAN * 6 * 7 - 1;
+    gottenDateTime.setTime(startTimestamp * 60000);
+    for(var index = 0; index < 6 * 7; index++) {
+        ccn_calendar_calendar_displayCache.push({
+            month: gottenDateTime.getMonth() + 1,
+            day: gottenDateTime.getDate(),
+            dayOfWeek: gottenDateTime.getWeekday(),
+            subcalendar: " ",
+            events: new Array()
+        });
+        gottenDateTime.setTime(gottenDateTime.getTime() + ccn_datetime_DAY1_SPAN * 60000);
+    }
+
+    var mytimezone = -(new Date().getTimezoneOffset());
+    // then analyse each event
+    for(var index in ccn_calendar_calendar_listCache) {
+        var item = ccn_calendar_calendar_listCache[index];
+        
+        var result = ccn_datetime_ResolveLoopRules4Event(
+            item[8],
+            Math.max(item[6] - item[5] + startTimestamp, item[9]),
+            Math.min(item[10], endTimestamp),
+            item[5],
+            item[6],
+            item[7],
+            startTimestamp
+        );
+        if(typeof(result) != 'undefined') {
+            for(var i in result) {
+                var it = result[i];
+                // try get event belong to which cell
+                var eventDateTime = new Date(it[0] * 60000);
+                var count = Math.floor((eventDateTime - startTimestamp) / ccn_datetime_DAY1_SPAN);
+                var exitFlag = false;
+                // then split event
+                while(count < 6 * 7) {
+                    var eventItem = {
+                        uuid: item[0],
+                        title: item[2],
+                        description: item[3],
+                        isVisible: true,
+                        isLocked: typeof(ccn_calendar_owned_displayCache[item[0]]) != 'undefined',
+                        loopText: " ",  // todo: finish this
+                        timezoneWarning: mytimezone != item[7],
+                        start: eventDateTime.toLocaleTimeString(),
+                        end: undefined  // filled in follwing code
+                    }
+                    eventDateTime.setHours(23, 59, 0, 0);
+                    if (Math.floor(eventDateTime.getTime() / 60000) <= it[1]) {
+                        exitFlag = true;
+                        eventDateTime.setTime(it[1] * 60000);
+                    }
+                    eventDateTime.end = eventDateTime.toLocaleTimeString();
+                    ccn_calendar_calendar_displayCache[count].events.push(eventItem);
+                    if (exitFlag) break;
+                    count++;
+                }
+            }
+        }
+    }
+
+}
+
+// just use produced ccn_calendar_calendar_displayCache
+// to re-generate ui
 function ccn_calendar_calendar_Render() {
+    // all data has been alanysed, feeback to calendar body.
+    var counter = 0;
+    for(var i = 0; i < 6; i++) {
+        for(var j = 0; j < 7; j++) {
+            var item = ccn_calendar_calendar_displayCache[counter];
+            $('#ccn-calendarItem-title' + i + '-' + j).text(item.day);
+            $('#ccn-calendarItem-desc' + i + '-' + j).text(item.subcalendar);
+            $('#ccn-calendarItem-task' + i + '-' + j).text(item.events.length);
+            counter++;
+        }
+    }
 
+    // todo: add / migrate subcalendar feature here
+
+    // analyse visible data
+    for(var i in ccn_calendar_calendar_displayCache) {
+        for(var j in ccn_calendar_calendar_displayCache[i].events) {
+            var gottenOwnedVisible = ccn_calendar_owned_displayCache[
+                ccn_calendar_calendar_displayCache[i].events[j].uuid
+            ];
+            if (typeof(gottenOwnedVisible) != 'undefined') gottenOwnedVisible = false;
+            var gottenSharedVisible = ccn_calendar_shared_displayCache[
+                ccn_calendar_calendar_displayCache[i].events[j].uuid
+            ];
+            if (typeof(gottenSharedVisible) != 'undefined') gottenSharedVisible = false;
+
+            ccn_calendar_calendar_displayCache[i].events[j].isVisible = gottenOwnedVisible || gottenSharedVisible;
+        }
+    }
+
+    // just render them
+    var listDOM = $('#ccn-calendar-scheduleList');
+    listDOM.empty();
+    listDOM.append(ccn_template_scheduleItem.render({renderdata: ccn_calendar_calendar_displayCache}));
+    ccn_i18n_ApplyLanguage2Content(listDOM);
 }
 
-function ccn_calendar_calendar_AnalyseEvent() {
-    
+function ccn_calendar_calendar_btnRefresh() {
+    ccn_calendar_calendar_Refresh();
+    ccn_calendar_calendar_Analyse();
+    ccn_calendar_calendar_Render();
 }
 
-function ccn_calendar_calendar_Today() {
+function ccn_calendar_calendar_btnToday() {
     var nowtime = new Date();
     ccn_datetimepicker_Set(1, nowtime, false);
     ccn_calendar_calendar_Refresh();
 }
 
-function ccn_calendar_calendar_Add() {
+function ccn_calendar_calendar_btnAdd() {
     window.location.href = '/web/eventAdd';
 }
 

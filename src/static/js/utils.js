@@ -51,6 +51,15 @@ function SmarterShowHide(boolean, element) {
     else element.hide();
 }
 
+function GCD(a, b) {
+    if (b == 0) return a;
+    return GCD(b, a % b);
+}
+
+function LCM(a, b) {
+    return a / GCD(a, b) * b;
+}
+
 String.prototype.format = function() { 
     var e = arguments; 
     return !!this && this.replace(

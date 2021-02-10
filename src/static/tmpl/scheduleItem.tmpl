@@ -1,37 +1,30 @@
+{{for renderdata}}
 <div class="schedule-day container">
     <div class="schedule-day-words">
-        <b>13</b>
-        <b>Friday</b>
+        <b>{{>month}}</b>
+        <b>{{>day}}</b>
+        <b i18n-name="ccn-i18n-universal-week-{{:dayOfWeek}}"></b>
     </div>
     <div class="schedule-event-list">
+        {{for event}}
+        {{if isVisible}}
         <div class="schedule-event card">
             <div class="schedule-event-words">
-                <p class="level-item"><b>This is
-                        titleewwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww</b>
-                </p>
-                <p class="level-item">this is
-                    subtitleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-                </p>
+                <p class="level-item"><b>{{>title}}</b></p>
+                <p class="level-item">{{>description}}</p>
+                <p class="level-item"><span>{{>start}}</span>-<span>{{>end}}</span></p>
             </div>
-
             <div class="schedule-event-icon">
+                {{if isLocked}}
                 <span class="icon is-small"><i class="fas fa-lock"></i></span>
+                {{/if}}
+                {{if timezoneWarning}}
+                <span class="icon is-small"><i class="fas fa-globe"></i></span>
+                {{/if}}
             </div>
         </div>
-
-        <div class="schedule-event card">
-            <div class="schedule-event-words">
-                <p class="level-item"><b>This is
-                        titleewwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww</b>
-                </p>
-                <p class="level-item">this is
-                    subtitleeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
-                </p>
-            </div>
-
-            <div class="schedule-event-icon">
-                <span class="icon is-small"><i class="fas fa-lock"></i></span>
-            </div>
-        </div>
+        {{/if}}
+        {{/for}}
     </div>
 </div>
+{{/for}}
