@@ -203,7 +203,7 @@ class CalendarDatabase(object):
         username = self.tokenOper_get_username(token)
         self.cursor.execute('SELECT calendar.* FROM calendar INNER JOIN collection \
                 ON collection.ccn_uuid = calendar.ccn_belongTo \
-                WHERE (collection.ccn_user = ? AND calendar.ccn_loopDateTimeEnd >= ? AND calendar.ccn_loopDateTimeStart <= ?);', 
+                WHERE (collection.ccn_user = ? AND calendar.ccn_loopDateTimeEnd >= ? AND calendar.ccn_loopDateTimeStart - (calendar.ccn_eventDateTimeEnd - calendar.ccn_eventDateTimeStart) <= ?);', 
                 (username, startDateTime, endDateTime))
         return self.cursor.fetchall()
 
@@ -212,7 +212,7 @@ class CalendarDatabase(object):
         username = self.tokenOper_get_username(token)
         self.cursor.execute('SELECT calendar.ccn_uuid FROM calendar INNER JOIN collection \
                 ON collection.ccn_uuid = calendar.ccn_belongTo \
-                WHERE (collection.ccn_user = ? AND calendar.ccn_loopDateTimeEnd >= ? AND calendar.ccn_loopDateTimeStart <= ?);', 
+                WHERE (collection.ccn_user = ? AND calendar.ccn_loopDateTimeEnd >= ? AND calendar.ccn_loopDateTimeStart - (calendar.ccn_eventDateTimeEnd - calendar.ccn_eventDateTimeStart) <= ?);', 
                 (username, startDateTime, endDateTime))
         return tuple(map(lambda x: x[0], self.cursor.fetchall()))
 

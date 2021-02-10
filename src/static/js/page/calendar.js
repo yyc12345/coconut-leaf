@@ -118,9 +118,10 @@ function ccn_calendar_calendar_Analyse() {
     for(var index in ccn_calendar_calendar_listCache) {
         var item = ccn_calendar_calendar_listCache[index];
         
+        var minStartTimestamp = startTimestamp - (item[6] - item[5]);
         var result = ccn_datetime_ResolveLoopRules4Event(
             item[8],
-            Math.max(item[6] - item[5] + startTimestamp, item[9]),
+            item[9] < minStartTimestamp ? minStartTimestamp : item[9],
             Math.min(item[10], endTimestamp),
             item[5],
             item[6],

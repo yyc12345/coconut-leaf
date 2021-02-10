@@ -112,9 +112,9 @@ function ccn_datetime_ResolveLoopRules4Event(loopRules, loopDateTimeStart, loopD
         var isSpecial = (originalMonth == 2 && originalDay == 29);
         var realLoopSpan = isSpecial ? LCM(4, loopSpan) : loopSpan;
 
-        var fullSpanCount = Math.floor(yearCount / realLoopSpan);
+        //var fullSpanCount = Math.floor(yearCount / realLoopSpan);
         var remainYear = year % realLoopSpan;
-        detectDateTime.setUTCFullYear(fullSpanCount + detectDateTime.getUTCFullYear(), 1, 1);
+        //detectDateTime.setUTCFullYear(fullSpanCount + detectDateTime.getUTCFullYear(), 1, 1);
         if (remainYear != 0)
             detectDateTime.setUTCFullYear(realLoopSpan - remainYear + detectDateTime.getUTCFullYear(), 1, 1);
 
@@ -138,9 +138,9 @@ function ccn_datetime_ResolveLoopRules4Event(loopRules, loopDateTimeStart, loopD
         var monthsCount = ccn_datetime_MonthsCount(detectDateTime.getUTCFullYear(). detectDateTime.getUTCMonth() + 1) -
         ccn_datetime_MonthsCount(originalYear, originalMonth);
 
-        var fullSpanCount = Math.floor(monthsCount / loopSpan);
+        //var fullSpanCount = Math.floor(monthsCount / loopSpan);
         var remainMonth = monthsCount % loopSpan;
-        detectDateTime.setUTCMonth(fullSpanCount * loopSpan + detectDateTime.getUTCMonth(), 1);
+        //detectDateTime.setUTCMonth(fullSpanCount * loopSpan + detectDateTime.getUTCMonth(), 1);
         if (remainMonth != 0)
             detectDateTime.setUTCMonth(loopSpan - remainMonth + detectDateTime.getUTCMonth(), 1);
 
@@ -193,11 +193,11 @@ function ccn_datetime_ResolveLoopRules4Event(loopRules, loopDateTimeStart, loopD
 
         var daysCount = ccn_datetime_DaysCount(detectDateTime.getUTCFullYear(), detectDateTime.getUTCMonth() + 1, detectDateTime.getDate()) -
                         ccn_datetime_DaysCount(originalYear, originalMonth, originalDay);
-        var fullSpanCount = Math.floor(daysCount / (7 * loopSpan));
+        //var fullSpanCount = Math.floor(daysCount / (7 * loopSpan));
         var remainFullSpanCount = Math.floor((daysCount % (7 * loopSpan)) / 7);
         var remainDays = (daysCount % (7 * loopSpan)) % 7;
         
-        detectDateTime.setUTCDate((7 * loopSpan * fullSpanCount) + detectDateTime.getUTCDate());
+        //detectDateTime.setUTCDate((7 * loopSpan * fullSpanCount) + detectDateTime.getUTCDate());
         if (remainFullSpanCount != 0) {
             detectDateTime.setUTCDate((loopSpan - remainFullSpanCount) * 7 + detectDateTime.getUTCDate());
         }
@@ -219,11 +219,11 @@ function ccn_datetime_ResolveLoopRules4Event(loopRules, loopDateTimeStart, loopD
     } else if (ccn_datetime_precompiledLoopRules.day.test(loopRules)) {
         var loopSpan = parseInt(RegExp.$1);
 
-        var daysCount = ccn_datetime_DaysCount(detectDateTime.getUTCFullYear(), detectDateTime.getUTCMonth() + 1, detectDateTime.getDate()) -
+        var daysCount = ccn_datetime_DaysCount(detectDateTime.getUTCFullYear(), detectDateTime.getUTCMonth() + 1, detectDateTime.getUTCDate()) -
                         ccn_datetime_DaysCount(originalYear, originalMonth, originalDay);
-        var fullSpanCount = Math.floor(daysCount / loopSpan);
+        //var fullSpanCount = Math.floor(daysCount / loopSpan);
         var remainDays = daysCount % loopSpan;
-        detectDateTime.setUTCDate(fullSpanCount * loopSpan + detectDateTime.getUTCDate());
+        //detectDateTime.setUTCDate(fullSpanCount * loopSpan + detectDateTime.getUTCDate());
         if (remainDays != 0) 
             detectDateTime.setUTCDate(loopSpan - remainDays + detectDateTime.getUTCDate());
 
