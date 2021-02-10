@@ -42,7 +42,7 @@ times: [2, times]
 function ccn_datetime_ResolveLoopRules4UI(strl) {
     if (strl == '') return undefined;
 
-    sp = strl.split('-');
+    var sp = strl.split('-');
     if (sp.length != 2) return undefined;
     var loopRules = undefined;
     var loopStopRules = undefined;
@@ -81,12 +81,12 @@ function ccn_datetime_ResolveLoopRules4UI(strl) {
 // in this section, all time should be analysed with Date((time + timezoneOffset) * 60000)
 // and use .getUTC...() functions.
 function ccn_datetime_ResolveLoopRules4Event(loopRules, loopDateTimeStart, loopDateTimeEnd, eventDateTimeStart, eventDateTimeEnd, timezoneOffset, clampStartDateTime) {
-    if (strl == '') return [
+    if (loopRules == '') return [
         [Math.max(eventDateTimeStart, clampStartDateTime), 
         Math.max(loopDateTimeEnd, eventDateTimeEnd)]
     ];
 
-    sp = strl.split('-');
+    var sp = loopRules.split('-');
     if (sp.length != 2) return undefined;
     var loopRules = sp[0];  // we don't need consider stop flag
     var result = new Array();
@@ -219,11 +219,14 @@ function ccn_datetime_ResolveLoopRules4Event(loopRules, loopDateTimeStart, loopD
     } else if (ccn_datetime_precompiledLoopRules.day.test(loopRules)) {
         var loopSpan = parseInt(RegExp.$1);
 
-        detectDateTime.setUTCDate(
-            (ccn_datetime_DaysCount(detectDateTime.getUTCFullYear(), detectDateTime.getUTCMonth() + 1, detectDateTime.getDate()) -
-            ccn_datetime_DaysCount(originalYear, originalMonth, originalDay)) % loopSpan +
-            detectDateTime.getUTCDate()
-        );
+        var daysCount = ccn_datetime_DaysCount(detectDateTime.getUTCFullYear(), detectDateTime.getUTCMonth() + 1, detectDateTime.getDate()) -
+                        ccn_datetime_DaysCount(originalYear, originalMonth, originalDay);
+        var fullSpanCount = Math.floor(daysCount / loopSpan);
+        var remainDays = daysCount % loopSpan;
+        detectDateTime.setUTCDate(fullSpanCount * loopSpan + detectDateTime.getUTCDate());
+        if (remainDays != 0) 
+            detectDateTime.setUTCDate(loopSpan - remainDays + detectDateTime.getUTCDate());
+
         while(Math.floor(detectDateTime.getTime() / 60000) + eventOffset - timezoneOffset <= loopDateTimeEnd) {
             result.push(
                 [Math.floor(detectDateTime.getTime() / 60000) + eventOffset - timezoneOffset, 

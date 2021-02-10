@@ -1,12 +1,12 @@
 {{for renderdata}}
 <div class="schedule-day container">
     <div class="schedule-day-words">
-        <b>{{>month}}</b>
+        <b i18n-name="ccn-i18n-universal-month-{{:month}}"></b>
         <b>{{>day}}</b>
         <b i18n-name="ccn-i18n-universal-week-{{:dayOfWeek}}"></b>
     </div>
     <div class="schedule-event-list">
-        {{for event}}
+        {{for events}}
         {{if isVisible}}
         <div class="schedule-event card">
             <div class="schedule-event-words">

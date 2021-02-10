@@ -106,8 +106,8 @@ function ccn_calendar_calendar_Analyse() {
         ccn_calendar_calendar_displayCache.push({
             month: gottenDateTime.getMonth() + 1,
             day: gottenDateTime.getDate(),
-            dayOfWeek: gottenDateTime.getWeekday(),
-            subcalendar: " ",
+            dayOfWeek: gottenDateTime.getWeekday() + 1,
+            subcalendar: "       -",
             events: new Array()
         });
         gottenDateTime.setTime(gottenDateTime.getTime() + ccn_datetime_DAY1_SPAN * 60000);
@@ -132,12 +132,13 @@ function ccn_calendar_calendar_Analyse() {
                 var it = result[i];
                 // try get event belong to which cell
                 var eventDateTime = new Date(it[0] * 60000);
-                var count = Math.floor((eventDateTime - startTimestamp) / ccn_datetime_DAY1_SPAN);
+                var count = Math.floor((it[0] - startTimestamp) / ccn_datetime_DAY1_SPAN);
                 var exitFlag = false;
                 // then split event
                 while(count < 6 * 7) {
                     var eventItem = {
                         uuid: item[0],
+                        belongTo: item[1],
                         title: item[2],
                         description: item[3],
                         isVisible: true,
@@ -148,11 +149,11 @@ function ccn_calendar_calendar_Analyse() {
                         end: undefined  // filled in follwing code
                     }
                     eventDateTime.setHours(23, 59, 0, 0);
-                    if (Math.floor(eventDateTime.getTime() / 60000) <= it[1]) {
+                    if (Math.floor(eventDateTime.getTime() / 60000) > it[1]) {
                         exitFlag = true;
                         eventDateTime.setTime(it[1] * 60000);
                     }
-                    eventDateTime.end = eventDateTime.toLocaleTimeString();
+                    eventItem.end = eventDateTime.toLocaleTimeString();
                     ccn_calendar_calendar_displayCache[count].events.push(eventItem);
                     if (exitFlag) break;
                     count++;
@@ -171,9 +172,9 @@ function ccn_calendar_calendar_Render() {
     for(var i = 0; i < 6; i++) {
         for(var j = 0; j < 7; j++) {
             var item = ccn_calendar_calendar_displayCache[counter];
-            $('#ccn-calendarItem-title' + i + '-' + j).text(item.day);
-            $('#ccn-calendarItem-desc' + i + '-' + j).text(item.subcalendar);
-            $('#ccn-calendarItem-task' + i + '-' + j).text(item.events.length);
+            $('#ccn-calendarItem-title-' + i + '-' + j).text(item.day);
+            $('#ccn-calendarItem-desc-' + i + '-' + j).text(item.subcalendar);
+            $('#ccn-calendarItem-task-' + i + '-' + j).text(item.events.length.toString());
             counter++;
         }
     }
@@ -184,13 +185,13 @@ function ccn_calendar_calendar_Render() {
     for(var i in ccn_calendar_calendar_displayCache) {
         for(var j in ccn_calendar_calendar_displayCache[i].events) {
             var gottenOwnedVisible = ccn_calendar_owned_displayCache[
-                ccn_calendar_calendar_displayCache[i].events[j].uuid
+                ccn_calendar_calendar_displayCache[i].events[j].belongTo
             ];
-            if (typeof(gottenOwnedVisible) != 'undefined') gottenOwnedVisible = false;
+            if (typeof(gottenOwnedVisible) == 'undefined') gottenOwnedVisible = false;
             var gottenSharedVisible = ccn_calendar_shared_displayCache[
-                ccn_calendar_calendar_displayCache[i].events[j].uuid
+                ccn_calendar_calendar_displayCache[i].events[j].belongTo
             ];
-            if (typeof(gottenSharedVisible) != 'undefined') gottenSharedVisible = false;
+            if (typeof(gottenSharedVisible) == 'undefined') gottenSharedVisible = false;
 
             ccn_calendar_calendar_displayCache[i].events[j].isVisible = gottenOwnedVisible || gottenSharedVisible;
         }
@@ -213,6 +214,8 @@ function ccn_calendar_calendar_btnToday() {
     var nowtime = new Date();
     ccn_datetimepicker_Set(1, nowtime, false);
     ccn_calendar_calendar_Refresh();
+    ccn_calendar_calendar_Analyse();
+    ccn_calendar_calendar_Render();
 }
 
 function ccn_calendar_calendar_btnAdd() {
