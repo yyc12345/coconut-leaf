@@ -201,7 +201,7 @@ function ccn_datetime_ResolveLoopRules4Event(loopRules, loopDateTimeStart, loopD
         if (remainFullSpanCount != 0) {
             detectDateTime.setUTCDate((loopSpan - remainFullSpanCount) * 7 + detectDateTime.getUTCDate());
         }
-        var weekCounter = (remainDays + 7 - originalWeek) % 7
+        var weekCounter = remainDays;
 
         while(Math.floor(detectDateTime.getTime() / 60000) + eventOffset - timezoneOffset <= loopDateTimeEnd) {
             if (weekOption[(weekCounter + originalWeek) % 7])

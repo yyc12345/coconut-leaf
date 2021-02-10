@@ -157,6 +157,7 @@ function ccn_calendar_calendar_Analyse() {
                     eventItem.end = eventDateTime.toLocaleTimeString();
                     ccn_calendar_calendar_displayCache[count].events.push(eventItem);
                     if (exitFlag) break;
+                    else eventDateTime.setMinutes(eventDateTime.getMinutes() + 1, 0, 0);
                     count++;
                 }
             }
