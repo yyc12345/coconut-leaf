@@ -45,27 +45,28 @@ def LoopHandle_Year(searchResult, starttime, times, tzoffset):
     isStrict = searchResult.group(1) == 'S'
     yearSpan = int(searchResult.group(2))
 
+    times -= 1
     newYear = clientYear = clientDate.year
     newMonth = clientMonth = clientDate.month
     newDay = clientDay = clientDate.day
     if clientMonth == 2 and clientDay == 29:
         if isStrict:
             realSpan = utils.LCM(yearSpan, 4)
+            print(realSpan)
             valCache = starttime
-            timesCache = times - 1
-            while valCache < MAX_TIMESTAMP and timesCache > 0:
+            while valCache < MAX_TIMESTAMP and times > 0:
                 newYear += realSpan
                 if not IsLeapYear(newYear):
                     continue
                 valCache = starttime + DAY1_SPAN * (DaysCount(newYear, newMonth, newDay) - DaysCount(clientYear, clientMonth, clientDay))
-                timesCache -= 1
+                times -= 1
         else:
-            newYear = 0 if times == 1 else (times * yearSpan)
+            newYear += times * yearSpan
             if not IsLeapYear(newYear):
                 newDay = 28     # migrate to 28
     else:
         # if times == 1, no extra datetime need to be added
-        newYear += 0 if times == 1 else (times * yearSpan)
+        newYear += times * yearSpan
 
     val = starttime + DAY1_SPAN * (DaysCount(newYear, newMonth, newDay) - DaysCount(clientYear, clientMonth, clientDay))
     return val if val < MAX_TIMESTAMP else MAX_TIMESTAMP
@@ -90,46 +91,56 @@ def LoopHandle_Month(searchResult, starttime, times, tzoffset):
     if isStrict:
         if loopType == 'A':
             while times > 0:
-                newMonth += 1
+                newMonth += monthSpan
                 if newMonth > 12:
-                    newMonth = 1
-                    newYear += 1
+                    newYear += int((newMonth - 1) / 12)
+                    newMonth = ((newMonth - 1) % 12) + 1
+                if newYear > MAX_DATETIME.year:
+                    break
                 maxDays = MonthDayCount[newMonth - 1] + (1 if newMonth == 2 and IsLeapYear(newYear) else 0)
                 if dayStatistics[0] <= maxDays:
                     times -= 1
         elif loopType == 'B':
             while times > 0:
-                newMonth += 1
+                newMonth += monthSpan
                 if newMonth > 12:
-                    newMonth = 1
-                    newYear += 1
+                    newYear += int((newMonth - 1) / 12)
+                    newMonth = ((newMonth - 1) % 12) + 1
+                if newYear > MAX_DATETIME.year:
+                    break
                 maxDays = MonthDayCount[newMonth - 1] + (1 if newMonth == 2 and IsLeapYear(newYear) else 0)
                 if dayStatistics[1] <= maxDays:
                     times -= 1
         elif loopType == 'C':
             while times > 0:
-                newMonth += 1
+                newMonth += monthSpan
                 if newMonth > 12:
-                    newMonth = 1
-                    newYear += 1
+                    newYear += int((newMonth - 1) / 12)
+                    newMonth = ((newMonth - 1) % 12) + 1
+                if newYear > MAX_DATETIME.year:
+                    break
                 monthStatistics = GetMonthWeekStatistics(newYear, newMonth)
                 if dayStatistics[2] <= monthStatistics[dayStatistics[3]]:
                     times -= 1
         elif loopType == 'D':
             while times > 0:
-                newMonth += 1
+                newMonth += monthSpan
                 if newMonth > 12:
-                    newMonth = 1
-                    newYear += 1
+                    newYear += int((newMonth - 1) / 12)
+                    newMonth = ((newMonth - 1) % 12) + 1
+                if newYear > MAX_DATETIME.year:
+                    break
                 monthStatistics = GetMonthWeekStatistics(newYear, newMonth)
                 if dayStatistics[4] <= monthStatistics[dayStatistics[5]]:
                     times -= 1
     else:
         newMonth += times * monthSpan
-        newYear += int(newMonth - 1 / 12)
-        newMonth = (newMonth % 12) + 1
-        newDay = MonthDayCount[newMonth - 1] + (1 if newMonth == 2 and IsLeapYear(newYear) else 0)
-
+        newYear += int((newMonth - 1) / 12)
+        newMonth = ((newMonth - 1) % 12) + 1
+        
+    # all method need calc newDay and it should be the last day of current selected month
+    # so calc it in there
+    newDay = MonthDayCount[newMonth - 1] + (1 if newMonth == 2 and IsLeapYear(newYear) else 0)
     val = starttime + DAY1_SPAN * (DaysCount(newYear, newMonth, newDay) - DaysCount(clientYear, clientMonth, clientDay))
     return val if val < MAX_TIMESTAMP else MAX_TIMESTAMP
 
@@ -145,9 +156,6 @@ def LoopHandle_Week(searchResult, starttime, times, tzoffset):
         times-=1    # if first event is not suit for week loop rules, minus one more event to suit it.
     fullWeek = int(times / weekEventCount)
     remainEvent = times % weekEventCount
-    print(fullWeek)
-    print(remainEvent)
-    print(nowDayOfWeek)
     
     val = starttime + DAY7_SPAN * fullWeek * weekSpan
     if val > MAX_TIMESTAMP:

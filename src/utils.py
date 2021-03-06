@@ -2,6 +2,7 @@ import hashlib
 import random
 import uuid
 import time
+import math
 
 ValidUsername = set(map(lambda x:chr(x), range(48, 58, 1))) | set(map(lambda x:chr(x), range(65, 91, 1))) | set(map(lambda x:chr(x), range(97, 123, 1)))
 ValidPassword = set(map(lambda x:chr(x), range(33, 127, 1)))
@@ -47,5 +48,5 @@ def GCD(a, b):
     return math.gcd(a, b)
 
 def LCM(a, b):
-    return a * b / GCD(a, b)
+    return int(a * b / GCD(a, b))
         
