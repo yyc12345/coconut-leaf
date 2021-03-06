@@ -298,7 +298,7 @@ function ccn_event_GetForm() {
     } else if ($('#ccn-event-radioLoopYear').prop('checked')) {
         loopRules = "Y{0}{1}".format(
             isStrict ? "S" : "R",
-            $('#ccn-event-loopDay-inputSpan').val()
+            $('#ccn-event-loopYear-inputSpan').val()
         );
     }
 

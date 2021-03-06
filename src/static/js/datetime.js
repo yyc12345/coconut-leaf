@@ -50,7 +50,7 @@ function ccn_datetime_ResolveLoopRules4UI(strl) {
     if (ccn_datetime_precompiledLoopRules.year.test(sp[0])) {
         loopRules = [0, RegExp.$1 == 'S', parseInt(RegExp.$2)];
     } else if (ccn_datetime_precompiledLoopRules.month.test(sp[0])) {
-        loopRules = [1, RegExp.$1 == 'S', RegExp.$2, parseInt(RedExp.$3)];
+        loopRules = [1, RegExp.$1 == 'S', RegExp.$2, parseInt(RegExp.$3)];
     } else if (ccn_datetime_precompiledLoopRules.week.test(sp[0])) {
         loopRules = [2];
         for (var i = 0; i < 7; i++)
@@ -110,17 +110,30 @@ function ccn_datetime_ResolveLoopRules4Event(loopRules, loopDateTimeStart, loopD
         
         var yearCount = detectDateTime.getFullYear() - originalYear;
         var isSpecial = (originalMonth == 2 && originalDay == 29);
-        var realLoopSpan = isSpecial ? LCM(4, loopSpan) : loopSpan;
+        var realLoopSpan = (isSpecial && isStrict) ? LCM(4, loopSpan) : loopSpan;
 
         //var fullSpanCount = Math.floor(yearCount / realLoopSpan);
-        var remainYear = year % realLoopSpan;
+        var remainYear = yearCount % realLoopSpan;
         //detectDateTime.setUTCFullYear(fullSpanCount + detectDateTime.getUTCFullYear(), 1, 1);
         if (remainYear != 0)
-            detectDateTime.setUTCFullYear(realLoopSpan - remainYear + detectDateTime.getUTCFullYear(), 1, 1);
+            detectDateTime.setUTCFullYear(realLoopSpan - remainYear + detectDateTime.getUTCFullYear(), 1 - 1, 1);
 
+        var skipFlag = false;
         while(Math.floor(detectDateTime.getTime() / 60000) + eventOffset - timezoneOffset <= loopDateTimeEnd) {
-            if (!isSpecial || (isSpecial && ccn_datetime_IsLeapYear(detectDateTime.getUTCFullYear()))) {
-                detectDateTime.setUTCMonth(originalMonth, originalDay);
+            skipFlag = false;
+            if (isSpecial) {
+                // is special day, 29 Feb
+                // try set it in 29 Feb
+                if (isStrict) {
+                    if (ccn_datetime_IsLeapYear(detectDateTime.getUTCFullYear())) detectDateTime.setUTCMonth(2 - 1, 29);
+                    else skipFlag = true;  // order skip
+                } else {
+                    if (ccn_datetime_IsLeapYear(detectDateTime.getUTCFullYear())) detectDateTime.setUTCMonth(2 - 1, 29);
+                    else detectDateTime.setUTCMonth(2 - 1, 28);
+                }
+            } else detectDateTime.setUTCMonth(originalMonth - 1, originalDay);
+
+            if (!skipFlag) {
                 result.push(
                     [Math.floor(detectDateTime.getTime() / 60000) + eventOffset - timezoneOffset, 
                     Math.floor(detectDateTime.getTime() / 60000) + eventOffset + eventDuration - timezoneOffset]
@@ -135,12 +148,13 @@ function ccn_datetime_ResolveLoopRules4Event(loopRules, loopDateTimeStart, loopD
         var loopMethod = RegExp.$2;
         var loopSpan = parseInt(RegExp.$3);
 
-        var monthsCount = ccn_datetime_MonthsCount(detectDateTime.getUTCFullYear(). detectDateTime.getUTCMonth() + 1) -
+        var monthsCount = ccn_datetime_MonthsCount(detectDateTime.getUTCFullYear(), detectDateTime.getUTCMonth() + 1) -
         ccn_datetime_MonthsCount(originalYear, originalMonth);
 
         //var fullSpanCount = Math.floor(monthsCount / loopSpan);
         var remainMonth = monthsCount % loopSpan;
         //detectDateTime.setUTCMonth(fullSpanCount * loopSpan + detectDateTime.getUTCMonth(), 1);
+        detectDateTime.setUTCDate(1);
         if (remainMonth != 0)
             detectDateTime.setUTCMonth(loopSpan - remainMonth + detectDateTime.getUTCMonth(), 1);
 
@@ -306,9 +320,9 @@ function ccn_datetime_GetDayInMonth(year, month, day) {
 function ccn_datetime_GetRemanagedDayInMonth(oldYear, oldMonth, oldDay, newYear, newMonth, isStrict) {
     var ddata = ccn_datetime_GetDayInMonth(oldYear, oldMonth, oldDay);
     var mdata = ccn_datetime_GetMonthWeekStatistics(newYear, newMonth);
-    var days = ccn_datetime_monthDayCount[month - 1] + ((month == 2 && ccn_datetime_IsLeapYear(year)) ? 1 : 0);
+    var days = ccn_datetime_monthDayCount[newMonth - 1] + ((newMonth == 2 && ccn_datetime_IsLeapYear(year)) ? 1 : 0);
     var firstDayOfWeek = ccn_datetime_DayOfWeek(newYear, newMonth, 1);
-    var lastDayOfWeek = (firstDayOfWeek + days - 1) % 7;
+    //var lastDayOfWeek = (firstDayOfWeek + days - 1) % 7;
     
     if (isStrict) {
         var methodA = ddata[0] > days ? undefined : ddata[0];
@@ -321,14 +335,14 @@ function ccn_datetime_GetRemanagedDayInMonth(oldYear, oldMonth, oldDay, newYear,
     var methodC = undefined;
     if (ddata[2] <= mdata[ddata[3]] || !isStrict) {
         var targetWeek = Math.min(ddata[2], mdata[ddata[3]]);
-        methodC = (targetWeek - 1) * 7 + ((ddata[3] + 7 - firstDayOfWeek) % 7);
+        methodC = 1 + (targetWeek - 1) * 7 + ((ddata[3] + 7 - firstDayOfWeek) % 7);
     }
 
     var methodD = undefined;
     if (ddata[4] <= mdata[ddata[5]] || !isStrict) {
         // convert to type c and calc
         var targetWeek = mdata[ddata[5]] - Math.min(ddata[4], mdata[ddata[5]]) + 1;
-        methodD = (targetWeek - 1) * 7 + ((ddata[3] + 7 - lastDayOfWeek) % 7);
+        methodD = 1 + (targetWeek - 1) * 7 + ((ddata[5] + 7 - firstDayOfWeek) % 7);
     }
 
     return [methodA, methodB, methodC, methodD];
