@@ -8,19 +8,22 @@
     <div class="schedule-event-list">
         {{for events}}
         {{if isVisible}}
-        <div class="schedule-event card">
-            <div class="schedule-event-words">
-                <p class="level-item"><b>{{>title}}</b></p>
-                <p class="level-item">{{>description}}</p>
-                <p class="level-item"><span>{{>start}}</span>-<span>{{>end}}</span></p>
-            </div>
-            <div class="schedule-event-icon">
-                {{if isLocked}}
-                <span class="icon is-small"><i class="fas fa-lock"></i></span>
-                {{/if}}
-                {{if timezoneWarning}}
-                <span class="icon is-small"><i class="fas fa-globe"></i></span>
-                {{/if}}
+        <div class="schedule-event-outter card" uuid="{{:uuid}}">
+            <div style="background: {{:color}}; width: 0.75rem; height: 100%;"></div>
+            <div class="schedule-event-inner">
+                <div class="schedule-event-words">
+                    <p class="level-item"><b>{{>title}}</b></p>
+                    <p class="level-item">{{>description}}</p>
+                    <p class="level-item"><span>{{>start}}</span>-<span>{{>end}}</span></p>
+                </div>
+                <div class="schedule-event-icon">
+                    {{if isLocked}}
+                    <span class="icon is-small"><i class="fas fa-lock"></i></span>
+                    {{/if}}
+                    {{if timezoneWarning}}
+                    <span class="icon is-small"><i class="fas fa-globe"></i></span>
+                    {{/if}}
+                </div>
             </div>
         </div>
         {{/if}}

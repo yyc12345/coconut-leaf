@@ -88,6 +88,28 @@ function ccn_api_boolTemplate(_url, _data) {
     return (IsResponseOK(gotten_data) && gotten_data['data']);
 }
 
+// deserialize & serialize calendar description function
+
+function ccn_api_serializeDescription(_description, _color) {
+    var sobj = {
+        description: _description,
+        color: _color
+    }
+    return JSON.stringify(sobj);
+}
+
+function ccn_api_deserializeDescription(strl) {
+    try {
+        return $.parseJSON(strl);
+    } catch(err) {
+        return {
+            description: "",
+            color: DefaultColor
+        };
+    }
+    
+}
+
 // ====================================================== common
 
 function ccn_api_common_webLogin(_username, _password) {

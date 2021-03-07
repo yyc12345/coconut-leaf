@@ -107,7 +107,7 @@ function ccn_calendar_calendar_Analyse() {
             month: gottenDateTime.getMonth() + 1,
             day: gottenDateTime.getDate(),
             dayOfWeek: gottenDateTime.getWeekday() + 1,
-            subcalendar: "       -",
+            subcalendar: "",
             events: new Array()
         });
         gottenDateTime.setTime(gottenDateTime.getTime() + ccn_datetime_DAY1_SPAN * 60000);
@@ -117,6 +117,7 @@ function ccn_calendar_calendar_Analyse() {
     // then analyse each event
     for(var index in ccn_calendar_calendar_listCache) {
         var item = ccn_calendar_calendar_listCache[index];
+        var deserializedDescription = ccn_api_deserializeDescription(item[3]);
         
         var minStartTimestamp = startTimestamp - (item[6] - item[5]);
         var result = ccn_datetime_ResolveLoopRules4Event(
@@ -141,7 +142,8 @@ function ccn_calendar_calendar_Analyse() {
                         uuid: item[0],
                         belongTo: item[1],
                         title: item[2],
-                        description: item[3],
+                        description: deserializedDescription.description,
+                        color: deserializedDescription.color,
                         isVisible: true,
                         isLocked: typeof(ccn_calendar_owned_displayCache[item[0]]) != 'undefined',
                         loopText: " ",  // todo: finish this
@@ -175,7 +177,7 @@ function ccn_calendar_calendar_Render() {
         for(var j = 0; j < 7; j++) {
             var item = ccn_calendar_calendar_displayCache[counter];
             $('#ccn-calendarItem-title-' + i + '-' + j).text(item.day);
-            $('#ccn-calendarItem-desc-' + i + '-' + j).text(item.subcalendar);
+            $('#ccn-calendarItem-desc-' + i + '-' + j).html(item.subcalendar == '' ? '&nbsp;' : item.subcalendar);
             $('#ccn-calendarItem-task-' + i + '-' + j).text(item.events.length.toString());
             counter++;
         }
@@ -203,6 +205,8 @@ function ccn_calendar_calendar_Render() {
     var listDOM = $('#ccn-calendar-scheduleList');
     listDOM.empty();
     listDOM.append(ccn_template_scheduleItem.render({renderdata: ccn_calendar_calendar_displayCache}));
+    // link click event
+    $('div.schedule-event-outter').click(ccn_calendar_calendar_ItemUpdate);
     ccn_i18n_ApplyLanguage2Content(listDOM);
 }
 

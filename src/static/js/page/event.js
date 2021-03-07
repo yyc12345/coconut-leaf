@@ -67,13 +67,17 @@ function ccn_event_Init() {
     // if ccn_event_editingEvent is undefined, init following content with add mode
     // otherwise, init as update mode
     var isAdd = typeof(ccn_event_editingEvent) == 'undefined';
+    var deserializeDescription = isAdd ? undefined : ccn_api_deserializeDescription(ccn_event_editingEvent[3]);
 
     // init title and description
     $('#ccn-event-inputTitle').val(
         isAdd ? '' : ccn_event_editingEvent[2]
     );
     $('#ccn-event-inputDescription').val(
-        isAdd ? '' : ccn_event_editingEvent[3]
+        isAdd ? '' : deserializeDescription.description
+    );
+    $('#ccn-event-inputColor').val(
+        isAdd ? DefaultColor : deserializeDescription.color
     );
 
     // init collection picker, first we need query data
@@ -244,6 +248,8 @@ function ccn_event_GetForm() {
     if (title == '') return undefined;
     var description = $('#ccn-event-inputDescription').val();
     if (description == '') return undefined;
+    var color = $('#ccn-event-inputColor').val();
+    if (color == '') return undefined;
     var belongTo = $('#ccn-event-inputCollection').val();
     if (belongTo == null) return undefined; // if no selected item, val return null, not undefined
 
@@ -326,7 +332,18 @@ function ccn_event_GetForm() {
         }
     }
 
-    return [belongTo, title, description, eventDateTimeStart, eventDateTimeEnd, timezoneOffset, loopRules];
+    return [
+        belongTo, 
+        title, 
+        ccn_api_serializeDescription(
+            description,
+            color
+        ), 
+        eventDateTimeStart, 
+        eventDateTimeEnd, 
+        timezoneOffset, 
+        loopRules
+    ];
 }
 
 function ccn_event_btnSpot() {

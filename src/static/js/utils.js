@@ -15,6 +15,7 @@ function ComputeSHA256(strl) {
     return hashHex.toLowerCase();
 }
 */
+var DefaultColor = '#536dfe';
 
 function IsResponseOK(data) {
     if (typeof (data) == 'undefined') {

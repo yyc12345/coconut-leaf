@@ -55,13 +55,20 @@ div.schedule-event-list {
     flex-flow: column;
 }
 
-div.schedule-event {
+div.schedule-event-outter {
     display: flex;
     flex-flow: row;
     align-items: flex-start;
 
-    padding: 1.25rem;
     margin-bottom: 1.25rem;
+}
+
+div.schedule-event-inner {
+    display: flex;
+    flex-flow: row;
+    align-items: flex-start;
+    
+    padding: 1.25rem;
 }
 
 div.schedule-event-words {
