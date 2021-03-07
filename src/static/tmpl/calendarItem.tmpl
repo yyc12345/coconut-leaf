@@ -2,9 +2,14 @@
 <div>
     {{for start=0 end=7 step=1 itemVar="~column"}}
     <div id="ccn-calendarItem-{{:~row}}-{{:~column}}">
-        <p><b id="ccn-calendarItem-title-{{:~row}}-{{:~column}}">&nbsp;</b></p>
-        <p><small id="ccn-calendarItem-desc-{{:~row}}-{{:~column}}">&nbsp;</small></p>
-        <p><span class="icon is-small"><i class="fas fa-tasks"></i></span><span id="ccn-calendarItem-task-{{:~row}}-{{:~column}}">&nbsp;</span></p>
+        <p><b id="ccn-calendarItem-title-{{:~row}}-{{:~column}}">&nbsp;</b>
+            <span id="ccn-calendarItem-desc-{{:~row}}-{{:~column}}"></span>
+        </p>
+        <div id="ccn-calendarItem-eventBox1-{{:~row}}-{{:~column}}" class="calendarItem-eventBox" enableDisplay="false"></div>
+        <div id="ccn-calendarItem-eventBox2-{{:~row}}-{{:~column}}" class="calendarItem-eventBox" enableDisplay="false"></div>
+        <div id="ccn-calendarItem-eventBox3-{{:~row}}-{{:~column}}" class="calendarItem-eventBox" enableDisplay="false"></div>
+        <div id="ccn-calendarItem-eventBox4-{{:~row}}-{{:~column}}" class="calendarItem-eventBox" enableDisplay="false"></div>
+        <p id="ccn-calendarItem-task-{{:~row}}-{{:~column}}">&nbsp;</p>
     </div>
     {{/for}}
 </div>

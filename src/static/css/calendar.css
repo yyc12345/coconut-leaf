@@ -1,4 +1,4 @@
-#ccn-calendar-calendarBody div:nth-child(n+2) div {
+#ccn-calendar-calendarBody > div:nth-child(n+2) > div {
     border-top: 0 solid black;
     border-left: 0 solid black;
     border-right: 1px solid black;
@@ -13,15 +13,15 @@
     overflow: hidden;
 }
 
-#ccn-calendar-calendarBody div:nth-child(n+2) div:nth-child(1) {
+#ccn-calendar-calendarBody > div:nth-child(n+2) > div:nth-child(1) {
     border-left: 1px solid black;
 }
 
-#ccn-calendar-calendarBody div:nth-child(2) div {
+#ccn-calendar-calendarBody > div:nth-child(2) > div {
     border-top: 1px solid black;
 }
 
-#ccn-calendar-calendarBody div div {
+#ccn-calendar-calendarBody > div > div {
     flex-grow: 1;
     flex-basis: 0;
     flex-shrink: 0;
@@ -29,12 +29,30 @@
     overflow: hidden;
 }
 
-#ccn-calendar-calendarBody div {
+#ccn-calendar-calendarBody > div {
     display: flex;
     flex-flow: row;
 }
 
 
+
+
+
+
+div.calendarItem-eventBox {
+    border: 1px solid black;
+    border-radius: 2px;
+    margin: 0.2rem;
+    height: 0.75rem;
+    width: 100%;
+}
+
+div.calendarItem-eventBox[enableDisplay=true] {
+    visibility: visible;
+}
+div.calendarItem-eventBox[enableDisplay=false] {
+    visibility: hidden;
+}
 
 
 
@@ -83,6 +101,11 @@ div.schedule-event-words {
 
 div.schedule-event-icon {
     margin-left: 0.75rem;
+}
+
+div.schedule-event-color {
+    width: 0.75rem; 
+    height: 100%;
 }
 
 #ccn-calendar-scheduleList div.schedule-day:nth-child(n+2) {

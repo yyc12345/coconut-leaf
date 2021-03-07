@@ -171,19 +171,8 @@ function ccn_calendar_calendar_Analyse() {
 // just use produced ccn_calendar_calendar_displayCache
 // to re-generate ui
 function ccn_calendar_calendar_Render() {
-    // all data has been alanysed, feeback to calendar body.
-    var counter = 0;
-    for(var i = 0; i < 6; i++) {
-        for(var j = 0; j < 7; j++) {
-            var item = ccn_calendar_calendar_displayCache[counter];
-            $('#ccn-calendarItem-title-' + i + '-' + j).text(item.day);
-            $('#ccn-calendarItem-desc-' + i + '-' + j).html(item.subcalendar == '' ? '&nbsp;' : item.subcalendar);
-            $('#ccn-calendarItem-task-' + i + '-' + j).text(item.events.length.toString());
-            counter++;
-        }
-    }
-
     // todo: add / migrate subcalendar feature here
+
 
     // analyse visible data
     for(var i in ccn_calendar_calendar_displayCache) {
@@ -207,6 +196,41 @@ function ccn_calendar_calendar_Render() {
     listDOM.append(ccn_template_scheduleItem.render({renderdata: ccn_calendar_calendar_displayCache}));
     // link click event
     $('div.schedule-event-outter').click(ccn_calendar_calendar_ItemUpdate);
+
+    // all data has been alanysed, feedback to calendar body.
+    var counter = 0;
+    for(var i = 0; i < 6; i++) {
+        for(var j = 0; j < 7; j++) {
+            var item = ccn_calendar_calendar_displayCache[counter];
+            var lenEvents = item.events.length;
+            var eventsCounter = 0;
+
+            $('#ccn-calendarItem-title-' + i + '-' + j).text(item.day);
+            $('#ccn-calendarItem-desc-' + i + '-' + j).text(item.subcalendar);
+
+
+            for(; eventsCounter < Math.min(lenEvents, 4); eventsCounter++) {
+                $('#ccn-calendarItem-eventBox' + (eventsCounter + 1) + '-' + i + '-' + j)
+                .css('background', item.events[eventsCounter].color)
+                .attr('enableDisplay', 'true');
+            }
+            if (lenEvents > 4) {
+                // more than 4 item, write number
+                $('#ccn-calendarItem-task-' + i + '-' + j).text(lenEvents.toString());
+            } else {
+                // otherwise, wipe out number
+                $('#ccn-calendarItem-task-' + i + '-' + j).html('&nbsp;');
+                // set others div are blank
+                for(; eventsCounter < 4; eventsCounter++) {
+                    $('#ccn-calendarItem-eventBox' + (eventsCounter + 1) + '-' + i + '-' + j)
+                    .attr('enableDisplay', 'false');
+                }
+            }
+            
+            counter++;
+        }
+    }
+
     ccn_i18n_ApplyLanguage2Content(listDOM);
 }
 
