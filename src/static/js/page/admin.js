@@ -22,11 +22,14 @@ $(document).ready(function() {
     $("#tabcontrol-tab-1-2").click(function(){
         ccn_tabcontrol_SwitchTab(1, 2);
     });
+    $("#tabcontrol-tab-1-3").click(function(){
+        ccn_tabcontrol_SwitchTab(1, 3);
+    });
     ccn_tabcontrol_SwitchTab(1, 1);
 
     // load user tab according to admin status
     if(!ccn_api_common_isAdmin())
-        $('#tabcontrol-tab-1-2').hide();
+        $('#tabcontrol-tab-1-3').hide();
 
     // apply i18n
     ccn_i18n_LoadLanguage();

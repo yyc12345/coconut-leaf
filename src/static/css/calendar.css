@@ -29,6 +29,10 @@
     overflow: hidden;
 }
 
+#ccn-calendar-calendarBody > div > div[isCurrentMonth=false] {
+    background: #d0d0d0;
+}
+
 #ccn-calendar-calendarBody > div {
     display: flex;
     flex-flow: row;
@@ -42,7 +46,7 @@
 div.calendarItem-eventBox {
     border: 1px solid black;
     border-radius: 2px;
-    margin: 0.2rem;
+    margin-top: 0.2rem;
     height: 0.75rem;
     width: 100%;
 }

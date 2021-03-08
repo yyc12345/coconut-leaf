@@ -51,6 +51,12 @@
 
     <div id="tabcontrol-panel-1-1" class="container tabcontrol-panel-1" style="margin-top: 20px;">
         <nav class="level">
+            <div class="level-item control">
+                <a id="ccn-calendar-calendar-btnPrevMonth" class="button">
+                    <span class="icon is-small"><i class="fas fa-chevron-circle-left"></i></span>
+                </a>
+            </div>
+
             <div class="level-item">
                 <div class="field has-addons">
                     <div class="control">
@@ -70,6 +76,11 @@
             </div>
             <div class="level-item control">
                 <a id="ccn-calendar-calendar-btnAdd" i18n-name="ccn-i18n-calendar-calendar-add" class="button is-primary"></a>
+            </div>
+            <div class="level-item control">
+                <a id="ccn-calendar-calendar-btnNextMonth" class="button">
+                    <span class="icon is-small"><i class="fas fa-chevron-circle-right"></i></span>
+                </a>
             </div>
         </nav>
 
@@ -98,7 +109,7 @@
     </div>
 
     <div id="tabcontrol-panel-1-2" class="container tabcontrol-panel-1" style="margin-top: 20px;">
-        <div id="ccn-calendar-collection-btnRefresh" class="control">
+        <div id="ccn-calendar-collection-btnRefresh" class="control" style="margin: 0.75rem;">
             <a class="button is-primary">
                 <span class="icon is-small"><i class="fas fa-sync"></i></span>
             </a>
@@ -112,7 +123,32 @@
     </div>
 
     <div id="tabcontrol-panel-1-3" class="container tabcontrol-panel-1" style="margin-top: 20px;">
-
+        <div class="field">
+            <label class="label" i18n-name="ccn-i18n-calendar-display-firstDayOfWeek"></label>
+            <div class="control">
+                <div class="select">
+                    <select id="ccn-calendar-display-firstDayOfWeek">
+                        <option i18n-name="ccn-i18n-universal-week-1"></option>
+                        <option i18n-name="ccn-i18n-universal-week-2"></option>
+                        <option i18n-name="ccn-i18n-universal-week-3"></option>
+                        <option i18n-name="ccn-i18n-universal-week-4"></option>
+                        <option i18n-name="ccn-i18n-universal-week-5"></option>
+                        <option i18n-name="ccn-i18n-universal-week-6"></option>
+                        <option i18n-name="ccn-i18n-universal-week-7"></option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="field">
+            <label class="label" i18n-name="ccn-i18n-calendar-display-subcalendar"></label>
+            <div class="control">
+                <div class="select">
+                    <select id="ccn-calendar-display-subcalendar">
+                        <option i18n-name="ccn-i18n-calendar-display-subcalendar-chineseLunisolarCalendar"></option>
+                    </select>
+                </div>
+            </div>
+        </div>
     </div>
 
 </body>

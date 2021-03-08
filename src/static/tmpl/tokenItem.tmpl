@@ -1,0 +1,20 @@
+<div id="ccn-tokenItem-{{:uuid}}" class="token-item card">
+    <div class="token-item-words">
+        <b>{{>token}}</b>
+        {{if isMe}}
+        <p i18n-name="ccn-i18n-tokenItem-isMe"></p>
+        {{/if}}
+        <p>
+            <span i18n-name="ccn-i18n-tokenItem-ua"></span>
+            <span>{{>ua}}</span>
+        </p>
+        <p>
+            <span i18n-name="ccn-i18n-tokenItem-ip"></span>
+            <span>{{>ip}}</span>
+        </p>
+    </div>
+
+    <div id="ccn-tokenItem-btnLogout-{{:uuid}}" uuid="{{:uuid}}" class="token-item-icon control">
+        <a class="button"><span class="icon is-small"><i class="fas fa-sign-out"></i></span></a>
+    </div>
+</div>

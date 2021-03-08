@@ -9,6 +9,7 @@ var ccn_template_displaySharedItem = undefined;
 var ccn_template_userItem = undefined;
 var ccn_template_todoItem = undefined;
 var ccn_template_optionItem = undefined;
+var ccn_template_tokenItem = undefined;
 
 function ccn_template_Load() {
     $.ajax({
@@ -82,6 +83,14 @@ function ccn_template_Load() {
                 async: false,
                 success: function (data) {
                     ccn_template_userItem = $.templates(data);
+                }
+            });
+            $.ajax({
+                url: $("#jsrender-tmpl-tokenItem").attr('src'),
+                type: "GET",
+                async: false,
+                success: function (data) {
+                    ccn_template_tokenItem = $.templates(data);
                 }
             });
             break;

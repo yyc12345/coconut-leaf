@@ -108,6 +108,7 @@ function ccn_calendar_calendar_Analyse() {
             day: gottenDateTime.getDate(),
             dayOfWeek: gottenDateTime.getWeekday() + 1,
             subcalendar: "",
+            isCurrentMonth: (gottenDateTime.getMonth() + 1) == gottenMonth,
             events: new Array()
         });
         gottenDateTime.setTime(gottenDateTime.getTime() + ccn_datetime_DAY1_SPAN * 60000);
@@ -205,6 +206,8 @@ function ccn_calendar_calendar_Render() {
             var lenEvents = item.events.length;
             var eventsCounter = 0;
 
+            $('#ccn-calendarItem-' + i + '-' + j).attr('isCurrentMonth', item.isCurrentMonth ? 'true' : 'false');
+
             $('#ccn-calendarItem-title-' + i + '-' + j).text(item.day);
             $('#ccn-calendarItem-desc-' + i + '-' + j).text(item.subcalendar);
 
@@ -216,7 +219,9 @@ function ccn_calendar_calendar_Render() {
             }
             if (lenEvents > 4) {
                 // more than 4 item, write number
-                $('#ccn-calendarItem-task-' + i + '-' + j).text(lenEvents.toString());
+                $('#ccn-calendarItem-task-' + i + '-' + j).text(
+                    $.i18n.prop('ccn-i18n-calendar-calendar-stripedEvents').format(lenEvents.toString())
+                );
             } else {
                 // otherwise, wipe out number
                 $('#ccn-calendarItem-task-' + i + '-' + j).html('&nbsp;');

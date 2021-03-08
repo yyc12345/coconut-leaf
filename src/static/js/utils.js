@@ -30,14 +30,6 @@ function IsResponseOK(data) {
     return true;
 }
 
-function GetApiToken() {
-    return ccn_localstorageAssist_Get('ccn-token', '');
-}
-
-function SetApiToken(value) {
-    ccn_localstorageAssist_Set('ccn-token', value);
-}
-
 function LineBreaker2Br(strl) {
     return $('<div>').text(strl).html().replace(/\n/g, '<br />');
 }

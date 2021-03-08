@@ -1,24 +1,24 @@
 // NOTE: this file is sync with dt.py. if this file or dt.py have bugs, all code should be changed
-ccn_datetime_monthDayCount = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+var ccn_datetime_monthDayCount = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
-ccn_datetime_MIN_YEAR = 1950;
-ccn_datetime_MAX_YEAR = 2199;
-ccn_datetime_MIN_DATETIME = new Date(Date.UTC(1950, 1, 1, 0, 0, 0, 0));
-ccn_datetime_MAX_DATETIME = new Date(Date.UTC(2200, 1, 1, 0, 0, 0, 0));
-ccn_datetime_MIN_TIMESTAMP = Math.floor(ccn_datetime_MIN_DATETIME.getTime() / 60000);
-ccn_datetime_MAX_TIMESTAMP = Math.floor(ccn_datetime_MAX_DATETIME.getTime() / 60000);
+var ccn_datetime_MIN_YEAR = 1950;
+var ccn_datetime_MAX_YEAR = 2199;
+var ccn_datetime_MIN_DATETIME = new Date(Date.UTC(1950, 1, 1, 0, 0, 0, 0));
+var ccn_datetime_MAX_DATETIME = new Date(Date.UTC(2200, 1, 1, 0, 0, 0, 0));
+var ccn_datetime_MIN_TIMESTAMP = Math.floor(ccn_datetime_MIN_DATETIME.getTime() / 60000);
+var ccn_datetime_MAX_TIMESTAMP = Math.floor(ccn_datetime_MAX_DATETIME.getTime() / 60000);
 
-ccn_datetime_DAY1_SPAN = 60 * 24;
-ccn_datetime_DAY7_SPAN = 7 * ccn_datetime_DAY1_SPAN;
+var ccn_datetime_DAY1_SPAN = 60 * 24;
+var ccn_datetime_DAY7_SPAN = 7 * ccn_datetime_DAY1_SPAN;
 
-ccn_datetime_precompiledLoopRules = {
+var ccn_datetime_precompiledLoopRules = {
     year: new RegExp(/^Y([SR]{1})([1-9]\d*)$/),
     month: new RegExp(/^M([SR]{1})([ABCD]{1})([1-9]\d*)$/),
     week: new RegExp(/^W([TF]{7})([1-9]\d*)$/),
     day: new RegExp(/^D([1-9]\d*)$/)
 };
 
-ccn_datetime_precompiledLoopStopRules = {
+var ccn_datetime_precompiledLoopStopRules = {
     infinity: new RegExp(/^F$/),
     datetime: new RegExp(/^D([1-9]\d*|0)$/),
     times: new RegExp(/^T([1-9]\d*)$/)
