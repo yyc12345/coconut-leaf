@@ -24,6 +24,31 @@ div.user-item-icon {
 
 
 
+div.token-item {
+    display: flex;
+    flex-flow: row;
+    align-items: flex-start;
+
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
+}
+
+div.token-item-words {
+    display: flex;
+    flex-flow: column;
+    align-items: flex-start;
+    flex-grow: 1;
+    flex-basis: 0;
+
+    word-break: break-all;
+}
+
+div.token-item-icon {
+    margin-left: 0.75rem;
+}
+
+
+
 
 div.control-list {
     display: flex; 

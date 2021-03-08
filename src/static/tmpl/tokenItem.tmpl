@@ -1,9 +1,6 @@
 <div id="ccn-tokenItem-{{:uuid}}" class="token-item card">
     <div class="token-item-words">
-        <b>{{>token}}</b>
-        {{if isMe}}
-        <p i18n-name="ccn-i18n-tokenItem-isMe"></p>
-        {{/if}}
+        <b>{{>uuid}}</b>
         <p>
             <span i18n-name="ccn-i18n-tokenItem-ua"></span>
             <span>{{>ua}}</span>
@@ -12,6 +9,16 @@
             <span i18n-name="ccn-i18n-tokenItem-ip"></span>
             <span>{{>ip}}</span>
         </p>
+        <p>
+            <span i18n-name="ccn-i18n-tokenItem-expireOn"></span>
+            <span>{{>expireOn}}</span>
+        </p>
+        {{if isMe}}
+        <p>
+            <span class="icon is-small"><i class="fas fa-exclamation-triangle"></i></span>
+            <span i18n-name="ccn-i18n-tokenItem-isMe"></span>
+        </p>
+        {{/if}}
     </div>
 
     <div id="ccn-tokenItem-btnLogout-{{:uuid}}" uuid="{{:uuid}}" class="token-item-icon control">

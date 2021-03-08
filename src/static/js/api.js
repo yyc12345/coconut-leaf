@@ -179,25 +179,6 @@ function ccn_api_common_tokenValid() {
     }
 }
 
-function ccn_api_common_isAdmin() {
-    return ccn_api_boolTemplate(
-        '/api/common/isAdmin',
-        {
-            token: ccn_localstorageAssist_GetApiToken()
-        }
-    );
-}
-
-function ccn_api_common_changePassword(_password) {
-    return ccn_api_boolTemplate(
-        '/api/common/changePassword',
-        {
-            token: ccn_localstorageAssist_GetApiToken(),
-            password: _password
-        }
-    );
-}
-
 // ====================================================== calendar
 
 function ccn_api_calendar_getFull(_startDateTime, _endDateTime) {
@@ -461,3 +442,42 @@ function ccn_api_admin_delete(_username) {
     );
 }
 
+// ====================================================== profile
+
+function ccn_api_profile_isAdmin() {
+    return ccn_api_boolTemplate(
+        '/api/profile/isAdmin',
+        {
+            token: ccn_localstorageAssist_GetApiToken()
+        }
+    );
+}
+
+function ccn_api_profile_changePassword(_password) {
+    return ccn_api_boolTemplate(
+        '/api/profile/changePassword',
+        {
+            token: ccn_localstorageAssist_GetApiToken(),
+            password: _password
+        }
+    );
+}
+
+function ccn_api_profile_getToken() {
+    return ccn_api_boolTemplate(
+        '/api/profile/getToken',
+        {
+            token: ccn_localstorageAssist_GetApiToken()
+        }
+    );
+}
+
+function ccn_api_profile_deleteToken(_deleteToken) {
+    return ccn_api_boolTemplate(
+        '/api/profile/deleteToken',
+        {
+            token: ccn_localstorageAssist_GetApiToken(),
+            deleteToken: _deleteToken
+        }
+    );
+}

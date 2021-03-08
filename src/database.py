@@ -136,7 +136,7 @@ class CalendarDatabase(object):
         return salt
 
     @SafeDatabaseOperation
-    def common_login(self, username, password):
+    def common_login(self, username, password, clientUa, clientIp):
         self.cursor.execute('SELECT [ccn_password], [ccn_salt] FROM user WHERE [ccn_name] = ?;', (username, ))
         (gotten_salt, gotten_password) = self.cursor.fetchone()
         
@@ -146,10 +146,12 @@ class CalendarDatabase(object):
                 utils.GenerateSalt(), # regenerate a new slat to prevent re-login try
                 username
             ))
-            self.cursor.execute('INSERT INTO token VALUES (?, ?, ?);', (
+            self.cursor.execute('INSERT INTO token VALUES (?, ?, ?, ?, ?);', (
                 username,
                 token,
                 utils.GetTokenExpireOn(), # add 2 day from now
+                clientUa,
+                clientIp,
             ))
             return token
         else:
@@ -157,15 +159,17 @@ class CalendarDatabase(object):
             raise Exception('Login authentication failed')
 
     @SafeDatabaseOperation
-    def common_webLogin(self, username, password):
+    def common_webLogin(self, username, password, clientUa, clientIp):
         self.cursor.execute('SELECT [ccn_name] FROM user WHERE [ccn_name] = ? AND [ccn_password] = ?;', (username, utils.ComputePasswordHash(password)))
 
         if len(self.cursor.fetchall()) != 0:
             token = utils.GenerateToken(username)
-            self.cursor.execute('INSERT INTO token VALUES (?, ?, ?);', (
+            self.cursor.execute('INSERT INTO token VALUES (?, ?, ?, ?, ?);', (
                 username,
                 token,
                 utils.GetTokenExpireOn(), # add 2 day from now
+                clientUa,
+                clientIp,
             ))
             return token
         else:
@@ -181,20 +185,6 @@ class CalendarDatabase(object):
     @SafeDatabaseOperation
     def common_tokenValid(self, token):
         self.tokenOper_check_valid(token)
-        return True
-
-    @SafeDatabaseOperation
-    def common_isAdmin(self, token):
-        username = self.tokenOper_get_username(token)
-        return self.tokenOper_is_admin(username)
-
-    @SafeDatabaseOperation
-    def common_changePassword(self, token, newpassword):
-        username = self.tokenOper_get_username(token)
-        self.cursor.execute('UPDATE user SET [ccn_password] = ? WHERE [ccn_name] = ?;', (
-            utils.ComputePasswordHash(newpassword),
-            username
-        ))
         return True
 
     # =============================== calendar
@@ -555,6 +545,43 @@ class CalendarDatabase(object):
 
         # delete
         self.cursor.execute('DELETE FROM user WHERE [ccn_name] = ?;', (username, ))
+        if self.cursor.rowcount != 1:
+            raise Exception('Fail to delete due to no matched rows or too much rows.')
+        return True
+
+    # =============================== profile
+    @SafeDatabaseOperation
+    def profile_isAdmin(self, token):
+        username = self.tokenOper_get_username(token)
+        return self.tokenOper_is_admin(username)
+
+    @SafeDatabaseOperation
+    def profile_changePassword(self, token, newpassword):
+        username = self.tokenOper_get_username(token)
+        self.cursor.execute('UPDATE user SET [ccn_password] = ? WHERE [ccn_name] = ?;', (
+            utils.ComputePasswordHash(newpassword),
+            username
+        ))
+        return True
+
+    @SafeDatabaseOperation
+    def profile_getToken(self, token):
+        username = self.tokenOper_get_username(token)
+
+        self.cursor.execute('SELECT * FROM token WHERE [ccn_user] = ?;', (
+            username,
+        ))
+        return self.cursor.fetchall()
+
+    @SafeDatabaseOperation
+    def profile_deleteToken(self, token, deleteToken):
+        _username = self.tokenOper_get_username(token)
+
+        # delete
+        self.cursor.execute('DELETE FROM token WHERE [ccn_user] = ? AND [ccn_token] = ?;', (
+            _username, 
+            deleteToken
+        ))
         if self.cursor.rowcount != 1:
             raise Exception('Fail to delete due to no matched rows or too much rows.')
         return True

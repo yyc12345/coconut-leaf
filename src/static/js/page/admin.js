@@ -1,4 +1,5 @@
 var ccn_admin_userListCache = [];
+var ccn_admin_tokenListCache = [];
 
 $(document).ready(function() {
     ccn_pages_currentPage = ccn_pages_enumPages.admin;
@@ -28,7 +29,7 @@ $(document).ready(function() {
     ccn_tabcontrol_SwitchTab(1, 1);
 
     // load user tab according to admin status
-    if(!ccn_api_common_isAdmin())
+    if(!ccn_api_profile_isAdmin())
         $('#tabcontrol-tab-1-3').hide();
 
     // apply i18n
@@ -37,6 +38,7 @@ $(document).ready(function() {
 
     // bind event
     $('#ccn-admin-profile-btnChangePassword').click(ccn_admin_profile_ChangePassword);
+    $('#ccn-admin-tokenList-btnRefresh').click(ccn_admin_tokenList_Refresh);
     $('#ccn-admin-userList-btnAdd').click(ccn_admin_userList_Add);
     $('#ccn-admin-userList-btnRefresh').click(ccn_admin_userList_Refresh);
 });
@@ -47,13 +49,68 @@ function ccn_admin_profile_ChangePassword() {
     var newpassword = $('#ccn-admin-profile-inputPassword').val();
     if (newpassword == "") return;
 
-    var result = ccn_api_common_changePassword(newpassword);
+    var result = ccn_api_profile_changePassword(newpassword);
     if(result) {
         ccn_messagebox_Show($.i18n.prop("ccn-i18n-js-success"));
         $('#ccn-admin-profile-inputPassword').val('');
     } else
         ccn_messagebox_Show($.i18n.prop("ccn-i18n-js-fail-update"));
     
+}
+
+// ================== token
+
+function ccn_admin_tokenList_Refresh() {
+    ccn_admin_tokenListCache = new Array();
+    var listDOM = $('#ccn-admin-tokenList');
+    listDOM.empty();
+
+    var renderdata = {
+        uuid: undefined,
+        isMe: undefined,
+        ua: undefined,
+        ip: undefined,
+        expireOn: undefined
+    }
+    var gottenDateTime = new Date();
+
+    var result = ccn_api_profile_getToken();
+    if(typeof(result) != 'undefined') {
+        for(var index in result) {
+            var item = result[index];
+            renderdata.uuid = item[1];
+            renderdata.isMe = ccn_localstorageAssist_GetApiToken() == item[1];
+            renderdata.ua = item[3];
+            renderdata.ip = item[4];
+            gottenDateTime.setTime(item[2] * 1000);
+            renderdata.expireOn = gottenDateTime.toLocaleString();
+
+            listDOM.append(ccn_template_tokenItem.render(renderdata));
+
+            // bind event
+            var uuid = renderdata.uuid;
+            $("#ccn-tokenItem-btnLogout-" + uuid).click(ccn_admin_tokenList_ItemDelete);
+
+            // add into cache
+            ccn_admin_tokenListCache[uuid] = item;
+        }
+
+        ccn_i18n_ApplyLanguage2Content(listDOM);
+    }
+}
+
+function ccn_admin_tokenList_ItemDelete() {
+    var uuid = $(this).attr("uuid");
+
+    var result = ccn_api_profile_deleteToken(uuid);
+
+    if(!result) {
+        // fail
+        ccn_messagebox_Show($.i18n.prop("ccn-i18n-js-fail-delete"));
+    } else {
+        // remove body
+        $("#ccn-tokenItem-" + uuid).remove();
+    }
 }
 
 // ================== user list

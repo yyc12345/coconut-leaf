@@ -153,33 +153,6 @@ Common类下的为通用请求接口，一般与用户状态等相关
 
 返回参数：一个bool，表示是否有效
 
-#### isAdmin
-
-请求地址：`/api/common/isAdmin`
-
-请求参数：
-
-|参数名|参数类型|参数解释|
-|:---|:---|:---|
-|token|string|用于管理员鉴别的token|
-
-返回参数：一个bool，表示是否是管理员
-
-#### changePassword
-
-请求地址：`/api/common/changePassword`
-
-请求参数：
-
-|参数名|参数类型|参数解释|
-|:---|:---|:---|
-|token|string|用于用户鉴权的字符串|
-|password|string|新的明文密码|
-
-返回参数：一个bool，表示是否修改成功
-
-此请求的安全性由HTTPS保证。
-
 ### Calendar类
 
 Calendar类下的为日历请求接口  
@@ -567,6 +540,63 @@ Admin类的操作不涉及任何客户端存储，因此不需要lastChange来�
 |username|string|用户名|
 
 返回参数：一个bool表示是否删除成功
+
+### Profile类
+
+Admin类下的为当前用户一些个人属性的请求接口  
+Profile类的操作不涉及任何客户端存储，因此不需要lastChange来保护。
+
+#### isAdmin
+
+请求地址：`/api/profile/isAdmin`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于管理员鉴别的token|
+
+返回参数：一个bool，表示是否是管理员
+
+#### changePassword
+
+请求地址：`/api/profile/changePassword`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|password|string|新的明文密码|
+
+返回参数：一个bool，表示是否修改成功
+
+此请求的安全性由HTTPS保证。
+
+#### getToken
+
+请求地址：`/api/profile/getToken`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+
+返回参数：一个JSON列表，为token表中符合当前提起请求的用户的所有token的条目
+
+#### deleteToken
+
+请求地址：`/api/profile/deleteToken`
+
+请求参数：
+
+|参数名|参数类型|参数解释|
+|:---|:---|:---|
+|token|string|用于用户鉴权的字符串|
+|deleteToken|string|需要被强制下线的token|
+
+返回参数：一个bool，表示是否下线成功
 
 ## 事件循环规则字符串
 

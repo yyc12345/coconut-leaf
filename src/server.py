@@ -92,40 +92,58 @@ def web_eventUpdateHandle(uuidPath):
 @app.route('/api/common/salt', methods=['POST'])
 def api_common_saltHandle():
     return SmartDbCaller(calendar_db.common_salt, 
-    (('username', str, False), ))
+    (('username', str, False), ),
+    None)
 
 @app.route('/api/common/login', methods=['POST'])
 def api_common_loginHandle():
+    # construct client data first
+    clientUa = request.user_agent.string
+    if request.headers.getlist("X-Forwarded-For"):
+        clientIp = request.headers.getlist("X-Forwarded-For")[0]
+    else:
+        clientIp = request.remote_addr
+
     return SmartDbCaller(calendar_db.common_login, 
     (('username', str, False), 
-    ('password', str, False)))
+    ('password', str, False),
+    ('clientUa', str, False),
+    ('clientIp', str, False)),
+    {
+        'clientUa': clientUa,
+        'clientIp': clientIp
+    })
 
 @app.route('/api/common/webLogin', methods=['POST'])
 def api_common_webLoginHandle():
+    # construct client data first
+    clientUa = request.user_agent.string
+    if request.headers.getlist("X-Forwarded-For"):
+        clientIp = request.headers.getlist("X-Forwarded-For")[0]
+    else:
+        clientIp = request.remote_addr
+
     return SmartDbCaller(calendar_db.common_webLogin, 
     (('username', str, False), 
-    ('password', str, False)))
+    ('password', str, False),
+    ('clientUa', str, False),
+    ('clientIp', str, False)),
+    {
+        'clientUa': clientUa,
+        'clientIp': clientIp
+    })
 
 @app.route('/api/common/logout', methods=['POST'])
 def api_common_logoutHandle():
     return SmartDbCaller(calendar_db.common_logout, 
-    (('token', str, False), ))
+    (('token', str, False), ),
+    None)
 
 @app.route('/api/common/tokenValid', methods=['POST'])
 def api_common_tokenValidHandle():
     return SmartDbCaller(calendar_db.common_tokenValid, 
-    (('token', str, False), ))
-
-@app.route('/api/common/isAdmin', methods=['POST'])
-def api_common_isAdminHandle():
-    return SmartDbCaller(calendar_db.common_isAdmin, 
-    (('token', str, False), ))
-
-@app.route('/api/common/changePassword', methods=['POST'])
-def api_common_changePasswordHandle():
-    return SmartDbCaller(calendar_db.common_changePassword, 
-    (('token', str, False),
-    ('password', str, False)))
+    (('token', str, False), ),
+    None)
 
 # ================================ calendar
 
@@ -134,20 +152,23 @@ def api_calendar_getFullHandle():
     return SmartDbCaller(calendar_db.calendar_getFull, 
     (('token', str, False),
     ('startDateTime', int, False),
-    ('endDateTime', int, False)))
+    ('endDateTime', int, False)),
+    None)
 
 @app.route('/api/calendar/getList', methods=['POST'])
 def api_calendar_getListHandle():
     return SmartDbCaller(calendar_db.calendar_getList, 
     (('token', str, False),
     ('startDateTime', int, False),
-    ('endDateTime', int, False)))
+    ('endDateTime', int, False)),
+    None)
 
 @app.route('/api/calendar/getDetail', methods=['POST'])
 def api_calendar_getDetailHandle():
     return SmartDbCaller(calendar_db.calendar_getDetail, 
     (('token', str, False),
-    ('uuid', str, False)))
+    ('uuid', str, False)),
+    None)
 
 @app.route('/api/calendar/update', methods=['POST'])
 def api_calendar_updateHandle():
@@ -161,7 +182,8 @@ def api_calendar_updateHandle():
     ('eventDateTimeEnd', int, True),
     ('loopRules', str, True),
     ('timezoneOffset', int, True),
-    ('lastChange', str, False)))
+    ('lastChange', str, False)),
+    None)
 
 @app.route('/api/calendar/add', methods=['POST'])
 def api_calendar_addHandle():
@@ -173,38 +195,44 @@ def api_calendar_addHandle():
     ('eventDateTimeStart', int, False),
     ('eventDateTimeEnd', int, False),
     ('loopRules', str, False),
-    ('timezoneOffset', int, False)))
+    ('timezoneOffset', int, False)),
+    None)
 
 @app.route('/api/calendar/delete', methods=['POST'])
 def api_calendar_deleteHandle():
     return SmartDbCaller(calendar_db.calendar_delete, 
     (('token', str, False),
     ('uuid', str, False),
-    ('lastChange', str, False)))
+    ('lastChange', str, False)),
+    None)
 
 # ================================ collection
 
 @app.route('/api/collection/getFullOwn', methods=['POST'])
 def api_collection_getFullOwnHandle():
     return SmartDbCaller(calendar_db.collection_getFullOwn, 
-    (('token', str, False), ))
+    (('token', str, False), ),
+    None)
 
 @app.route('/api/collection/getListOwn', methods=['POST'])
 def api_collection_getListOwnHandle():
     return SmartDbCaller(calendar_db.collection_getListlOwn, 
-    (('token', str, False), ))
+    (('token', str, False), ),
+    None)
 
 @app.route('/api/collection/getDetailOwn', methods=['POST'])
 def api_collection_getDetailOwnHandle():
     return SmartDbCaller(calendar_db.collection_getDetailOwn, 
     (('token', str, False), 
-    ('uuid', str, False)))
+    ('uuid', str, False)),
+    None)
 
 @app.route('/api/collection/addOwn', methods=['POST'])
 def api_collection_addOwnHandle():
     return SmartDbCaller(calendar_db.collection_addOwn, 
     (('token', str, False), 
-    ('name', str, False)))
+    ('name', str, False)),
+    None)
 
 @app.route('/api/collection/updateOwn', methods=['POST'])
 def api_collection_updateOwnHandle():
@@ -212,21 +240,24 @@ def api_collection_updateOwnHandle():
     (('token', str, False), 
     ('uuid', str, False),
     ('name', str, False), 
-    ('lastChange', str, False)))
+    ('lastChange', str, False)),
+    None)
 
 @app.route('/api/collection/deleteOwn', methods=['POST'])
 def api_collection_deleteOwnHandle():
     return SmartDbCaller(calendar_db.collection_deleteOwn, 
     (('token', str, False), 
     ('uuid', str, False),
-    ('lastChange', str, False)))
+    ('lastChange', str, False)),
+    None)
 
 
 @app.route('/api/collection/getSharing', methods=['POST'])
 def api_collection_getSharingHandle():
     return SmartDbCaller(calendar_db.collection_getSharing, 
     (('token', str, False), 
-    ('uuid', str, False)))
+    ('uuid', str, False)),
+    None)
 
 @app.route('/api/collection/deleteSharing', methods=['POST'])
 def api_collection_deleteSharingHandle():
@@ -234,7 +265,8 @@ def api_collection_deleteSharingHandle():
     (('token', str, False), 
     ('uuid', str, False),
     ('target', str, False),
-    ('lastChange', str, False)))
+    ('lastChange', str, False)),
+    None)
 
 @app.route('/api/collection/addSharing', methods=['POST'])
 def api_collection_addSharingHandle():
@@ -242,37 +274,42 @@ def api_collection_addSharingHandle():
     (('token', str, False), 
     ('uuid', str, False),
     ('target', str, False),
-    ('lastChange', str, False)))
+    ('lastChange', str, False)),
+    None)
 
 
 @app.route('/api/collection/getShared', methods=['POST'])
 def api_collection_getSharedHandle():
     return SmartDbCaller(calendar_db.collection_getShared, 
-    (('token', str, False), ))
-
+    (('token', str, False), ),
+    None)
 
 # ================================ todo
 
 @app.route('/api/todo/getFull', methods=['POST'])
 def api_todo_getFullHandle():
     return SmartDbCaller(calendar_db.todo_getFull, 
-    (('token', str, False), ))
+    (('token', str, False), ),
+    None)
 
 @app.route('/api/todo/getList', methods=['POST'])
 def api_todo_getListHandle():
     return SmartDbCaller(calendar_db.todo_getList, 
-    (('token', str, False), ))
+    (('token', str, False), ),
+    None)
 
 @app.route('/api/todo/getDetail', methods=['POST'])
 def api_todo_getDetailHandle():
     return SmartDbCaller(calendar_db.todo_getDetail, 
     (('token', str, False), 
-    ('uuid', str, False)))
+    ('uuid', str, False)),
+    None)
 
 @app.route('/api/todo/add', methods=['POST'])
 def api_todo_addHandle():
     return SmartDbCaller(calendar_db.todo_add, 
-    (('token', str, False), ))
+    (('token', str, False), ),
+    None)
 
 @app.route('/api/todo/update', methods=['POST'])
 def api_todo_updateHandle():
@@ -280,27 +317,31 @@ def api_todo_updateHandle():
     (('token', str, False), 
     ('uuid', str, False), 
     ('data', str, False), 
-    ('lastChange', str, False)))
+    ('lastChange', str, False)),
+    None)
 
 @app.route('/api/todo/delete', methods=['POST'])
 def api_todo_deleteHandle():
     return SmartDbCaller(calendar_db.todo_delete, 
     (('token', str, False), 
     ('uuid', str, False), 
-    ('lastChange', str, False)))
+    ('lastChange', str, False)),
+    None)
 
 # ================================ admin
 
 @app.route('/api/admin/get', methods=['POST'])
 def api_admin_getHandle():
     return SmartDbCaller(calendar_db.admin_get, 
-    (('token', str, False), ))
+    (('token', str, False), ),
+    None)
 
 @app.route('/api/admin/add', methods=['POST'])
 def api_admin_addHandle():
     return SmartDbCaller(calendar_db.admin_add, 
     (('token', str, False), 
-    ('username', str, False)))
+    ('username', str, False)),
+    None)
 
 @app.route('/api/admin/update', methods=['POST'])
 def api_admin_updateHandle():
@@ -308,13 +349,43 @@ def api_admin_updateHandle():
     (('token', str, False), 
     ('username', str, False),
     ('password', str, True),
-    ('isAdmin', utils.Str2Bool, True)))
+    ('isAdmin', utils.Str2Bool, True)),
+    None)
 
 @app.route('/api/admin/delete', methods=['POST'])
 def api_admin_deleteHandle():
     return SmartDbCaller(calendar_db.admin_delete, 
     (('token', str, False), 
-    ('username', str, False)))
+    ('username', str, False)),
+    None)
+
+# ================================ profile
+
+@app.route('/api/profile/isAdmin', methods=['POST'])
+def api_profile_isAdminHandle():
+    return SmartDbCaller(calendar_db.profile_isAdmin, 
+    (('token', str, False), ),
+    None)
+
+@app.route('/api/profile/changePassword', methods=['POST'])
+def api_profile_changePasswordHandle():
+    return SmartDbCaller(calendar_db.profile_changePassword, 
+    (('token', str, False),
+    ('password', str, False)),
+    None)
+
+@app.route('/api/profile/getToken', methods=['POST'])
+def api_profile_getTokenHandle():
+    return SmartDbCaller(calendar_db.profile_getToken, 
+    (('token', str, False), ),
+    None)
+
+@app.route('/api/profile/deleteToken', methods=['POST'])
+def api_profile_deleteTokenHandle():
+    return SmartDbCaller(calendar_db.profile_deleteToken, 
+    (('token', str, False),
+    ('deleteToken', str, False)),
+    None)
 
 # =============================================main run
 
@@ -336,14 +407,20 @@ def UpdateStaticResources():
     }
 '''
 
-def SmartDbCaller(dbMethod, paramTuple):
+def SmartDbCaller(dbMethod, paramTuple, extraDict):
     result = (False, 'Invalid parameter', None)
     optCount = 0
     paramList = []
     optParamDict = {}
-    # for each item, item[0] is field name. item[1] is type. item[2] is whether it is optional field
+    # for each item, 
+    # item[0] is field name. 
+    # item[1] is type. 
+    # item[2] is whether it is optional field
+    realForm = request.form.to_dict()
+    if extraDict is not None:
+        realForm.update(extraDict)
     for item in paramTuple:
-        cache = request.form.get(item[0], default=None, type=item[1])
+        cache = item[1](realForm.get(item[0], None))
         if item[2]:
             # optional param
             if cache is not None:

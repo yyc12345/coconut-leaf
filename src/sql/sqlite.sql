@@ -11,6 +11,8 @@ CREATE TABLE token(
     [ccn_user] TEXT NOT NULL,
     [ccn_token] TEXT UNIQUE NOT NULL,
     [ccn_tokenExpireOn] BIGINT NOT NULL,
+    [ccn_ua] TEXT NOT NULL,
+    [ccn_ip] TEXT NOT NULL,
 
     FOREIGN KEY (ccn_user) REFERENCES user(ccn_name) ON DELETE CASCADE
 );
