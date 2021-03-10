@@ -1,5 +1,6 @@
 var ccn_template_headerNav = undefined;
 var ccn_template_messagebox = undefined;
+var ccn_template_datetimepicker = undefined;
 var ccn_template_calendarItem = undefined;
 var ccn_template_scheduleItem = undefined;
 var ccn_template_ownedItem = undefined;
@@ -12,115 +13,38 @@ var ccn_template_optionItem = undefined;
 var ccn_template_tokenItem = undefined;
 
 function ccn_template_Load() {
+    ccn_template_headerNav = ccn_template_TemplateLoader('headerNav');
+    ccn_template_messagebox = ccn_template_TemplateLoader('messagebox');
+    ccn_template_datetimepicker = ccn_template_TemplateLoader('datetimepicker');
+
+    ccn_template_calendarItem = ccn_template_TemplateLoader('calendarItem');
+    ccn_template_scheduleItem = ccn_template_TemplateLoader('scheduleItem');
+    ccn_template_displayOwnedItem = ccn_template_TemplateLoader('displayOwnedItem');
+    ccn_template_displaySharedItem = ccn_template_TemplateLoader('displaySharedItem');
+
+    ccn_template_todoItem = ccn_template_TemplateLoader('todoItem');
+    ccn_template_userItem = ccn_template_TemplateLoader('userItem');
+    ccn_template_tokenItem = ccn_template_TemplateLoader('tokenItem');
+
+    ccn_template_ownedItem = ccn_template_TemplateLoader('ownedItem');
+    ccn_template_sharingItem = ccn_template_TemplateLoader('sharingItem');
+    ccn_template_optionItem = ccn_template_TemplateLoader('optionItem');
+
+}
+
+function ccn_template_TemplateLoader(templateName) {
+    var elements = $("#jsrender-tmpl-" + templateName);
+    if (elements.length == 0) return undefined;
+    var cache = undefined;
+
     $.ajax({
-        url: $("#jsrender-tmpl-headerNav").attr('src'),
+        url: elements.attr('src'),
         type: "GET",
         async: false,
         success: function (data) {
-            ccn_template_headerNav = $.templates(data);
-        }
-    });
-    $.ajax({
-        url: $("#jsrender-tmpl-messagebox").attr('src'),
-        type: "GET",
-        async: false,
-        success: function (data) {
-            ccn_template_messagebox = $.templates(data);
+            cache = $.templates(data);
         }
     });
 
-    switch(ccn_pages_currentPage) {
-        case ccn_pages_enumPages.home:
-            break;
-        case ccn_pages_enumPages.calendar:
-            $.ajax({
-                url: $("#jsrender-tmpl-calendarItem").attr('src'),
-                type: "GET",
-                async: false,
-                success: function (data) {
-                    ccn_template_calendarItem = $.templates(data);
-                }
-            });
-            $.ajax({
-                url: $("#jsrender-tmpl-scheduleItem").attr('src'),
-                type: "GET",
-                async: false,
-                success: function (data) {
-                    ccn_template_scheduleItem = $.templates(data);
-                }
-            });
-            $.ajax({
-                url: $("#jsrender-tmpl-displayOwnedItem").attr('src'),
-                type: "GET",
-                async: false,
-                success: function (data) {
-                    ccn_template_displayOwnedItem = $.templates(data);
-                }
-            });
-            $.ajax({
-                url: $("#jsrender-tmpl-displaySharedItem").attr('src'),
-                type: "GET",
-                async: false,
-                success: function (data) {
-                    ccn_template_displaySharedItem = $.templates(data);
-                }
-            });
-            break;
-        case ccn_pages_enumPages.todo:
-            $.ajax({
-                url: $("#jsrender-tmpl-todoItem").attr('src'),
-                type: "GET",
-                async: false,
-                success: function (data) {
-                    ccn_template_todoItem = $.templates(data);
-                }
-            });
-            break;
-        case ccn_pages_enumPages.admin:
-            $.ajax({
-                url: $("#jsrender-tmpl-userItem").attr('src'),
-                type: "GET",
-                async: false,
-                success: function (data) {
-                    ccn_template_userItem = $.templates(data);
-                }
-            });
-            $.ajax({
-                url: $("#jsrender-tmpl-tokenItem").attr('src'),
-                type: "GET",
-                async: false,
-                success: function (data) {
-                    ccn_template_tokenItem = $.templates(data);
-                }
-            });
-            break;
-        case ccn_pages_enumPages.login:
-            break;
-        case ccn_pages_enumPages.collection:
-            $.ajax({
-                url: $("#jsrender-tmpl-ownedItem").attr('src'),
-                type: "GET",
-                async: false,
-                success: function (data) {
-                    ccn_template_ownedItem = $.templates(data);
-                }
-            });
-            $.ajax({
-                url: $("#jsrender-tmpl-sharingItem").attr('src'),
-                type: "GET",
-                async: false,
-                success: function (data) {
-                    ccn_template_sharingItem = $.templates(data);
-                }
-            });
-        case ccn_pages_enumPages.event:
-            $.ajax({
-                url: $("#jsrender-tmpl-optionItem").attr('src'),
-                type: "GET",
-                async: false,
-                success: function (data) {
-                    ccn_template_optionItem = $.templates(data);
-                }
-            });
-    }
+    return cache;
 }

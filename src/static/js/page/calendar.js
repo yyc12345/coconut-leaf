@@ -31,6 +31,7 @@ $(document).ready(function() {
     ccn_calendar_calendar_LoadCalendarBody();
 
     // init datetimepicker
+    ccn_datetimepicker_Insert();
     ccn_datetimepicker_Init();
 
     // bind tab control switcher and set current tab

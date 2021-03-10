@@ -18,6 +18,10 @@ $(document).ready(function() {
     ccn_messagebox_Insert();
     ccn_messagebox_BindEvent();
 
+    // init datetimepicker
+    ccn_datetimepicker_Insert();
+    ccn_datetimepicker_Init();
+
     // apply i18n
     ccn_i18n_LoadLanguage();
     ccn_i18n_ApplyLanguage();
@@ -58,7 +62,7 @@ function ccn_event_Init() {
     .val(1);
 
     // now, init 3 datetimepicker
-    ccn_datetimepicker_Init();
+    //ccn_datetimepicker_Init();
 
     // in there, we need get uuid from meta
     var uuid = $('meta[name=uuid]').attr('content');

@@ -1,3 +1,7 @@
+function ccn_datetimepicker_Insert() {
+    $('body').append(ccn_template_datetimepicker.render());
+}
+
 function ccn_datetimepicker_Init() {
     var nowtime = new Date();
 
