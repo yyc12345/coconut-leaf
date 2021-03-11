@@ -37,14 +37,71 @@ div.perfectTable > div {
 }
 
 
+
+
+
+
+
+
 div.pickerContainer {
     display: flex; 
     align-items: center; 
     flex-flow: row;
+    justify-content: center;
 }
 
 div.pickerContainer > div {
     flex-grow: 1;
     flex-shrink: 1;
     flex-basis: 0;
+}
+
+div.pickerContainer > svg {
+    width: 100%;
+    height: 100%;
+}
+
+div.pickerContainer > svg > text {
+    dominant-baseline: middle;
+    text-anchor: middle;
+}
+
+div.pickerContainer > svg > circle[type=background] {
+    stroke-width: 0;
+    fill: #d0d0d0;
+}
+
+div.pickerContainer > svg > circle[type=symbol] {
+    stroke-width: 0;
+    fill: hsl(171, 100%, 41%); /* $primary */
+}
+
+div.pickerContainer > svg > line {
+    stroke-width: 0.125em;
+    stroke: hsl(171, 100%, 41%); /* $primary */
+}
+
+
+
+
+
+
+header.pickerHeader {
+    display: flex;
+    flex-flow: row;
+
+    flex-grow: 1;
+    flex-basis: 0;
+    flex-shrink: 0;
+
+    justify-content: space-between;
+}
+
+header.pickerHeader > div {
+    display: flex;
+    flex-flow: column;
+
+    flex-grow: 1;
+    flex-basis: 0;
+    flex-shrink: 0;
 }

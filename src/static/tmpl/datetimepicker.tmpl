@@ -1,12 +1,15 @@
 <div id="ccn-datetimepicker-modal" class="modal is-active" style="float: left; position: fixed; top: 0; bottom: 0; left: 0; right: 0;">
     <div class="modal-background"></div>
     <div class="modal-card" style="height: 70%;">
-        <header class="modal-card-head">
-            <p id="ccn-datetimepicker-date" class="modal-card-title">2020年2月30日</p>
-            <p id="ccn-datetimepicker-time" class="modal-card-title">24：61</p>
+        <header class="modal-card-head pickerHeader">
+            <div><small i18n-name="ccn-i18n-universal-text-year"></small><span id="ccn-datetimepicker-datetime-year">&nbsp;</span></div>
+            <div><small i18n-name="ccn-i18n-universal-text-month"></small><span id="ccn-datetimepicker-datetime-month">&nbsp;</span></div>
+            <div><small i18n-name="ccn-i18n-universal-text-day"></small><span id="ccn-datetimepicker-datetime-day">&nbsp;</span></div>
+            <div><small i18n-name="ccn-i18n-universal-text-hour"></small><span id="ccn-datetimepicker-datetime-hour">&nbsp;</span></div>
+            <div><small i18n-name="ccn-i18n-universal-text-minute"></small><span id="ccn-datetimepicker-datetime-minute">&nbsp;</span></div>
         </header>
         <div class="modal-card-body pickerContainer">
-            <div style="display: none;">
+            <div id="ccn-datetimepicker-panel-year">
                 <nav class="level is-mobile">
                     <div class="level-left">
                         <div class="level-item control">
@@ -46,7 +49,7 @@
                     </div>
                 </div>
             </div>
-            <div style="display: none;">
+            <div id="ccn-datetimepicker-panel-month">
                 <nav class="level is-mobile">
                     <div class="level-left">
                         <div class="level-item control">
@@ -86,7 +89,7 @@
                     </div>
                 </div>
             </div>
-            <div>
+            <div id="ccn-datetimepicker-panel-day">
                 <nav class="level is-mobile">
                     <div class="level-left">
                         <div class="level-item control">
@@ -135,6 +138,55 @@
                     </div>
                 </div>
             </div>
+            <svg id="ccn-datetimepicker-panel-hour" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" viewBox="0 0 200 200">
+                <circle cx="100.000000" cy="100.000000" r="100.000000" type="background"></circle>
+                <line x1="100" y1="100" x2="100.000000" y2="20.000000"></line>
+                <circle cx="100.000000" cy="20.000000" r="1em" type="symbol"></circle>
+
+                <text x="100.000000" y="20.000000">0</text>
+                <text x="140.000000" y="30.717968">1</text>
+                <text x="169.282032" y="60.000000">2</text>
+                <text x="180.000000" y="100.000000">3</text>
+                <text x="169.282032" y="140.000000">4</text>
+                <text x="140.000000" y="169.282032">5</text>
+                <text x="100.000000" y="180.000000">6</text>
+                <text x="60.000000" y="169.282032">7</text>
+                <text x="30.717968" y="140.000000">8</text>
+                <text x="20.000000" y="100.000000">9</text>
+                <text x="30.717968" y="60.000000">10</text>
+                <text x="60.000000" y="30.717968">11</text>
+                <text x="100.000000" y="40.000000">12</text>
+                <text x="130.000000" y="48.038476">13</text>
+                <text x="151.961524" y="70.000000">14</text>
+                <text x="160.000000" y="100.000000">15</text>
+                <text x="151.961524" y="130.000000">16</text>
+                <text x="130.000000" y="151.961524">17</text>
+                <text x="100.000000" y="160.000000">18</text>
+                <text x="70.000000" y="151.961524">19</text>
+                <text x="48.038476" y="130.000000">20</text>
+                <text x="40.000000" y="100.000000">21</text>
+                <text x="48.038476" y="70.000000">22</text>
+                <text x="70.000000" y="48.038476">23</text>
+            </svg>
+            <svg id="ccn-datetimepicker-panel-minute" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" viewBox="0 0 200 200">
+                <circle cx="100.000000" cy="100.000000" r="100.000000" type="background"></circle>
+                <line x1="100" y1="100" x2="100.000000" y2="20.000000"></line>
+                <circle cx="100.000000" cy="20.000000" r="1em" type="symbol"></circle>
+
+                <text x="100.000000" y="20.000000">0</text>
+                <text x="140.000000" y="30.717968">5</text>
+                <text x="169.282032" y="60.000000">10</text>
+                <text x="180.000000" y="100.000000">15</text>
+                <text x="169.282032" y="140.000000">20</text>
+                <text x="140.000000" y="169.282032">25</text>
+                <text x="100.000000" y="180.000000">30</text>
+                <text x="60.000000" y="169.282032">35</text>
+                <text x="30.717968" y="140.000000">40</text>
+                <text x="20.000000" y="100.000000">45</text>
+                <text x="30.717968" y="60.000000">50</text>
+                <text x="60.000000" y="30.717968">55</text>
+            </svg>
+ 
         </div>
         <footer class="modal-card-foot">
             <a id="ccn-datetimepicker-btnConfirm" class="button is-success">
