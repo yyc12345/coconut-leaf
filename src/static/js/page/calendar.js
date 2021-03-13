@@ -32,7 +32,6 @@ $(document).ready(function() {
 
     // init datetimepicker
     ccn_datetimepicker_Insert();
-    ccn_datetimepicker_Init();
 
     // bind tab control switcher and set current tab
     $("#tabcontrol-tab-1-1").click(function(){

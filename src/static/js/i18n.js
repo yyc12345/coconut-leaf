@@ -76,3 +76,9 @@ function ccn_i18n_ApplyLanguage2Content(ctx) {
         $(this).html($.i18n.prop($(this).attr('i18n-name')));
     });
 }
+
+// note: month is zero based
+function ccn_i18n_UniversalGetMonth(month) {
+    return $.i18n.prop('ccn-i18n-universal-month-' + (month + 1));
+}
+

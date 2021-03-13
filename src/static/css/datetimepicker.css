@@ -36,6 +36,11 @@ div.perfectTable > div {
     flex-flow: row;
 }
 
+div.perfectTable > div > div[picked=true] {
+    background: hsl(171, 100%, 41%);
+    color: #fff;
+}
+
 
 
 

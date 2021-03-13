@@ -2,73 +2,73 @@
     <div class="modal-background"></div>
     <div class="modal-card" style="height: 70%;">
         <header class="modal-card-head pickerHeader">
-            <div><small i18n-name="ccn-i18n-universal-text-year"></small><span id="ccn-datetimepicker-datetime-year">&nbsp;</span></div>
-            <div><small i18n-name="ccn-i18n-universal-text-month"></small><span id="ccn-datetimepicker-datetime-month">&nbsp;</span></div>
-            <div><small i18n-name="ccn-i18n-universal-text-day"></small><span id="ccn-datetimepicker-datetime-day">&nbsp;</span></div>
-            <div><small i18n-name="ccn-i18n-universal-text-hour"></small><span id="ccn-datetimepicker-datetime-hour">&nbsp;</span></div>
-            <div><small i18n-name="ccn-i18n-universal-text-minute"></small><span id="ccn-datetimepicker-datetime-minute">&nbsp;</span></div>
+            <div type="year"><small i18n-name="ccn-i18n-universal-text-year"></small><span id="ccn-datetimepicker-datetime-year">&nbsp;</span></div>
+            <div type="month"><small i18n-name="ccn-i18n-universal-text-month"></small><span id="ccn-datetimepicker-datetime-month">&nbsp;</span></div>
+            <div type="day"><small i18n-name="ccn-i18n-universal-text-day"></small><span id="ccn-datetimepicker-datetime-day">&nbsp;</span></div>
+            <div type="hour"><small i18n-name="ccn-i18n-universal-text-hour"></small><span id="ccn-datetimepicker-datetime-hour">&nbsp;</span></div>
+            <div type="minute"><small i18n-name="ccn-i18n-universal-text-minute"></small><span id="ccn-datetimepicker-datetime-minute">&nbsp;</span></div>
         </header>
         <div class="modal-card-body pickerContainer">
-            <div id="ccn-datetimepicker-panel-year">
+            <div id="ccn-datetimepicker-panelYear">
                 <nav class="level is-mobile">
                     <div class="level-left">
                         <div class="level-item control">
-                            <a class="button">
+                            <a id="ccn-datetimepiacker-panelYear-prevBtn" class="button">
                                 <span class="icon is-small"><i class="fas fa-chevron-circle-left"></i></span>
                             </a>
                         </div>
                     </div>
-                    <div class="level-item">this is a title</div>
+                    <div id="ccn-datetimepiacker-panelYear-title" class="level-item"></div>
                     <div class="level-right">
                         <div class="level-item control">
-                            <a class="button">
+                            <a id="ccn-datetimepiacker-panelYear-nextBtn" class="button">
                                 <span class="icon is-small"><i class="fas fa-chevron-circle-right"></i></span>
                             </a>
                         </div>
                     </div>
                 </nav>
 
-                <div class="perfectTable">
+                <div id="ccn-datetimepiacker-panelYear-table" class="perfectTable">
                     <div>
-                        <div>abc</div>
-                        <div>abc</div>
-                        <div>abc</div>
-                        <div>abc</div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
                     </div>
                     <div>
-                        <div>abc</div>
-                        <div>abc</div>
-                        <div>abc</div>
-                        <div>abc</div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
                     </div>
                     <div>
-                        <div>abc</div>
-                        <div>abc</div>
-                        <div>abc</div>
-                        <div>abc</div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
                     </div>
                 </div>
             </div>
-            <div id="ccn-datetimepicker-panel-month">
+            <div id="ccn-datetimepicker-panelMonth">
                 <nav class="level is-mobile">
                     <div class="level-left">
                         <div class="level-item control">
-                            <a class="button">
+                            <a id="ccn-datetimepiacker-panelMonth-prevBtn" class="button">
                                 <span class="icon is-small"><i class="fas fa-chevron-circle-left"></i></span>
                             </a>
                         </div>
                     </div>
-                    <div class="level-item">this is a title</div>
+                    <div id="ccn-datetimepiacker-panelMonth-title" class="level-item"></div>
                     <div class="level-right">
                         <div class="level-item control">
-                            <a class="button">
+                            <a id="ccn-datetimepiacker-panelMonth-nextBtn" class="button">
                                 <span class="icon is-small"><i class="fas fa-chevron-circle-right"></i></span>
                             </a>
                         </div>
                     </div>
                 </nav>
 
-                <div class="perfectTable">
+                <div id="ccn-datetimepiacker-panelMonth-table" class="perfectTable">
                     <div>
                         <div i18n-name="ccn-i18n-universal-month-1"></div>
                         <div i18n-name="ccn-i18n-universal-month-2"></div>
@@ -89,26 +89,26 @@
                     </div>
                 </div>
             </div>
-            <div id="ccn-datetimepicker-panel-day">
+            <div id="ccn-datetimepicker-panelDay">
                 <nav class="level is-mobile">
                     <div class="level-left">
                         <div class="level-item control">
-                            <a class="button">
+                            <a id="ccn-datetimepiacker-panelDay-prevBtn" class="button">
                                 <span class="icon is-small"><i class="fas fa-chevron-circle-left"></i></span>
                             </a>
                         </div>
                     </div>
-                    <div class="level-item">this is a title</div>
+                    <div id="ccn-datetimepiacker-panelDay-title" class="level-item"></div>
                     <div class="level-right">
                         <div class="level-item control">
-                            <a class="button">
+                            <a id="ccn-datetimepiacker-panelDay-nextBtn" class="button">
                                 <span class="icon is-small"><i class="fas fa-chevron-circle-right"></i></span>
                             </a>
                         </div>
                     </div>
                 </nav>
 
-                <div class="perfectTable">
+                <div id="ccn-datetimepiacker-panelDay-table" class="perfectTable">
                     <div>
                         <div i18n-name="ccn-i18n-universal-week-1"></div>
                         <div i18n-name="ccn-i18n-universal-week-2"></div>
@@ -138,7 +138,7 @@
                     </div>
                 </div>
             </div>
-            <svg id="ccn-datetimepicker-panel-hour" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" viewBox="0 0 200 200">
+            <svg id="ccn-datetimepicker-panelHour" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" viewBox="0 0 200 200">
                 <circle cx="100.000000" cy="100.000000" r="100.000000" type="background"></circle>
                 <line x1="100" y1="100" x2="100.000000" y2="20.000000"></line>
                 <circle cx="100.000000" cy="20.000000" r="1em" type="symbol"></circle>
@@ -168,7 +168,7 @@
                 <text x="48.038476" y="70.000000">22</text>
                 <text x="70.000000" y="48.038476">23</text>
             </svg>
-            <svg id="ccn-datetimepicker-panel-minute" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" viewBox="0 0 200 200">
+            <svg id="ccn-datetimepicker-panelMinute" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMidYMid" viewBox="0 0 200 200">
                 <circle cx="100.000000" cy="100.000000" r="100.000000" type="background"></circle>
                 <line x1="100" y1="100" x2="100.000000" y2="20.000000"></line>
                 <circle cx="100.000000" cy="20.000000" r="1em" type="symbol"></circle>

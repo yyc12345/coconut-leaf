@@ -20,7 +20,6 @@ $(document).ready(function() {
 
     // init datetimepicker
     ccn_datetimepicker_Insert();
-    ccn_datetimepicker_Init();
 
     // apply i18n
     ccn_i18n_LoadLanguage();
