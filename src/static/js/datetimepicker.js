@@ -7,9 +7,10 @@ var ccn_datetimepicker_tabType = {
 };
 
 var ccn_datetimepicker_dialPlateRadius = 200;
+var ccn_datetimepicker_dialPlateHalfRadius = ccn_datetimepicker_dialPlateRadius / 2;
 var ccn_datetimepicker_dialPlateHourInnerPercent = 0.6;
 var ccn_datetimepicker_dialPlateHourOutterPercent = 0.8;
-var ccn_datetimepicker_dialPlateHourDistinguishPercent = 0.6;
+var ccn_datetimepicker_dialPlateHourDistinguishPercent = 0.7;
 var ccn_datetimepicker_dialPlateMinutePercent = 0.8;
 
 var ccn_datetimepicker_mode = undefined;
@@ -36,7 +37,7 @@ function ccn_datetimepicker_Insert() {
     for(var i = 0; i < 3; i++) {
         for(var j = 0; j < 4; j++) {
             $('#ccn-datetimepiacker-panelMonth-table > div:nth-child({0}) > div:nth-child({1})'.format(i + 1, j + 1))
-            .attr('data', i * 4 + j + 1);
+            .attr('data', i * 4 + j);
         }
     }
 
@@ -65,6 +66,10 @@ function ccn_datetimepicker_Insert() {
         ccn_datetimepicker_PrevNextDay(false);
     });
 
+    $('#ccn-datetimepiacker-panelYear-table > div > div').click(ccn_datetimepicker_ClickYear);
+    $('#ccn-datetimepiacker-panelMonth-table > div > div').click(ccn_datetimepicker_ClickMonth);
+    $('#ccn-datetimepiacker-panelDay-table > div:nth-child(n+1) > div').click(ccn_datetimepicker_ClickDay);
+
 }
 
 function ccn_datetimepicker_Modal(mode, pickerIndex, isUTC, callbackFunc) {
@@ -76,7 +81,7 @@ function ccn_datetimepicker_Modal(mode, pickerIndex, isUTC, callbackFunc) {
     ccn_datetimepicker_internalDateTime = ccn_datetimepicker_Get(pickerIndex, false);
 
     $('header.pickerHeader > div').hide();
-    switch(newTab) {
+    switch(mode) {
         case ccn_datetimepicker_tabType.minute:
             $('header.pickerHeader > div[type=minute]').show();
         case ccn_datetimepicker_tabType.hour:
@@ -195,9 +200,37 @@ function ccn_datetimepicker_RefreshDisplay(tab) {
 
             break;
         case ccn_datetimepicker_tabType.hour:
+            var gottenHour = ccn_datetimepicker_displayCacheDateTime.getHours();
+            var newX = Math.cos((15 - gottenHour) * Math.PI * 2 / 60);
+            var newY = Math.sin((15 - gottenHour) * Math.PI * 2 / 60);
+            var radius = ccn_datetimepicker_dialPlateHalfRadius * (gottenHour < 12 ? ccn_datetimepicker_dialPlateHourOutterPercent : ccn_datetimepicker_dialPlateHourInnerPercent);
+            newX = newX * radius + ccn_datetimepicker_dialPlateHalfRadius;
+            newY = (-newY * radius) + ccn_datetimepicker_dialPlateHalfRadius;
+
+            $('#ccn-datetimepicker-panelHour > line')
+            .attr('x2', newX)
+            .attr('y2', newY);
+
+            $('#ccn-datetimepicker-panelHour > circle[type=symbol]')
+            .attr('cx', newX)
+            .attr('cy', newY);
             
             break;
         case ccn_datetimepicker_tabType.minute:
+            var gottenMinute = ccn_datetimepicker_displayCacheDateTime.getMinutes();
+            var newX = Math.cos((15 - gottenMinute) * Math.PI * 2 / 60);
+            var newY = Math.sin((15 - gottenMinute) * Math.PI * 2 / 60);
+            var radius = ccn_datetimepicker_dialPlateHalfRadius * ccn_datetimepicker_dialPlateMinutePercent;
+            newX = newX * radius + ccn_datetimepicker_dialPlateHalfRadius;
+            newY = (-newY * radius) + ccn_datetimepicker_dialPlateHalfRadius;
+
+            $('#ccn-datetimepicker-panelMinute > line')
+            .attr('x2', newX)
+            .attr('y2', newY);
+
+            $('#ccn-datetimepicker-panelMinute > circle[type=symbol]')
+            .attr('cx', newX)
+            .attr('cy', newY);
             
             break;
     }
@@ -232,15 +265,30 @@ function ccn_datetimepicker_PrevNextDay(isPrev) {
 }
 
 function ccn_datetimepicker_ClickYear() {
+    var ele = $(this);
+    if (ele.attr('data') == '') return;
 
+    ccn_datetimepicker_internalDateTime.setFullYear(parseInt(ele.attr('data')));
+    if (ccn_datetimepicker_mode != ccn_datetimepicker_tabType.year)
+        ccn_datetimepicker_SwitchTab(ccn_datetimepicker_tabType.month);
 }
 
 function ccn_datetimepicker_ClickMonth() {
+    var ele = $(this);
+    if (ele.attr('data') == '') return;
 
+    ccn_datetimepicker_internalDateTime.setMonth(parseInt(ele.attr('data')));
+    if (ccn_datetimepicker_mode != ccn_datetimepicker_tabType.month)
+        ccn_datetimepicker_SwitchTab(ccn_datetimepicker_tabType.day);
 }
 
 function ccn_datetimepicker_ClickDay() {
+    var ele = $(this);
+    if (ele.attr('data') == '') return;
 
+    ccn_datetimepicker_internalDateTime.setDate(parseInt(ele.attr('data')));
+    if (ccn_datetimepicker_mode != ccn_datetimepicker_tabType.day)
+        ccn_datetimepicker_SwitchTab(ccn_datetimepicker_tabType.hour);
 }
 
 /*
