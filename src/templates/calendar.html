@@ -52,37 +52,35 @@
     </div>
 
     <div id="tabcontrol-panel-1-1" class="container tabcontrol-panel-1" style="margin-top: 20px;">
-        <nav class="level">
-            <div class="level-item control">
-                <a id="ccn-calendar-calendar-btnPrevMonth" class="button">
-                    <span class="icon is-small"><i class="fas fa-chevron-circle-left"></i></span>
-                </a>
-            </div>
-
-            <div class="level-item">
-                <div class="field has-addons">
-                    <div class="control">
-                        <input datetimepicker="1" class="input datetimepicker-year" type="number">
-                    </div>
-                    <div class="control">
-                        <input datetimepicker="1" class="input datetimepicker-month" type="number">
-                    </div>
-                    <div class="control">
-                        <a id="ccn-calendar-calendar-btnJump" i18n-name="ccn-i18n-calendar-calendar-jump" class="button is-info"></a>
-                    </div>
+        <nav class="level is-mobile">
+            <div class="level-left">
+                <div class="level-item control">
+                    <a id="ccn-calendar-calendar-btnPrevMonth" class="button" datetimepicker="1">
+                        <span class="icon is-small"><i class="fas fa-chevron-circle-left"></i></span>
+                    </a>
                 </div>
             </div>
 
+            <div class="level-item control">
+                <a id="ccn-calendar-calendar-btnJump" class="button">
+                    <span id="ccn-calendar-calendar-textMonth"></span>
+                </a>
+            </div>
+
+            <div class="level-right">
+                <div class="level-item control">
+                    <a id="ccn-calendar-calendar-btnNextMonth" class="button">
+                        <span class="icon is-small"><i class="fas fa-chevron-circle-right"></i></span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+        <nav class="level">
             <div class="level-item control">
                 <a id="ccn-calendar-calendar-btnToday" i18n-name="ccn-i18n-calendar-calendar-today" class="button is-info"></a>
             </div>
             <div class="level-item control">
                 <a id="ccn-calendar-calendar-btnAdd" i18n-name="ccn-i18n-calendar-calendar-add" class="button is-primary"></a>
-            </div>
-            <div class="level-item control">
-                <a id="ccn-calendar-calendar-btnNextMonth" class="button">
-                    <span class="icon is-small"><i class="fas fa-chevron-circle-right"></i></span>
-                </a>
             </div>
         </nav>
 

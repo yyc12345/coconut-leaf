@@ -30,8 +30,10 @@ $(document).ready(function() {
     // process calendar it self
     ccn_calendar_calendar_LoadCalendarBody();
 
-    // init datetimepicker
+    // init datetimepicker and preset
     ccn_datetimepicker_Insert();
+    var nowtime = new Date();
+    ccn_datetimepicker_Set(1, nowtime, false, ccn_datetimepicker_tabType.month);
 
     // bind tab control switcher and set current tab
     $("#tabcontrol-tab-1-1").click(function(){
@@ -58,7 +60,11 @@ $(document).ready(function() {
     // bind event
     $('#ccn-calendar-collection-btnRefresh').click(ccn_calendar_collection_Refresh);
 
-    $('#ccn-calendar-calendar-btnJump').click(ccn_calendar_calendar_btnRefresh);
+    $('#ccn-calendar-calendar-btnJump')
+    .prop('callbackFunc', ccn_calendar_calendar_btnRefresh)
+    .click(function() {
+        ccn_datetimepicker_Modal(ccn_datetimepicker_tabType.month, 1, false);
+    });
     $('#ccn-calendar-calendar-btnToday').click(ccn_calendar_calendar_btnToday);
     $('#ccn-calendar-calendar-btnAdd').click(ccn_calendar_calendar_btnAdd);
 });
@@ -74,6 +80,7 @@ function ccn_calendar_calendar_Refresh() {
     var gottenDateTime = ccn_datetimepicker_Get(1, false);
     var gottenYear = gottenDateTime.getFullYear();
     var gottenMonth = gottenDateTime.getMonth() + 1;
+    $('#ccn-calendar-calendar-textMonth').text('{0} - {1}'.format(gottenYear, ccn_i18n_UniversalGetMonth(gottenMonth - 1)));
     // don't need to set anything, because its default value is enough to use.
 
     var gottenWeek = ccn_datetime_DayOfWeek(gottenYear, gottenMonth, 1);
@@ -247,7 +254,7 @@ function ccn_calendar_calendar_btnRefresh() {
 
 function ccn_calendar_calendar_btnToday() {
     var nowtime = new Date();
-    ccn_datetimepicker_Set(1, nowtime, false);
+    ccn_datetimepicker_Set(1, nowtime, false, ccn_datetimepicker_tabType.month);
     ccn_calendar_calendar_Refresh();
     ccn_calendar_calendar_Analyse();
     ccn_calendar_calendar_Render();
