@@ -116,6 +116,7 @@ function ccn_datetimepicker_Modal(mode, pickerIndex, isUTC) {
 }
 
 function ccn_datetimepicker_Confirm() {
+    // update and call callback func
     ccn_datetimepicker_Set(
         ccn_datetimepicker_pickerIndex, 
         ccn_datetimepicker_internalDateTime, 
@@ -211,7 +212,7 @@ function ccn_datetimepicker_RefreshDisplay(tab) {
             var gottenYear = ccn_datetimepicker_displayCacheDateTime.getFullYear();
             var gottenMonth = ccn_datetimepicker_displayCacheDateTime.getMonth() + 1;
             var counter = -ccn_datetime_DayOfWeek(gottenYear, gottenMonth,  1);
-            var days = ccn_datetime_monthDayCount[gottenMonth - 1] + ((gottenMonth == 2 && ccn_datetime_IsLeapYear(year)) ? 1 : 0);
+            var days = ccn_datetime_monthDayCount[gottenMonth - 1] + ((gottenMonth == 2 && ccn_datetime_IsLeapYear(gottenYear)) ? 1 : 0);
             for(var i = 0; i < 6; i++) {
                 for(var j = 0; j < 7; j++, counter++) {
                     var ele = $('#ccn-datetimepiacker-panelDay-table > div:nth-child({0}) > div:nth-child({1})'.format(i + 2, j + 1));
@@ -356,9 +357,17 @@ function ccn_datetimepicker_ClickDay() {
 
 function ccn_datetimepicker_StartDragHour() { ccn_datetimepicker_enableHourDrag = true; }
 function ccn_datetimepicker_DraggingHour(e) {
-    var offset = $('#ccn-datetimepicker-panelHour').offset();
-    var x = e.pageX - offset.left - ccn_datetimepicker_dialPlateRadius;
-    var y = -(e.pageY - offset.top - ccn_datetimepicker_dialPlateRadius);
+    if (!ccn_datetimepicker_enableHourDrag) return;
+
+    var ele = $('#ccn-datetimepicker-panelHour')
+    var offset = {
+        left: ele.offset().left,
+        top: ele.offset().top,
+        width: ele.width(),
+        height: ele.height()
+    }
+    var x = (e.pageX - offset.left) / width * ccn_datetimepicker_dialPlateWidth - ccn_datetimepicker_dialPlateRadius;
+    var y = -((e.pageY - offset.top) / height * ccn_datetimepicker_dialPlateWidth - ccn_datetimepicker_dialPlateRadius);
 
     var distance = Math.sqrt(x * x + y * y);
     var angle = Math.asin(y / distance);
@@ -392,9 +401,17 @@ function ccn_datetimepicker_StopDragHour() {
 
 function ccn_datetimepicker_StartDragMinute() { ccn_datetimepicker_enableMinuteDrag = true; }
 function ccn_datetimepicker_DraggingMinute(e) {
-    var offset = $('#ccn-datetimepicker-panelMinute').offset();
-    var x = e.pageX - offset.left - ccn_datetimepicker_dialPlateRadius;
-    var y = -(e.pageY - offset.top - ccn_datetimepicker_dialPlateRadius);
+    if (!ccn_datetimepicker_enableMinuteDrag) return;
+
+    var ele = $('#ccn-datetimepicker-panelMinute')
+    var offset = {
+        left: ele.offset().left,
+        top: ele.offset().top,
+        width: ele.width(),
+        height: ele.height()
+    }
+    var x = (e.pageX - offset.left) / offset.width * ccn_datetimepicker_dialPlateWidth - ccn_datetimepicker_dialPlateRadius;
+    var y = -((e.pageY - offset.top) / offset.height * ccn_datetimepicker_dialPlateWidth - ccn_datetimepicker_dialPlateRadius);
 
     var distance = Math.sqrt(x * x + y * y);
     var angle = Math.asin(y / distance);
@@ -434,19 +451,23 @@ function ccn_datetimepicker_ClampDateTime(dateObj) {
 
 function ccn_datetimepicker_Set(pickerIndex, dt, isUTC, mode) {
     var ele = $('[datetimepicker=' + pickerIndex + ']');
-    if (mode < ccn_datetimepicker_tabType.year) return;
-    ele.attr('datetimepicker-year', isUTC ? dt.getUTCFullYear() : dt.getFullYear());
-    if (mode < ccn_datetimepicker_tabType.month) return;
-    ele.attr('datetimepicker-month', (isUTC ? dt.getUTCMonth() : dt.getMonth()) + 1);
-    if (mode < ccn_datetimepicker_tabType.day) return;
-    ele.attr('datetimepicker-day', isUTC ? dt.getUTCDate() : dt.getDate());
-    if (mode < ccn_datetimepicker_tabType.hour) return;
-    ele.attr('datetimepicker-hour', isUTC ? dt.getUTCHours() : dt.getHours());
-    if (mode < ccn_datetimepicker_tabType.minute) return;
-    ele.attr('datetimepicker-minute', isUTC ? dt.getUTCMinutes() : dt.getMinutes());
+    while(true) {
+        if (mode < ccn_datetimepicker_tabType.year) break;
+        ele.attr('datetimepicker-year', isUTC ? dt.getUTCFullYear() : dt.getFullYear());
+        if (mode < ccn_datetimepicker_tabType.month) break;
+        ele.attr('datetimepicker-month', (isUTC ? dt.getUTCMonth() : dt.getMonth()) + 1);
+        if (mode < ccn_datetimepicker_tabType.day) break;
+        ele.attr('datetimepicker-day', isUTC ? dt.getUTCDate() : dt.getDate());
+        if (mode < ccn_datetimepicker_tabType.hour) break;
+        ele.attr('datetimepicker-hour', isUTC ? dt.getUTCHours() : dt.getHours());
+        if (mode < ccn_datetimepicker_tabType.minute) break;
+        ele.attr('datetimepicker-minute', isUTC ? dt.getUTCMinutes() : dt.getMinutes());
 
-    if (typeof(ele.prop('callbackFunc')) == 'function')
-        ele.prop('callbackFunc')();
+        break;
+    }
+
+    if (typeof(ele.prop('funcs')) != 'undefined' && typeof(ele.prop('funcs').callback) == 'function')
+        ele.prop('funcs').callback();
 }
 
 function ccn_datetimepicker_Get(pickerIndex, isUTC) {

@@ -61,9 +61,12 @@ $(document).ready(function() {
     $('#ccn-calendar-collection-btnRefresh').click(ccn_calendar_collection_Refresh);
 
     $('#ccn-calendar-calendar-btnJump')
-    .prop('callbackFunc', ccn_calendar_calendar_btnRefresh)
+    .prop('funcs', {callback: ccn_calendar_calendar_btnRefresh})
     .click(function() {
-        ccn_datetimepicker_Modal(ccn_datetimepicker_tabType.month, 1, false);
+        ccn_datetimepicker_Modal(
+            ccn_datetimepicker_tabType.month, 
+            1, 
+            false);
     });
     $('#ccn-calendar-calendar-btnToday').click(ccn_calendar_calendar_btnToday);
     $('#ccn-calendar-calendar-btnAdd').click(ccn_calendar_calendar_btnAdd);

@@ -3,8 +3,8 @@ var ccn_datetime_monthDayCount = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31
 
 var ccn_datetime_MIN_YEAR = 1950;
 var ccn_datetime_MAX_YEAR = 2200;
-var ccn_datetime_MIN_DATETIME = new Date(Date.UTC(ccn_datetime_MIN_YEAR, 1, 1, 0, 0, 0, 0));
-var ccn_datetime_MAX_DATETIME = new Date(Date.UTC(ccn_datetime_MAX_YEAR, 1, 1, 0, 0, 0, 0));
+var ccn_datetime_MIN_DATETIME = new Date(Date.UTC(ccn_datetime_MIN_YEAR, 0, 1, 0, 0, 0, 0));
+var ccn_datetime_MAX_DATETIME = new Date(Date.UTC(ccn_datetime_MAX_YEAR, 0, 1, 0, 0, 0, 0));
 var ccn_datetime_MIN_TIMESTAMP = Math.floor(ccn_datetime_MIN_DATETIME.getTime() / 60000);
 var ccn_datetime_MAX_TIMESTAMP = Math.floor(ccn_datetime_MAX_DATETIME.getTime() / 60000);
 

@@ -37,6 +37,15 @@ $(document).ready(function() {
     $('#ccn-event-btnCancel').click(ccn_event_btnCancel);
     $('#ccn-event-btnSpot').click(ccn_event_btnSpot);
     $('#ccn-event-btnFullDay').click(ccn_event_btnFullDay);
+    $('#ccn-event-btnStartDateTime')
+    .prop('funcs', {callback: function() {ccn_event_UpdateDateTimePickerButton(1);}})
+    .click(ccn_event_btnDateTimePicker);
+    $('#ccn-event-btnEndDateTime')
+    .prop('funcs', {callback: function() {ccn_event_UpdateDateTimePickerButton(2);}})
+    .click(ccn_event_btnDateTimePicker);
+    $('#ccn-event-btnLoopStopDateTime')
+    .prop('funcs', {callback: function() {ccn_event_UpdateDateTimePickerButton(3);}})
+    .click(ccn_event_btnDateTimePicker);
 
     // init form
     ccn_event_Init();
@@ -59,9 +68,6 @@ function ccn_event_Init() {
     .attr('min', 1)
     .attr('step', 1)
     .val(1);
-
-    // now, init 3 datetimepicker
-    //ccn_datetimepicker_Init();
 
     // in there, we need get uuid from meta
     var uuid = $('meta[name=uuid]').attr('content');
@@ -242,6 +248,26 @@ function ccn_event_RefreshLoopMonthType() {
     $('#ccn-event-loopMonth-textD').text($.i18n.prop('ccn-i18n-event-loopWeek-optionD').format(data[4], data[5] + 1));
 }
 
+function ccn_event_UpdateDateTimePickerButton(index) {
+    switch(index) {
+        case 1:
+            $('#ccn-event-btnStartDateTime-text').text(
+                ccn_datetimepicker_Get(1, false).toLocaleString()
+            );
+            break;
+        case 2:
+            $('#ccn-event-btnEndDateTime-text').text(
+                ccn_datetimepicker_Get(2, false).toLocaleString()
+            );
+            break;
+        case 3:
+            $('#ccn-event-btnLoopStopDateTime-text').text(
+                ccn_datetimepicker_Get(3, false).toLocaleDateString()
+            );
+            break;
+    }
+}
+
 // return undefined to indicate an error
 // or
 // [belongTo, title, description, eventDateTimeStart, eventDateTimeEnd, timezoneOffset, loopRules]
@@ -363,6 +389,20 @@ function ccn_event_btnFullDay() {
     datetime.setMinutes(59);
     datetime.setHours(23);
     ccn_datetimepicker_Set(2, datetime, false);
+}
+
+function ccn_event_btnDateTimePicker() {
+    switch(parseInt($(this).attr('datetimepicker'))) {
+        case 1:
+            ccn_datetimepicker_Modal(ccn_datetimepicker_tabType.minute, 1, false);
+            break;
+        case 2:
+            ccn_datetimepicker_Modal(ccn_datetimepicker_tabType.minute, 2, false);
+            break;
+        case 3:
+            ccn_datetimepicker_Modal(ccn_datetimepicker_tabType.day, 3, false);
+            break;
+    }
 }
 
 function ccn_event_btnCancel() {

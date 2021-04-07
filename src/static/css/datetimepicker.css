@@ -29,6 +29,9 @@ div.perfectTable > div > div {
 
     display: flex;
     justify-content: center;
+
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }
 
 div.perfectTable > div {
@@ -95,7 +98,7 @@ header.pickerHeader {
     display: flex;
     flex-flow: row;
 
-    flex-grow: 1;
+    flex-grow: 0;
     flex-basis: 0;
     flex-shrink: 0;
 
