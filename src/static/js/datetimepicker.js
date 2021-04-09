@@ -233,8 +233,8 @@ function ccn_datetimepicker_RefreshDisplay(tab) {
             break;
         case ccn_datetimepicker_tabType.hour:
             var gottenHour = ccn_datetimepicker_displayCacheDateTime.getHours();
-            var newX = Math.cos((15 - gottenHour) * Math.PI * 2 / 60);
-            var newY = Math.sin((15 - gottenHour) * Math.PI * 2 / 60);
+            var newX = Math.cos((3 - gottenHour) * Math.PI * 2 / 12);
+            var newY = Math.sin((3 - gottenHour) * Math.PI * 2 / 12);
             var radius = ccn_datetimepicker_dialPlateRadius * (gottenHour < 12 ? ccn_datetimepicker_dialPlateHourOutterPercent : ccn_datetimepicker_dialPlateHourInnerPercent);
             newX = newX * radius + ccn_datetimepicker_dialPlateRadius;
             newY = (-newY * radius) + ccn_datetimepicker_dialPlateRadius;
@@ -366,19 +366,20 @@ function ccn_datetimepicker_DraggingHour(e) {
         width: ele.width(),
         height: ele.height()
     }
-    var x = (e.pageX - offset.left) / width * ccn_datetimepicker_dialPlateWidth - ccn_datetimepicker_dialPlateRadius;
-    var y = -((e.pageY - offset.top) / height * ccn_datetimepicker_dialPlateWidth - ccn_datetimepicker_dialPlateRadius);
+    var x = (e.pageX - offset.left) / offset.width * ccn_datetimepicker_dialPlateWidth - ccn_datetimepicker_dialPlateRadius;
+    var y = -((e.pageY - offset.top) / offset.height * ccn_datetimepicker_dialPlateWidth - ccn_datetimepicker_dialPlateRadius);
 
     var distance = Math.sqrt(x * x + y * y);
-    var angle = Math.asin(y / distance);
-    if (x < 0) angle = Math.PI - angle; // correct negative x axis angle
+    var angle = Math.acos(x / distance);
+    if (y < 0) angle = Math.PI * 2 - angle; // correct negative y axis angle
 
     angle += (ccn_datetimepicker_dialPlateHourResolution / 2); // correct offset
     if (angle > Math.PI * 2)
         angle -= Math.PI * 2;
 
-    var number = -(Math.floor(angle / (ccn_datetimepicker_dialPlateHourResolution / 2)) - 3);
-    if (number < 0) number += 12;
+    var number = Math.floor(angle / ccn_datetimepicker_dialPlateHourResolution);
+    if (number >= 12) number = 11; // prevent unexpected result at the edge.
+    number = (15 - number) % 12;
     if (distance < ccn_datetimepicker_dialPlateRadius * ccn_datetimepicker_dialPlateHourDistinguishPercent)
         number += 12;
 
@@ -414,15 +415,16 @@ function ccn_datetimepicker_DraggingMinute(e) {
     var y = -((e.pageY - offset.top) / offset.height * ccn_datetimepicker_dialPlateWidth - ccn_datetimepicker_dialPlateRadius);
 
     var distance = Math.sqrt(x * x + y * y);
-    var angle = Math.asin(y / distance);
-    if (x < 0) angle = Math.PI - angle; // correct negative x axis angle
+    var angle = Math.acos(x / distance);
+    if (y < 0) angle = Math.PI * 2 - angle; // correct negative y axis angle
 
     angle += (ccn_datetimepicker_dialPlateMinuteResolution / 2); // correct offset
     if (angle > Math.PI * 2)
         angle -= Math.PI * 2;
 
-    var number = -(Math.floor(angle / (ccn_datetimepicker_dialPlateMinuteResolution / 2)) - 3);
-    if (number < 0) number += 12;
+    var number = Math.floor(angle / ccn_datetimepicker_dialPlateMinuteResolution);
+    if (number >= 60) number = 59; // prevent unexpected result at the edge.
+    number = (75 - number) % 60;
 
     // judge
     if (ccn_datetimepicker_displayCacheDateTime.getMinutes() != number) {
