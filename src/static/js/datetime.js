@@ -261,8 +261,76 @@ function ccn_datetime_ResolveLoopRules4Event(loopRules, loopDateTimeStart, loopD
     return realResult;
 }
 
-function ccn_datetime_ResolveLoopRules4Text(loopRules) {
-    return "";
+function ccn_datetime_ResolveLoopRules4Text(strl, startDateTime, timezoneOffset) {
+    if (strl == '') return "";
+
+    var sp = strl.split('-');
+    if (sp.length != 2) return "";
+    var loopRules = undefined;
+    var loopStopRules = undefined;
+    var datetimeInstance = new Date((startDateTime + timezoneOffset) * 60000)
+
+    if (ccn_datetime_precompiledLoopRules.year.test(sp[0])) {
+        if (RegExp.$1 == 'S')
+            loopRules = $.i18n.prop('ccn-i18n-datetime-loopRuleText-modeStrict');
+        else
+            loopRules = $.i18n.prop('ccn-i18n-datetime-loopRuleText-modeRough');
+        loopRules += $.i18n.prop('ccn-i18n-datetime-loopRuleText-year')
+        .format(parseInt(RegExp.$2), datetimeInstance.toLocaleDateString(undefined, {timeZone: "UTC"}));
+    } else if (ccn_datetime_precompiledLoopRules.month.test(sp[0])) {
+        if (RegExp.$1 == 'S')
+            loopRules = $.i18n.prop('ccn-i18n-datetime-loopRuleText-modeStrict');
+        else
+            loopRules = $.i18n.prop('ccn-i18n-datetime-loopRuleText-modeRough');
+
+        var dayInMonth = ccn_datetime_GetDayInMonth(
+            datetimeInstance.getUTCFullYear(), 
+            datetimeInstance.getUTCMonth() + 1,
+            datetimeInstance.getUTCDate());
+        switch(loopMethod) {
+            case 'A':
+                loopRules = $.i18n.prop('ccn-i18n-datetime-loopRuleText-monthA')
+                format(parseInt(RegExp.$3), dayInMonth[0]);
+                break;
+            case 'B':
+                loopRules = $.i18n.prop('ccn-i18n-datetime-loopRuleText-monthB')
+                format(parseInt(RegExp.$3), dayInMonth[1]);
+                break;
+            case 'C':
+                loopRules = $.i18n.prop('ccn-i18n-datetime-loopRuleText-monthC')
+                format(parseInt(RegExp.$3), dayInMonth[2], dayInMonth[3]);
+                break;
+            case 'D':
+                loopRules = $.i18n.prop('ccn-i18n-datetime-loopRuleText-monthD')
+                format(parseInt(RegExp.$3), dayInMonth[4], dayInMonth[5]);
+                break;
+        }
+    } else if (ccn_datetime_precompiledLoopRules.week.test(sp[0])) {
+        var weekOfDayCache = [];
+        for (var i = 0; i < 7; i++) {
+            if (RegExp.$1[i] == 'T')
+                weekOfDayCache.push(ccn_i18n_UniversalGetDayOfWeek(i));
+        }
+
+        loopRules = $.i18n.prop('ccn-i18n-datetime-loopRuleText-week')
+        .format(parseInt(RegExp.$2), weekOfDayCache.join(', '));
+    } else if (ccn_datetime_precompiledLoopRules.day.test(sp[0])) {
+        loopRules = $.i18n.prop('ccn-i18n-datetime-loopRuleText-day')
+        .format(parseInt(RegExp.$1));
+    } else return "";
+
+
+    if (ccn_datetime_precompiledLoopStopRules.infinity.test(sp[1])) {
+        loopStopRules = $.i18n.prop('ccn-i18n-datetime-loopStopRuleText-infinity');
+    } else if (ccn_datetime_precompiledLoopStopRules.datetime.test(sp[1])) {
+        loopStopRules = $.i18n.prop('ccn-i18n-datetime-loopStopRuleText-datetime')
+        .format(new Date(parseInt(RegExp.$1)).toLocaleDateString());
+    } else if (ccn_datetime_precompiledLoopStopRules.times.test(sp[1])) {
+        loopStopRules = $.i18n.prop('ccn-i18n-datetime-loopStopRuleText-times')
+        .format(parseInt(RegExp.$1));
+    } else return "";
+
+    return (loopRules + loopStopRules);
 }
 
 function ccn_datetime_LeapYearCountEx(endYear, includeThis, baseYear, includeBase) {

@@ -15,6 +15,9 @@
                     <p class="level-item"><b>{{>title}}</b></p>
                     <p class="level-item">{{>description}}</p>
                     <p class="level-item"><span>{{>start}}</span>-<span>{{>end}}</span></p>
+                    {{if loopText != ""}}
+                    <p><span class="icon is-small"><i class="fas fa-retweet"></i></span><span>{{>loopText}}</span></p>
+                    {{/if}}
                 </div>
                 <div class="schedule-event-icon">
                     {{if isLocked}}

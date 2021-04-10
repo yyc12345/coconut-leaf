@@ -157,7 +157,7 @@ function ccn_calendar_calendar_Analyse() {
                         color: deserializedDescription.color,
                         isVisible: true,
                         isLocked: typeof(ccn_calendar_owned_displayCache[item[0]]) != 'undefined',
-                        loopText: " ",  // todo: finish this
+                        loopText: ccn_datetime_ResolveLoopRules4Text(item[8], item[5], item[7]),
                         timezoneWarning: mytimezone != item[7],
                         start: eventDateTime.toLocaleTimeString(),
                         end: undefined  // filled in follwing code

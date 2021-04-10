@@ -82,3 +82,8 @@ function ccn_i18n_UniversalGetMonth(month) {
     return $.i18n.prop('ccn-i18n-universal-month-' + (month + 1));
 }
 
+// note: day of week is zero based
+function ccn_i18n_UniversalGetDayOfWeek(dayOfWeek) {
+    return $.i18n.prop('ccn-i18n-universal-week-' + (dayOfWeek + 1));
+}
+
