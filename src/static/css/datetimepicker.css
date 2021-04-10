@@ -72,6 +72,8 @@ div.pickerContainer > svg {
 div.pickerContainer > svg > text {
     dominant-baseline: middle;
     text-anchor: middle;
+    user-select: none;
+    cursor: default;
 }
 
 div.pickerContainer > svg > circle[type=background] {

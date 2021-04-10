@@ -31,11 +31,7 @@ function ccn_datetimepicker_Insert() {
     $('body').append(ccn_template_datetimepicker.render());
 
     // bind size event and trigge once
-    $(window).resize(function (){
-        $('div.pickerContainer > svg').each(function() {
-            ccn_datetimepicker_OnSvgResize($(this));
-        });
-    }).resize();
+    $(window).resize(ccn_datetimepicker_RefreshSvg).resize();
 
     // add data attr
     for(var i = 0; i < 3; i++) {
@@ -77,12 +73,18 @@ function ccn_datetimepicker_Insert() {
     $('#ccn-datetimepicker-panelHour')
     .mousedown(ccn_datetimepicker_StartDragHour)
     .mousemove(ccn_datetimepicker_DraggingHour)
-    .mouseup(ccn_datetimepicker_StopDragHour);
+    .mouseup(ccn_datetimepicker_StopDragHour)
+    .on('touchstart', ccn_datetimepicker_StartDragHour)
+    .on('touchmove', ccn_datetimepicker_DraggingHour)
+    .on('touchend', ccn_datetimepicker_StopDragHour);
 
     $('#ccn-datetimepicker-panelMinute')
     .mousedown(ccn_datetimepicker_StartDragMinute)
     .mousemove(ccn_datetimepicker_DraggingMinute)
-    .mouseup(ccn_datetimepicker_StopDragMinute);
+    .mouseup(ccn_datetimepicker_StopDragMinute)
+    .on('touchstart', ccn_datetimepicker_StartDragMinute)
+    .on('touchmove', ccn_datetimepicker_DraggingMinute)
+    .on('touchend', ccn_datetimepicker_StopDragMinute);
 
     $('#ccn-datetimepicker-btnConfirm').click(ccn_datetimepicker_Confirm);
     $('#ccn-datetimepicker-btnCancel').click(ccn_datetimepicker_Cancel);
@@ -110,9 +112,9 @@ function ccn_datetimepicker_Modal(mode, pickerIndex, isUTC) {
             $('header.pickerHeader > div[type=year]').show();
             break;
     }
-    ccn_datetimepicker_SwitchTab(mode);
 
     $('#ccn-datetimepicker-modal').addClass('is-active');
+    ccn_datetimepicker_SwitchTab(mode); // this call is set in there by design. if you don't show the dialog, the call of svg resize will fail.
 }
 
 function ccn_datetimepicker_Confirm() {
@@ -156,9 +158,11 @@ function ccn_datetimepicker_SwitchTab(newTab) {
             break;
         case ccn_datetimepicker_tabType.hour:
             $('#ccn-datetimepicker-panelHour').show();
+            ccn_datetimepicker_RefreshSvg();    // immediately trigger once svg resize
             break;
         case ccn_datetimepicker_tabType.minute:
             $('#ccn-datetimepicker-panelMinute').show();
+            ccn_datetimepicker_RefreshSvg();    // immediately trigger once svg resize
             break;
     }
 }
@@ -268,6 +272,15 @@ function ccn_datetimepicker_RefreshDisplay(tab) {
     }
 }
 
+function ccn_datetimepicker_RefreshSvg() {
+    // svg resize only can be called when the svg is showing.
+    // so call this func in window resize event or
+    // displaying svg.
+    $('div.pickerContainer > svg').each(function() {
+        ccn_datetimepicker_OnSvgResize($(this));
+    });
+}
+
 function ccn_datetimepicker_Str2TabType(strl) {
     switch(strl) {
         case 'year':
@@ -282,6 +295,31 @@ function ccn_datetimepicker_Str2TabType(strl) {
             return ccn_datetimepicker_tabType.minute
     }
     return undefined;
+}
+
+function ccn_datetimepicker_GetUniformedXY(mouseOrTouchEvent, elements) {
+    var offset = {
+        left: elements.offset().left,
+        top: elements.offset().top,
+        halfWidth: elements.width() / 2,
+        halfHeight: elements.height() / 2,
+        halfSquareWidthHeight: Math.min(elements.width(), elements.height()) / 2
+    }
+    if(typeof(mouseOrTouchEvent.pageX) != 'undefined' && typeof(mouseOrTouchEvent.pageY) != 'undefined') {
+        offset.realX = mouseOrTouchEvent.pageX;
+        offset.realY = mouseOrTouchEvent.pageY;
+    } else if(typeof(mouseOrTouchEvent.targetTouches) != 'undefined' && mouseOrTouchEvent.targetTouches.length >= 1) {
+        offset.realX = mouseOrTouchEvent.targetTouches[0].pageX;
+        offset.realY = mouseOrTouchEvent.targetTouches[0].pageY;
+    } else {
+        offset.realX = 0;
+        offset.realY = 0;
+    }
+
+    var _x = (offset.realX - offset.left - offset.halfWidth) / offset.halfSquareWidthHeight * ccn_datetimepicker_dialPlateRadius;
+    var _y = -((offset.realY - offset.top - offset.halfHeight) / offset.halfSquareWidthHeight * ccn_datetimepicker_dialPlateRadius);
+
+    return {x: _x, y: _y};
 }
 
 function ccn_datetimepicker_PrevNextYear(isPrev) {
@@ -359,15 +397,9 @@ function ccn_datetimepicker_StartDragHour() { ccn_datetimepicker_enableHourDrag 
 function ccn_datetimepicker_DraggingHour(e) {
     if (!ccn_datetimepicker_enableHourDrag) return;
 
-    var ele = $('#ccn-datetimepicker-panelHour')
-    var offset = {
-        left: ele.offset().left,
-        top: ele.offset().top,
-        width: ele.width(),
-        height: ele.height()
-    }
-    var x = (e.pageX - offset.left) / offset.width * ccn_datetimepicker_dialPlateWidth - ccn_datetimepicker_dialPlateRadius;
-    var y = -((e.pageY - offset.top) / offset.height * ccn_datetimepicker_dialPlateWidth - ccn_datetimepicker_dialPlateRadius);
+    var offset = ccn_datetimepicker_GetUniformedXY(e, $('#ccn-datetimepicker-panelHour'));
+    var x = offset.x;
+    var y = offset.y;
 
     var distance = Math.sqrt(x * x + y * y);
     var angle = Math.acos(x / distance);
@@ -388,6 +420,8 @@ function ccn_datetimepicker_DraggingHour(e) {
         ccn_datetimepicker_displayCacheDateTime.setHours(number);
         ccn_datetimepicker_RefreshDisplay(ccn_datetimepicker_tabType.hour);
     }
+    
+    e.preventDefault();
 }
 function ccn_datetimepicker_StopDragHour() { 
     ccn_datetimepicker_enableHourDrag = false;
@@ -404,15 +438,9 @@ function ccn_datetimepicker_StartDragMinute() { ccn_datetimepicker_enableMinuteD
 function ccn_datetimepicker_DraggingMinute(e) {
     if (!ccn_datetimepicker_enableMinuteDrag) return;
 
-    var ele = $('#ccn-datetimepicker-panelMinute')
-    var offset = {
-        left: ele.offset().left,
-        top: ele.offset().top,
-        width: ele.width(),
-        height: ele.height()
-    }
-    var x = (e.pageX - offset.left) / offset.width * ccn_datetimepicker_dialPlateWidth - ccn_datetimepicker_dialPlateRadius;
-    var y = -((e.pageY - offset.top) / offset.height * ccn_datetimepicker_dialPlateWidth - ccn_datetimepicker_dialPlateRadius);
+    var offset = ccn_datetimepicker_GetUniformedXY(e, $('#ccn-datetimepicker-panelMinute'));
+    var x = offset.x;
+    var y = offset.y;
 
     var distance = Math.sqrt(x * x + y * y);
     var angle = Math.acos(x / distance);
@@ -431,6 +459,8 @@ function ccn_datetimepicker_DraggingMinute(e) {
         ccn_datetimepicker_displayCacheDateTime.setMinutes(number);
         ccn_datetimepicker_RefreshDisplay(ccn_datetimepicker_tabType.minute);
     }
+
+    e.preventDefault();
 }
 function ccn_datetimepicker_StopDragMinute() { 
     ccn_datetimepicker_enableMinuteDrag = false;
@@ -438,7 +468,9 @@ function ccn_datetimepicker_StopDragMinute() {
     ccn_datetimepicker_internalDateTime.setMinutes(ccn_datetimepicker_displayCacheDateTime.getMinutes());
     ccn_datetimepicker_ClampDateTime(ccn_datetimepicker_internalDateTime);
 
-    // no page need to be jumped
+    // no page need to go to
+    // but we need refresh current page
+    ccn_datetimepicker_RefreshDisplay(ccn_datetimepicker_tabType.minute);
 }
 
 

@@ -28,17 +28,16 @@ $(document).ready(function() {
     // bind event
     $('input[type=radio][name=loop-method]').click(ccn_event_RefreshRadioDiaplay);
     $('input[type=radio][name=loop-end]').click(ccn_event_RefreshRadioDiaplay);
-    $('.datetimepicker-year[datetimepicker=1],.datetimepicker-month[datetimepicker=1],.datetimepicker-day[datetimepicker=1]').bind(
-        'input propertychange',
-        ccn_event_RefreshLoopMonthType
-    );
 
     $('#ccn-event-btnSubmit').click(ccn_event_btnSubmit);
     $('#ccn-event-btnCancel').click(ccn_event_btnCancel);
     $('#ccn-event-btnSpot').click(ccn_event_btnSpot);
     $('#ccn-event-btnFullDay').click(ccn_event_btnFullDay);
     $('#ccn-event-btnStartDateTime')
-    .prop('funcs', {callback: function() {ccn_event_UpdateDateTimePickerButton(1);}})
+    .prop('funcs', {callback: function() {
+        ccn_event_UpdateDateTimePickerButton(1);
+        ccn_event_RefreshLoopMonthType();
+    }})
     .click(ccn_event_btnDateTimePicker);
     $('#ccn-event-btnEndDateTime')
     .prop('funcs', {callback: function() {ccn_event_UpdateDateTimePickerButton(2);}})
