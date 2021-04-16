@@ -287,22 +287,22 @@ function ccn_datetime_ResolveLoopRules4Text(strl, startDateTime, timezoneOffset)
             datetimeInstance.getUTCFullYear(), 
             datetimeInstance.getUTCMonth() + 1,
             datetimeInstance.getUTCDate());
-        switch(loopMethod) {
+        switch(RegExp.$2) {
             case 'A':
                 loopRules = $.i18n.prop('ccn-i18n-datetime-loopRuleText-monthA')
-                format(parseInt(RegExp.$3), dayInMonth[0]);
+                .format(parseInt(RegExp.$3), dayInMonth[0]);
                 break;
             case 'B':
                 loopRules = $.i18n.prop('ccn-i18n-datetime-loopRuleText-monthB')
-                format(parseInt(RegExp.$3), dayInMonth[1]);
+                .format(parseInt(RegExp.$3), dayInMonth[1]);
                 break;
             case 'C':
                 loopRules = $.i18n.prop('ccn-i18n-datetime-loopRuleText-monthC')
-                format(parseInt(RegExp.$3), dayInMonth[2], dayInMonth[3]);
+                .format(parseInt(RegExp.$3), dayInMonth[2], dayInMonth[3]);
                 break;
             case 'D':
                 loopRules = $.i18n.prop('ccn-i18n-datetime-loopRuleText-monthD')
-                format(parseInt(RegExp.$3), dayInMonth[4], dayInMonth[5]);
+                .format(parseInt(RegExp.$3), dayInMonth[4], dayInMonth[5]);
                 break;
         }
     } else if (ccn_datetime_precompiledLoopRules.week.test(sp[0])) {
