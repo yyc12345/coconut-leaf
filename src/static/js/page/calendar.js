@@ -163,7 +163,7 @@ function ccn_calendar_calendar_Analyse() {
                         end: undefined  // filled in follwing code
                     }
                     eventDateTime.setHours(23, 59, 0, 0);
-                    if (Math.floor(eventDateTime.getTime() / 60000) > it[1]) {
+                    if (it[1] <= Math.floor(eventDateTime.getTime() / 60000)) {
                         exitFlag = true;
                         eventDateTime.setTime(it[1] * 60000);
                     }
